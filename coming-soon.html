@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0f1a">
+<title>MAJC — Coming Soon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #0a0f1a;
+    color: #e2e8f0;
+    font-family: 'Barlow', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+  .logo-mark {
+    width: 72px;
+    height: 72px;
+    background: #1d4ed8;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 auto 20px;
+  }
+  .app-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #e2e8f0;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .tagline {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 40px;
+  }
+  .status-badge {
+    display: inline-block;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 99px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fcd34d;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .message {
+    background: #111827;
+    border: 1px solid rgba(148,163,184,0.12);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 24px;
+  }
+  .message h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 12px;
+  }
+  .message p {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+  .progress-section {
+    background: #111827;
+    border: 1px solid rgba(148,163,184,0.12);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .progress-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(148,163,184,0.08);
+    font-size: 14px;
+  }
+  .progress-item:last-child { border-bottom: none; }
+  .progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .done { background: #22c55e; }
+  .building { background: #f59e0b; }
+  .todo { background: #334155; }
+  .item-label { flex: 1; color: #e2e8f0; }
+  .item-status { font-size: 11px; font-weight: 600; }
+  .status-done { color: #4ade80; }
+  .status-building { color: #fcd34d; }
+  .status-todo { color: #475569; }
+  .user-info {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 16px;
+  }
+  .user-info span { color: #60a5fa; font-weight: 600; }
+  .btn-signout {
+    background: none;
+    border: 1px solid rgba(148,163,184,0.2);
+    color: #94a3b8;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Barlow', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-signout:hover { border-color: rgba(148,163,184,0.4); color: #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo-mark">MJ</div>
+  <div class="app-name">MAJC</div>
+  <div class="tagline">Fleet Back Office</div>
+
+  <div class="status-badge">🔧 Under Development</div>
+
+  <div class="message">
+    <h2>You're in — app coming soon!</h2>
+    <p>Your account is set up and ready. We're building the dashboard and all the good stuff right now. Check back soon — it won't be long.</p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-title">Build Progress</div>
+    <div class="progress-item">
+      <div class="progress-dot done"></div>
+      <div class="item-label">Login & Authentication</div>
+      <div class="item-status status-done">Done ✓</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot done"></div>
+      <div class="item-label">Cloud Database</div>
+      <div class="item-status status-done">Done ✓</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot building"></div>
+      <div class="item-label">Dashboard</div>
+      <div class="item-status status-building">Building...</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot todo"></div>
+      <div class="item-label">Pay Period Tracker</div>
+      <div class="item-status status-todo">Coming soon</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot todo"></div>
+      <div class="item-label">Transactions</div>
+      <div class="item-status status-todo">Coming soon</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot todo"></div>
+      <div class="item-label">Fleet Maintenance</div>
+      <div class="item-status status-todo">Coming soon</div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-dot todo"></div>
+      <div class="item-label">Bills & Loans</div>
+      <div class="item-status status-todo">Coming soon</div>
+    </div>
+  </div>
+
+  <div class="user-info" id="user-info">Signed in as <span id="user-email">...</span></div>
+  <button class="btn-signout" onclick="signOut()">Sign Out</button>
+
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut as fbSignOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD95D_6kVluW8neV_T0S64T6yMML7Tsv58",
+  authDomain: "majc-ec327.firebaseapp.com",
+  projectId: "majc-ec327",
+  storageBucket: "majc-ec327.firebasestorage.app",
+  messagingSenderId: "916377285796",
+  appId: "1:916377285796:web:5d60ff54ea1b6d31aa6231"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// If not logged in, send back to login
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = 'login.html';
+  } else {
+    document.getElementById('user-email').textContent = user.displayName || user.email;
+  }
+});
+
+window.signOut = async function() {
+  await fbSignOut(auth);
+  localStorage.removeItem('majc_user');
+  localStorage.removeItem('majc_workspace');
+  window.location.href = 'login.html';
+};
+</script>
+</body>
+</html>
