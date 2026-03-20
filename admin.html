@@ -675,7 +675,7 @@
   <aside class="sidebar">
     <div class="sidebar-greeting">
       <div class="sidebar-greeting-label">Welcome back</div>
-      <div class="sidebar-greeting-name">JESS<span>ICA</span></div>
+      <div class=<div class="sidebar-greeting-name" id="sidebarName">JESS<span>ICA</span></div>
       <div class="sidebar-date" id="sidebarDate">—</div>
     </div>
 
@@ -1355,9 +1355,12 @@
   document.getElementById('eventDate').value = todayInput;
 
   // ── AUTH ──
+// ── AUTH ──
   onAuthStateChanged(auth, user => {
     if (!user) { window.location.href = 'login.html'; return; }
     document.getElementById('navUserName').textContent = user.displayName?.split(' ')[0] || 'Admin';
+    const firstName = (user.displayName?.split(' ')[0] || 'Admin').toUpperCase();
+    document.getElementById('sidebarName').innerHTML = firstName.slice(0,-3) + '<span>' + firstName.slice(-3) + '</span>';
     loadAll();
   });
   document.getElementById('logoutBtn').addEventListener('click', () =>
