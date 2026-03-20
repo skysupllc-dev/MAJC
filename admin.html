@@ -1354,12 +1354,15 @@
   document.getElementById('txDate').value = todayInput;
   document.getElementById('eventDate').value = todayInput;
 
-  // ── AUTH ──
 // ── AUTH ──
   onAuthStateChanged(auth, user => {
     if (!user) { window.location.href = 'login.html'; return; }
     document.getElementById('navUserName').textContent = user.displayName?.split(' ')[0] || 'Admin';
-    const firstName = (user.displayName?.split(' ')[0] || 'Admin').toUpperCase();
+    const NAMES = {
+      'R29clFw9tZbJlQOTjs0kbY4z6sw1': 'JESSICA',
+      'EYlO9qTN6yVa5FXeYpj9t8CvIbr2': 'MATTHEW'
+    };
+    const firstName = NAMES[user.uid] || (user.displayName?.split(' ')[0] || 'Admin').toUpperCase();
     document.getElementById('sidebarName').innerHTML = firstName.slice(0,-3) + '<span>' + firstName.slice(-3) + '</span>';
     loadAll();
   });
