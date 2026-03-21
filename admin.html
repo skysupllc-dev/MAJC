@@ -773,6 +773,11 @@
           <div class="stat-value red" id="stat-bills-total">$0.00</div>
           <div class="stat-sub" id="stat-bills-count">0 bills</div>
         </div>
+        <div class="stat-card red">
+          <div class="stat-label">Bills Still Due</div>
+          <div class="stat-value red" id="stat-bills-remaining">$0.00</div>
+          <div class="stat-sub" id="stat-bills-remaining-count">0 unpaid</div>
+        </div>
         <div class="stat-card orange">
           <div class="stat-label">Transactions Out</div>
           <div class="stat-value orange" id="stat-spent">$0.00</div>
@@ -1714,6 +1719,8 @@
     // Bills due this month: count each bill with a dueDay that falls in the month
     const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31);
     const billsTotal = billsThisMonth.reduce((s, b) => s + (b.amount || 0), 0);
+    const billsPaid = bills.filter(b => b.status === 'paid').reduce((s,b) => s+(b.amount||0), 0);
+    const billsRemaining = billsTotal - billsPaid;
 
     // Transactions this month (filter by date field)
     const txThisMonth = transactions.filter(t => t.date && t.date >= start && t.date <= end);
@@ -1731,6 +1738,9 @@
     document.getElementById('stat-income-count').textContent = `${incomeThisMonth.length} entries`;
     document.getElementById('stat-bills-total').textContent  = fmt(billsTotal);
     document.getElementById('stat-bills-count').textContent  = `${billsThisMonth.length} bills this month`;
+    const unpaidCount = billsThisMonth.filter(b => b.status !== 'paid').length;
+    document.getElementById('stat-bills-remaining').textContent = fmt(billsRemaining);
+    document.getElementById('stat-bills-remaining-count').textContent = `${unpaidCount} unpaid`;
     document.getElementById('stat-spent').textContent        = fmt(txTotal);
     document.getElementById('stat-tx-count').textContent     = `${txThisMonth.length} transactions`;
     document.getElementById('stat-available').textContent    = fmt(available);
