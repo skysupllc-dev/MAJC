@@ -1723,7 +1723,7 @@
     const incomeThisMonth = income.filter(i => i.date && i.date >= start && i.date <= end);
     const incomeTotal = incomeThisMonth.reduce((s, i) => s + (i.amount || 0), 0);
 
-    // Available = starting balance + income - bills - transactions
+    // Available = starting balance + income - transactions
     const available = startingBalance + incomeTotal - txTotal;
 
     document.getElementById('stat-starting').textContent     = fmt(startingBalance);
