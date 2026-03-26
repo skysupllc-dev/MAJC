@@ -219,14 +219,19 @@
     }
     .timeclock-log { display: flex; flex-direction: column; gap: 10px; }
     .timeclock-log-item {
-      display: flex; justify-content: space-between; gap: 14px; align-items: flex-start;
+      display: block;
       background: rgba(14,15,13,0.55); border: 1px solid rgba(255,255,255,0.06);
       border-radius: 10px; padding: 14px 16px;
     }
+    .timeclock-log-copy { min-width: 0; }
     .timeclock-log-title { font-size: 0.88rem; font-weight: 600; color: var(--text); }
-    .timeclock-log-meta { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+    .timeclock-log-meta {
+      font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
     .timeclock-log-time {
-      font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--accent); white-space: nowrap;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--accent);
+      white-space: nowrap; text-align: left; display: block; margin-top: 10px;
     }
     .timeclock-empty { text-align: center; color: var(--muted); font-size: 0.84rem; padding: 22px 0; }
     .today-date { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
@@ -1068,6 +1073,35 @@
       || 'Current User';
   }
 
+  function getCurrentMemberShortName() {
+    const fullName = getCurrentMemberName().trim();
+    if (!fullName) return 'Current User';
+    const parts = fullName.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0];
+    return `${parts[0]} ${parts[1][0]}.`;
+  }
+
+  function formatEmployeeShortName(rawName, fallbackEmail = '') {
+    const raw = (rawName || '').trim();
+    const fallback = (fallbackEmail || '').trim();
+
+    const source = raw && !raw.includes('@') ? raw : fallback;
+    if (!source) return 'Current User';
+
+    if (source.includes('@')) {
+      const local = source.split('@')[0].replace(/[._-]+/g, ' ').trim();
+      const parts = local.split(/\s+/).filter(Boolean);
+      if (!parts.length) return 'Current User';
+      const first = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+      if (parts.length === 1) return first;
+      return `${first} ${parts[1][0].toUpperCase()}.`;
+    }
+
+    const parts = source.split(/\s+/).filter(Boolean);
+    if (parts.length === 1) return parts[0];
+    return `${parts[0]} ${parts[1][0].toUpperCase()}.`;
+  }
+
   function getCurrentMemberRole() {
     return normalizeRole(currentMember?.role || (ADMIN_UIDS.includes(currentUser?.uid) ? 'admin' : 'limited'));
   }
@@ -1192,8 +1226,8 @@
     const log = document.getElementById('dashTimeClockLog');
     if (log) log.innerHTML = todayEntries.slice().reverse().map(entry => `
       <div class="timeclock-log-item">
-        <div>
-          <div class="timeclock-log-title">${getCurrentMemberName()}</div>
+        <div class="timeclock-log-copy">
+          <div class="timeclock-log-title">${formatEmployeeShortName(entry.employeeName, currentUser?.email || '')}</div>
           <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved to time clock</div>
         </div>
         <div class="timeclock-log-time">${entry.time24}</div>
