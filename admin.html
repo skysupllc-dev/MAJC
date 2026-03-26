@@ -873,6 +873,12 @@
       color: var(--accent);
       white-space: nowrap;
     }
+    .timeclock-log-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
     .timeclock-employee-card {
       display: flex;
       justify-content: space-between;
@@ -1894,6 +1900,44 @@
   </div>
 </div>
 
+<!-- EDIT TIME CLOCK PUNCH -->
+<div class="modal-overlay" id="timeclockEditModal">
+  <div class="modal">
+    <input type="hidden" id="timeclockEditId"/>
+    <div class="modal-title">EDIT TIME CLOCK PUNCH</div>
+    <div class="modal-sub">Update the employee, punch type, and military-time stamp for this saved entry.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Employee</label>
+        <select class="form-select" id="timeclockEditEmployee"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Action</label>
+        <select class="form-select" id="timeclockEditAction">
+          <option value="clock-in">Clock In</option>
+          <option value="clock-out">Clock Out</option>
+          <option value="break-out">Break Out</option>
+          <option value="break-in">Break In</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-input" type="date" id="timeclockEditDate"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time (24-hour)</label>
+        <input class="form-input" type="time" id="timeclockEditTime" step="1"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveTimeClockEdit()">Save Changes</button>
+      <button class="btn btn-secondary" onclick="closeTimeClockEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD / EDIT SERVICE -->
 <div class="modal-overlay" id="serviceModal">
   <div class="modal">
@@ -2495,6 +2539,32 @@
     return 'Clocked Out';
   }
 
+  function getTimeClockActionLabel(action) {
+    const labels = {
+      'clock-in': 'Clock In',
+      'clock-out': 'Clock Out',
+      'break-out': 'Break Out',
+      'break-in': 'Break In'
+    };
+    return labels[action] || action;
+  }
+
+  function populateTimeClockMemberSelect(selectId, selectedUid = '') {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    const members = getTimeClockMembers();
+    select.innerHTML = '<option value="">Select employee</option>';
+    members.forEach(member => {
+      const option = document.createElement('option');
+      option.value = member.uid;
+      option.textContent = member.name;
+      select.appendChild(option);
+    });
+    if (selectedUid && members.some(member => member.uid === selectedUid)) {
+      select.value = selectedUid;
+    }
+  }
+
   function updateTimeClockTerminal() {
     const select = document.getElementById('timeclockEmployeeSelect');
     if (!select) return;
@@ -2540,13 +2610,7 @@
     if (!select) return;
     const members = getTimeClockMembers();
     const current = select.value;
-    select.innerHTML = '<option value="">Select employee</option>';
-    members.forEach(member => {
-      const option = document.createElement('option');
-      option.value = member.uid;
-      option.textContent = member.name;
-      select.appendChild(option);
-    });
+    populateTimeClockMemberSelect('timeclockEmployeeSelect', current);
 
     if (members.some(member => member.uid === current)) {
       select.value = current;
@@ -2596,9 +2660,12 @@
       <div class="timeclock-log-item">
         <div>
           <div class="timeclock-log-title">${entry.employeeName}</div>
-          <div class="timeclock-log-meta">${entry.label || entry.action} saved to time clock</div>
+          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved to time clock</div>
         </div>
-        <div class="timeclock-log-time">${entry.time24}</div>
+        <div class="timeclock-log-actions">
+          <div class="timeclock-log-time">${entry.time24}</div>
+          <button class="btn btn-secondary btn-sm" onclick="openEditTimeClockPunch('${entry.id}')">Edit</button>
+        </div>
       </div>`).join('') || '<div class="timeclock-empty">No punches have been recorded yet today.</div>';
 
     document.getElementById('timeclockStatIn').textContent = clockedIn;
@@ -2667,6 +2734,62 @@
         ? 'Time clock save blocked by Firestore permissions'
         : 'Error saving time clock punch';
       showToast(msg, 'error');
+      console.error(e);
+    }
+  };
+
+  window.openEditTimeClockPunch = function(id) {
+    const entry = timeClockEntries.find(item => item.id === id);
+    if (!entry) {
+      showToast('Punch record not found', 'error');
+      return;
+    }
+    document.getElementById('timeclockEditId').value = entry.id;
+    populateTimeClockMemberSelect('timeclockEditEmployee', entry.employeeUid || '');
+    document.getElementById('timeclockEditAction').value = entry.action || 'clock-in';
+    document.getElementById('timeclockEditDate').value = entry.date || formatMilitaryDateTime(new Date()).date;
+    document.getElementById('timeclockEditTime').value = (entry.time24 || '00:00:00').slice(0, 8);
+    openModal('timeclockEditModal');
+  };
+
+  window.closeTimeClockEditModal = function() {
+    closeModal('timeclockEditModal');
+  };
+
+  window.saveTimeClockEdit = async function() {
+    const id = document.getElementById('timeclockEditId').value;
+    const employeeUid = document.getElementById('timeclockEditEmployee').value;
+    const action = document.getElementById('timeclockEditAction').value;
+    const date = document.getElementById('timeclockEditDate').value;
+    let time24 = document.getElementById('timeclockEditTime').value;
+    const member = getTimeClockMembers().find(item => item.uid === employeeUid);
+
+    if (!id || !member || !date || !time24) {
+      showToast('Complete all punch fields before saving', 'error');
+      return;
+    }
+
+    if (time24.length === 5) time24 += ':00';
+    const stamp = new Date(`${date}T${time24}`);
+    const timestampMs = Number.isNaN(stamp.getTime()) ? Date.now() : stamp.getTime();
+
+    try {
+      await updateDoc(doc(db, 'timeClock', id), {
+        employeeId: member.id,
+        employeeUid: member.uid,
+        employeeName: member.name,
+        employeeRole: member.role,
+        action,
+        label: getTimeClockActionLabel(action),
+        date,
+        time24,
+        timestampMs,
+        updatedAt: serverTimestamp()
+      });
+      closeTimeClockEditModal();
+      showToast('Time clock punch updated', 'success');
+    } catch (e) {
+      showToast('Error updating time clock punch', 'error');
       console.error(e);
     }
   };
@@ -4198,4 +4321,3 @@
 </script>
 </body>
 </html>
-
