@@ -326,6 +326,84 @@
     }
     .data-table tr:last-child td { border-bottom: none; }
     .data-table tr:hover td { background: var(--bg); }
+    .team-link-btn {
+      background: none; border: none; padding: 0; margin: 0;
+      color: inherit; font: inherit; text-align: left; cursor: pointer;
+      width: 100%;
+    }
+    .team-link-btn:hover { color: var(--accent2); }
+    .profile-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px;
+      margin-bottom: 18px;
+    }
+    .profile-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 16px;
+    }
+    .profile-block.full { grid-column: 1 / -1; }
+    .profile-label {
+      font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .profile-value { font-size: 0.9rem; color: var(--text); line-height: 1.5; }
+    .profile-perms { display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-perm {
+      font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--muted);
+    }
+    .profile-perm.on { background: var(--accent2-lt); color: var(--accent2); border-color: rgba(78,124,69,0.2); }
+    .profile-summary {
+      display: flex; justify-content: space-between; gap: 16px; align-items: flex-start;
+      padding: 16px 18px; margin-bottom: 18px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px;
+    }
+    .profile-summary-name { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; line-height: 1; }
+    .profile-summary-meta { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .profile-tabbar {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+      padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    }
+    .profile-tab {
+      background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 14px; border-radius: 999px; cursor: pointer;
+      font-size: 0.76rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+      transition: all 0.15s;
+    }
+    .profile-tab.active { background: var(--accent2-lt); color: var(--accent2); border-color: #c0dab8; }
+    .profile-tab-panel { display: none; }
+    .profile-tab-panel.active { display: block; }
+    .profile-list { display: flex; flex-direction: column; gap: 10px; }
+    .profile-list-item {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+      padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface);
+    }
+    .profile-list-copy { min-width: 0; }
+    .profile-list-title { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .profile-list-note { font-size: 0.78rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .profile-status-badge {
+      font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase;
+      padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+      border: 1px solid var(--border);
+    }
+    .profile-status-done { background: var(--accent2-lt); color: var(--accent2); border-color: #c0dab8; }
+    .profile-status-progress { background: var(--accent-lt); color: var(--accent); border-color: #ead6b0; }
+    .profile-status-empty { background: var(--bg); color: var(--muted); }
+    .profile-empty {
+      padding: 24px; text-align: center; color: var(--muted);
+      border: 1px dashed var(--border); border-radius: 8px; background: var(--surface);
+      font-size: 0.85rem;
+    }
+    .crm-row-overdue td { background: #fff4f2; }
+    .crm-row-upcoming td { background: #fffaf0; }
+    .crm-status-badge {
+      display: inline-block; padding: 4px 8px; border-radius: 999px;
+      font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase;
+      border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+    }
+    .crm-status-badge.due { background: var(--danger-lt); color: var(--danger); border-color: #f0c0c0; }
+    .crm-status-badge.soon { background: var(--accent-lt); color: var(--accent); border-color: #ead6b0; }
+    .crm-status-badge.done { background: var(--accent2-lt); color: var(--accent2); border-color: #c0dab8; }
 
     /* ── STATUS PILLS ── */
     .pill {
@@ -408,8 +486,16 @@
       font-weight: 600; padding: 2px 9px; border-radius: 3px;
     }
     .role-admin  { background: #f0e8d8; color: var(--accent); }
-    .role-driver { background: var(--accent2-lt); color: var(--accent2); }
-    .role-staff  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .role-operator { background: var(--accent2-lt); color: var(--accent2); }
+    .role-limited  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .team-status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 999px;
+    }
+    .team-status-active { background: #e8f0e6; color: var(--accent2); }
+    .team-status-inactive { background: #f6efe2; color: var(--accent); }
+    .team-status-terminated { background: #fbe9e7; color: var(--danger); }
 
     /* ── SECTION PAGES ── */
     .page-section { display: none; }
@@ -663,6 +749,154 @@
     .month-nav button:hover { border-color: var(--accent); color: var(--accent); }
     .month-nav-label { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); min-width: 120px; text-align: center; }
 
+    /* ── TIME CLOCK ── */
+    .timeclock-shell {
+      display: grid;
+      grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .timeclock-card {
+      background: linear-gradient(180deg, var(--surface), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .timeclock-live {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.2rem;
+      letter-spacing: 3px;
+      line-height: 1;
+      color: var(--accent);
+      margin: 6px 0 8px;
+    }
+    .timeclock-live-date {
+      font-size: 0.78rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+    .timeclock-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .timeclock-status.clocked-in { background: var(--accent2-lt); color: var(--accent2); border-color: #c0dab8; }
+    .timeclock-status.on-break { background: var(--accent-lt); color: var(--accent); border-color: #ead6b0; }
+    .timeclock-status.clocked-out { background: var(--bg); color: var(--muted); }
+    .timeclock-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .timeclock-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .timeclock-actions .btn { justify-content: center; }
+    .timeclock-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .timeclock-mini-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .timeclock-mini-label {
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .timeclock-mini-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+    .timeclock-mini-sub { font-size: 0.76rem; color: var(--muted); margin-top: 4px; }
+    .timeclock-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+      gap: 20px;
+    }
+    .timeclock-log {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .timeclock-log-item,
+    .timeclock-employee-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .timeclock-log-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .timeclock-log-title,
+    .timeclock-employee-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .timeclock-log-meta,
+    .timeclock-employee-meta {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .timeclock-log-time {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.84rem;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .timeclock-employee-card {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .timeclock-empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      font-size: 0.84rem;
+    }
+    @media (max-width: 980px) {
+      .timeclock-shell,
+      .timeclock-board { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .timeclock-actions { grid-template-columns: 1fr; }
+    }
+
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
@@ -708,6 +942,9 @@
     <div class="nav-item" onclick="showSection('schedule', this)">
       <span class="nav-icon">📅</span> Schedule
     </div>
+    <div class="nav-item" onclick="showSection('crm', this)">
+      <span class="nav-icon">📇</span> CRM
+    </div>
 
     <div class="sidebar-section-label">People & Fleet</div>
     <div class="nav-item" onclick="showSection('tasks', this)">
@@ -715,6 +952,9 @@
     </div>
     <div class="nav-item" onclick="showSection('team', this)">
       <span class="nav-icon">👥</span> Team
+    </div>
+    <div class="nav-item" onclick="showSection('timeclock', this)">
+      <span class="nav-icon">TC</span> Time Clock
     </div>
     <div class="nav-item" onclick="showSection('fleet', this)">
       <span class="nav-icon">🚛</span> Fleet
@@ -879,12 +1119,136 @@
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Status</th>
               <th style="text-align:center">Schedule</th>
               <th style="text-align:center">Estimates</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody id="teamTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="section-timeclock">
+      <div class="page-header">
+        <div>
+          <div class="page-title">TIME CLOCK</div>
+          <div class="page-subtitle">Track employee punches in military time with live shift and break status</div>
+        </div>
+      </div>
+
+      <div class="timeclock-shell" style="margin-bottom:24px;">
+        <div class="timeclock-card">
+          <div class="panel-title">PUNCH TERMINAL</div>
+          <div class="timeclock-live" id="timeclockLiveTime">00:00:00</div>
+          <div class="timeclock-live-date" id="timeclockLiveDate">-</div>
+          <div class="timeclock-status clocked-out" id="timeclockCurrentStatus">Clocked Out</div>
+          <div class="form-group" style="margin-bottom:14px;">
+            <label class="form-label">Employee</label>
+            <select class="form-select" id="timeclockEmployeeSelect"></select>
+          </div>
+          <div class="timeclock-note" id="timeclockCurrentNote">Select an employee to record a punch. All saved times use 24-hour format.</div>
+          <div class="timeclock-actions">
+            <button class="btn btn-success" id="timeclockClockInBtn" onclick="saveTimeClockAction('clock-in')">Clock In</button>
+            <button class="btn btn-danger" id="timeclockClockOutBtn" onclick="saveTimeClockAction('clock-out')">Clock Out</button>
+            <button class="btn btn-secondary" id="timeclockBreakOutBtn" onclick="saveTimeClockAction('break-out')">Break Out</button>
+            <button class="btn btn-blue" id="timeclockBreakInBtn" onclick="saveTimeClockAction('break-in')">Break In</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="timeclock-summary-grid">
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">Clocked In</div>
+              <div class="timeclock-mini-value" id="timeclockStatIn">0</div>
+              <div class="timeclock-mini-sub">Employees currently on shift</div>
+            </div>
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">On Break</div>
+              <div class="timeclock-mini-value" id="timeclockStatBreak">0</div>
+              <div class="timeclock-mini-sub">Employees away from active work</div>
+            </div>
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">Clocked Out</div>
+              <div class="timeclock-mini-value" id="timeclockStatOut">0</div>
+              <div class="timeclock-mini-sub">Employees not on shift</div>
+            </div>
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">Punches Today</div>
+              <div class="timeclock-mini-value" id="timeclockStatPunches">0</div>
+              <div class="timeclock-mini-sub" id="timeclockStatLastPunch">No punches yet</div>
+            </div>
+          </div>
+
+          <div class="timeclock-board">
+            <div class="panel" style="margin-bottom:0;">
+              <div class="panel-header">
+                <div class="panel-title">TODAY'S PUNCH LOG</div>
+                <div class="panel-meta">Newest entries first - 24-hour timestamps</div>
+              </div>
+              <div class="timeclock-log" id="timeclockLog"></div>
+            </div>
+
+            <div class="panel" style="margin-bottom:0;">
+              <div class="panel-header">
+                <div class="panel-title">EMPLOYEE STATUS</div>
+                <div class="panel-meta" id="timeclockTeamMeta">0 employees tracked</div>
+              </div>
+              <div id="timeclockRoster"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="section-crm">
+      <div class="page-header">
+        <div>
+          <div class="page-title">CRM</div>
+          <div class="page-subtitle">Track leads, customers, and follow-ups in one place</div>
+        </div>
+        <button class="btn btn-primary" onclick="openCRMModal()">+ Add Contact</button>
+      </div>
+      <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:20px;">
+        <div class="stat-card neutral">
+          <div class="stat-label">Total Contacts</div>
+          <div class="stat-value" id="crm-stat-total">0</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">New Leads</div>
+          <div class="stat-value orange" id="crm-stat-new">0</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Follow-Ups Due</div>
+          <div class="stat-value red" id="crm-stat-due">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Won</div>
+          <div class="stat-value green" id="crm-stat-won">0</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">CONTACT PIPELINE</div>
+          <div class="panel-meta" id="crmCount">0 records</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Date Added</th>
+              <th>Contact</th>
+              <th>Lead Source</th>
+              <th>Service</th>
+              <th>Status</th>
+              <th>Next Follow-Up</th>
+              <th>Follow-Up</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="crmTableBody">
+            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">No CRM contacts yet.</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -1306,8 +1670,9 @@
 <!-- ADD EMPLOYEE -->
 <div class="modal-overlay" id="employeeModal">
   <div class="modal">
-    <div class="modal-title">CREATE ACCOUNT</div>
-    <div class="modal-sub">Creates a Firebase login for this employee. Give them their email and temporary password to sign in.</div>
+    <input type="hidden" id="empDocId"/>
+    <div class="modal-title" id="employeeModalTitle">CREATE ACCOUNT</div>
+    <div class="modal-sub" id="employeeModalSub">Creates a Firebase login for this employee. Give them their email and temporary password to sign in.</div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">First Name</label>
@@ -1324,17 +1689,45 @@
     </div>
     <div class="form-row">
       <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" type="text" id="empPhone" placeholder="(555) 555-5555"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Position</label>
+        <input class="form-input" type="text" id="empPosition" placeholder="Operator"/>
+      </div>
+    </div>
+    <div class="form-row" id="empPasswordRow">
+      <div class="form-group">
         <label class="form-label">Temporary Password</label>
         <input class="form-input" type="text" id="empPassword" placeholder="e.g. MAJC2025!"/>
       </div>
       <div class="form-group">
         <label class="form-label">Role</label>
         <select class="form-select" id="empRole">
-          <option value="driver">Driver</option>
-          <option value="staff">Staff</option>
+          <option value="operator">Operator</option>
+          <option value="limited">Limited</option>
           <option value="admin">Admin</option>
         </select>
       </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Hire Date</label>
+        <input class="form-input" type="date" id="empHireDate"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="empStatus">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="terminated">Terminated</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Notes</label>
+      <input class="form-input" type="text" id="empNotes" placeholder="Lightweight employee notes only"/>
     </div>
     <div id="credentialCard" style="display:none;margin-top:16px;background:var(--accent-lt);border:1px solid var(--border2);border-radius:8px;padding:16px;">
       <div style="font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">✅ Account Created — Share These Credentials</div>
@@ -1344,8 +1737,85 @@
     </div>
     <div id="empError" style="display:none;margin-top:12px;padding:10px 14px;background:var(--danger-lt);border:1px solid #f0c0c0;border-radius:6px;font-size:0.82rem;color:var(--danger);"></div>
     <div class="modal-actions">
+      <button class="btn btn-secondary" type="button" id="fillTestEmployeeBtn" onclick="fillTestEmployee()">Use Test Driver</button>
       <button class="btn btn-primary" id="createEmpBtn" onclick="saveEmployee()">Create Account</button>
       <button class="btn btn-secondary" onclick="closeEmployeeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="employeeProfileModal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-title">EMPLOYEE PROFILE</div>
+    <div class="modal-sub" id="employeeProfileSub">Employee details</div>
+    <div class="profile-summary">
+      <div>
+        <div class="profile-summary-name" id="profileName">—</div>
+        <div class="profile-value" id="profileEmail">—</div>
+        <div class="profile-value" id="profilePhone" style="margin-top:4px;">—</div>
+        <div class="profile-summary-meta">
+          <span class="role-badge role-limited" id="profileRoleBadge">limited</span>
+          <span class="team-status-pill team-status-active" id="profileStatusBadge">active</span>
+          <span class="profile-perm" id="profilePositionBadge">Position —</span>
+          <span class="profile-perm" id="profileHireDateBadge">Hire Date —</span>
+        </div>
+      </div>
+      <div class="profile-perms" id="profilePermissions"></div>
+    </div>
+    <div class="profile-tabbar">
+      <button class="profile-tab active" type="button" onclick="switchEmployeeHubTab('overview', this)">Overview</button>
+      <button class="profile-tab" type="button" onclick="switchEmployeeHubTab('onboarding', this)">Onboarding</button>
+      <button class="profile-tab" type="button" onclick="switchEmployeeHubTab('training', this)">Training</button>
+    </div>
+    <div class="profile-tab-panel active" id="employeeHub-overview">
+      <div class="profile-grid">
+        <div class="profile-block">
+          <div class="profile-label">Name</div>
+          <div class="profile-value" id="profileOverviewName">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Email</div>
+          <div class="profile-value" id="profileOverviewEmail">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Phone</div>
+          <div class="profile-value" id="profileOverviewPhone">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Position</div>
+          <div class="profile-value" id="profilePosition">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Role</div>
+          <div class="profile-value" id="profileRole">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Status</div>
+          <div class="profile-value" id="profileStatus">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Hire Date</div>
+          <div class="profile-value" id="profileHireDate">—</div>
+        </div>
+        <div class="profile-block">
+          <div class="profile-label">Permissions</div>
+          <div class="profile-perms" id="profileOverviewPermissions"></div>
+        </div>
+        <div class="profile-block full">
+          <div class="profile-label">Notes</div>
+          <div class="profile-value" id="profileNotes">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-tab-panel" id="employeeHub-onboarding">
+      <div class="profile-list" id="profileOnboardingList"></div>
+    </div>
+    <div class="profile-tab-panel" id="employeeHub-training">
+      <div class="profile-list" id="profileTrainingList"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="editEmployeeProfileBtn" onclick="editEmployeeFromProfile()">Edit Profile</button>
+      <button class="btn btn-secondary" onclick="closeModal('employeeProfileModal')">Close</button>
     </div>
   </div>
 </div>
@@ -1632,6 +2102,96 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="crmModal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-title" id="crmModalTitle">ADD CRM CONTACT</div>
+    <div class="modal-sub">Keep lead status, service interest, and next follow-up visible for daily operations.</div>
+    <input type="hidden" id="crm-id"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">First Name *</label>
+        <input class="form-input" type="text" id="crm-first" placeholder="First"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name *</label>
+        <input class="form-input" type="text" id="crm-last" placeholder="Last"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input class="form-input" type="text" id="crm-phone" placeholder="(555) 555-5555"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="crm-email" placeholder="name@email.com"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Company</label>
+        <input class="form-input" type="text" id="crm-company" placeholder="Optional"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lead Source</label>
+        <select class="form-select" id="crm-source">
+          <option value="Website">Website</option>
+          <option value="Referral">Referral</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Cold Call">Cold Call</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Service Interested In</label>
+        <input class="form-input" type="text" id="crm-service" placeholder="Driveway install, hauling, excavation..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-select" id="crm-status">
+          <option value="New Lead">New Lead</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Estimate Sent">Estimate Sent</option>
+          <option value="Waiting Response">Waiting Response</option>
+          <option value="Won">Won</option>
+          <option value="Lost">Lost</option>
+          <option value="On Hold">On Hold</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Last Contact Date</label>
+        <input class="form-input" type="date" id="crm-last-contact"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Next Follow-Up Date</label>
+        <input class="form-input" type="date" id="crm-next-followup"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">Follow-Up Status</label>
+      <select class="form-select" id="crm-followup-status">
+        <option value="Not Started">Not Started</option>
+        <option value="Scheduled">Scheduled</option>
+        <option value="Completed">Completed</option>
+        <option value="Overdue">Overdue</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">Notes</label>
+      <input class="form-input" type="text" id="crm-notes" placeholder="Call details, estimate notes, next step..."/>
+    </div>
+    <div id="crmError" style="display:none;margin-top:12px;padding:10px 14px;background:var(--danger-lt);border:1px solid #f0c0c0;border-radius:6px;font-size:0.82rem;color:var(--danger);"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="crmSaveBtn" onclick="saveCRM()">Save Contact</button>
+      <button class="btn btn-secondary" onclick="closeCRMModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1642,7 +2202,7 @@
   import { initializeApp as initializeSecondaryApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-    onSnapshot, query, orderBy, serverTimestamp, getDocs
+    onSnapshot, query, where, orderBy, serverTimestamp, getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1670,8 +2230,20 @@
   document.getElementById('incomeDate').value = todayInput;
 
   // ── AUTH ──
-  onAuthStateChanged(auth, user => {
+  onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = 'login.html'; return; }
+    const isCoreAdmin = ADMIN_UIDS.includes(user.uid);
+    if (!isCoreAdmin) {
+      const memberSnap = await getDocs(query(collection(db, 'team'), where('uid', '==', user.uid)));
+      const member = memberSnap.docs[0]?.data();
+      const role = normalizeRole(member?.role);
+      const status = member?.status || 'active';
+      const perms = { ...defaultPermissionsForRole(role), ...(member?.permissions || {}) };
+      if (status !== 'active' || (role !== 'admin' && perms.admin !== true)) {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+    }
     document.getElementById('navUserName').textContent = user.displayName?.split(' ')[0] || 'Admin';
     const NAMES = {
       'R29clFw9tZbJlQOTjs0kbY4z6sw1': 'JESSICA',
@@ -1686,12 +2258,26 @@
     signOut(auth).then(() => window.location.href = 'login.html'));
 
   // ── STATE ──
-  let bills = [], transactions = [], events = [], team = [], trucks = [], income = [], allAdminTasks = [];
+  let bills = [], transactions = [], events = [], team = [], trucks = [], income = [], allAdminTasks = [], crmContacts = [], timeClockEntries = [];
   let allServices = [], currentFilter = 'all';
   let weekOffset = 0, startingBalance = 0;
   let currentAdminUid = null;
   let adminTaskFilter = 'all';
   let pnlView = 'weekly';
+  const ADMIN_UIDS = ['R29clFw9tZbJlQOTjs0kbY4z6sw1', 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2'];
+
+  function normalizeRole(role) {
+    if (role === 'driver') return 'operator';
+    if (role === 'staff') return 'limited';
+    return role || 'limited';
+  }
+
+  function defaultPermissionsForRole(role) {
+    const normalized = normalizeRole(role);
+    if (normalized === 'admin') return { schedule: true, estimates: true, admin: true };
+    if (normalized === 'operator') return { schedule: true, estimates: false, admin: false };
+    return { schedule: false, estimates: false, admin: false };
+  }
 
   // ── FINANCES MONTH STATE ──
   // financesMonthOffset: 0 = current month, -1 = last month, etc.
@@ -1761,6 +2347,10 @@
       events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderCalendar();
     });
+    onSnapshot(collection(db, 'crm'), snap => {
+      crmContacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCRM();
+    });
     onSnapshot(collection(db, 'team'), snap => {
       team = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderTeam();
@@ -1776,6 +2366,17 @@
       renderPnl();
       updateFinanceStats(); // re-run since income affects available
     });
+    onSnapshot(
+      query(collection(db, 'timeClock'), orderBy('timestampMs','desc')),
+      snap => {
+        timeClockEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderTimeClock();
+      },
+      error => {
+        console.error('Time clock listener error:', error);
+        showToast('Time clock feed unavailable', 'error');
+      }
+    );
     onSnapshot(collection(db, 'tasks'), snap => {
       allAdminTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderAdminTasks();
@@ -1831,6 +2432,247 @@
   }
 
   function fmt(n) { return '$' + Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+  function formatMilitaryDateTime(date) {
+    const localDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    return {
+      date: localDate,
+      time: date.toLocaleTimeString('en-GB', { hour12: false }),
+      displayDate: date.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' })
+    };
+  }
+
+  function getTimeClockMembers() {
+    const core = [
+      { id: 'core-jessica', uid: 'R29clFw9tZbJlQOTjs0kbY4z6sw1', first: 'Jessica', last: '(Owner)', name: 'Jessica (Owner)', role: 'admin', status: 'active', core: true },
+      { id: 'core-matt', uid: 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2', first: 'Matt', last: '(Owner)', name: 'Matt (Owner)', role: 'admin', status: 'active', core: true }
+    ];
+    const merged = [...core, ...team];
+    const seen = new Set();
+    return merged.filter(member => {
+      const key = member.uid || member.id;
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return (member.status || 'active') !== 'terminated';
+    }).map(member => ({
+      id: member.id,
+      uid: member.uid || member.id,
+      name: member.name || `${member.first || ''} ${member.last || ''}`.trim() || 'Unknown Employee',
+      role: normalizeRole(member.role),
+      status: member.status || 'active'
+    }));
+  }
+
+  function getEmployeeTimeClockEntries(employeeUid) {
+    return timeClockEntries
+      .filter(entry => entry.employeeUid === employeeUid)
+      .sort((a, b) => {
+        const aTime = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (a.timestampMs || 0);
+        const bTime = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (b.timestampMs || 0);
+        return aTime - bTime;
+      });
+  }
+
+  function getTimeClockStatus(employeeUid) {
+    const history = getEmployeeTimeClockEntries(employeeUid);
+    let status = 'clocked-out';
+    let lastEntry = null;
+
+    history.forEach(entry => {
+      if (entry.action === 'clock-in') status = 'clocked-in';
+      if (entry.action === 'clock-out') status = 'clocked-out';
+      if (entry.action === 'break-out' && status === 'clocked-in') status = 'on-break';
+      if (entry.action === 'break-in' && status === 'on-break') status = 'clocked-in';
+      lastEntry = entry;
+    });
+
+    return { status, lastEntry };
+  }
+
+  function getTimeClockStatusLabel(status) {
+    if (status === 'clocked-in') return 'Clocked In';
+    if (status === 'on-break') return 'On Break';
+    return 'Clocked Out';
+  }
+
+  function updateTimeClockTerminal() {
+    const select = document.getElementById('timeclockEmployeeSelect');
+    if (!select) return;
+    const statusEl = document.getElementById('timeclockCurrentStatus');
+    const noteEl = document.getElementById('timeclockCurrentNote');
+    const employeeUid = select.value;
+    const member = getTimeClockMembers().find(item => item.uid === employeeUid);
+
+    if (!member) {
+      statusEl.className = 'timeclock-status clocked-out';
+      statusEl.textContent = 'Clocked Out';
+      noteEl.textContent = 'Select an employee to record a punch. All saved times use 24-hour format.';
+      ['timeclockClockInBtn','timeclockClockOutBtn','timeclockBreakOutBtn','timeclockBreakInBtn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = true;
+      });
+      return;
+    }
+
+    const { status, lastEntry } = getTimeClockStatus(employeeUid);
+    statusEl.className = `timeclock-status ${status}`;
+    statusEl.textContent = getTimeClockStatusLabel(status);
+
+    if (lastEntry) {
+      noteEl.textContent = `${member.name} last punched ${lastEntry.label || lastEntry.action} at ${lastEntry.time24} on ${lastEntry.date}.`;
+    } else {
+      noteEl.textContent = `${member.name} has no punches yet. Start with Clock In.`;
+    }
+
+    const clockInBtn = document.getElementById('timeclockClockInBtn');
+    const clockOutBtn = document.getElementById('timeclockClockOutBtn');
+    const breakOutBtn = document.getElementById('timeclockBreakOutBtn');
+    const breakInBtn = document.getElementById('timeclockBreakInBtn');
+
+    clockInBtn.disabled = status !== 'clocked-out';
+    clockOutBtn.disabled = status === 'clocked-out';
+    breakOutBtn.disabled = status !== 'clocked-in';
+    breakInBtn.disabled = status !== 'on-break';
+  }
+
+  function populateTimeClockEmployees() {
+    const select = document.getElementById('timeclockEmployeeSelect');
+    if (!select) return;
+    const members = getTimeClockMembers();
+    const current = select.value;
+    select.innerHTML = '<option value="">Select employee</option>';
+    members.forEach(member => {
+      const option = document.createElement('option');
+      option.value = member.uid;
+      option.textContent = member.name;
+      select.appendChild(option);
+    });
+
+    if (members.some(member => member.uid === current)) {
+      select.value = current;
+    } else if (members.some(member => member.uid === currentAdminUid)) {
+      select.value = currentAdminUid;
+    }
+
+    updateTimeClockTerminal();
+  }
+
+  function renderTimeClock() {
+    const members = getTimeClockMembers();
+    const today = formatMilitaryDateTime(new Date()).date;
+    const entriesToday = timeClockEntries.filter(entry => entry.date === today);
+    const roster = document.getElementById('timeclockRoster');
+    const log = document.getElementById('timeclockLog');
+
+    if (!roster || !log) return;
+
+    populateTimeClockEmployees();
+
+    let clockedIn = 0;
+    let onBreak = 0;
+    let clockedOut = 0;
+
+    roster.innerHTML = members.map(member => {
+      const { status, lastEntry } = getTimeClockStatus(member.uid);
+      if (status === 'clocked-in') clockedIn++;
+      else if (status === 'on-break') onBreak++;
+      else clockedOut++;
+
+      const lastLine = lastEntry
+        ? `${lastEntry.label || lastEntry.action} at ${lastEntry.time24} on ${lastEntry.date}`
+        : 'No punches recorded yet';
+
+      return `
+        <div class="timeclock-employee-card">
+          <div>
+            <div class="timeclock-employee-name">${member.name}</div>
+            <div class="timeclock-employee-meta">${member.role.toUpperCase()} · ${lastLine}</div>
+          </div>
+          <div class="timeclock-status ${status}">${getTimeClockStatusLabel(status)}</div>
+        </div>`;
+    }).join('') || '<div class="timeclock-empty">No employees available for time tracking.</div>';
+
+    log.innerHTML = entriesToday.map(entry => `
+      <div class="timeclock-log-item">
+        <div>
+          <div class="timeclock-log-title">${entry.employeeName}</div>
+          <div class="timeclock-log-meta">${entry.label || entry.action} saved to time clock</div>
+        </div>
+        <div class="timeclock-log-time">${entry.time24}</div>
+      </div>`).join('') || '<div class="timeclock-empty">No punches have been recorded yet today.</div>';
+
+    document.getElementById('timeclockStatIn').textContent = clockedIn;
+    document.getElementById('timeclockStatBreak').textContent = onBreak;
+    document.getElementById('timeclockStatOut').textContent = clockedOut;
+    document.getElementById('timeclockStatPunches').textContent = entriesToday.length;
+    document.getElementById('timeclockTeamMeta').textContent = `${members.length} employees tracked`;
+    document.getElementById('timeclockStatLastPunch').textContent = entriesToday[0]
+      ? `Last: ${entriesToday[0].employeeName} at ${entriesToday[0].time24}`
+      : 'No punches yet';
+
+    updateTimeClockTerminal();
+  }
+
+  function startTimeClockDisplay() {
+    const update = () => {
+      const liveTime = document.getElementById('timeclockLiveTime');
+      const liveDate = document.getElementById('timeclockLiveDate');
+      if (!liveTime || !liveDate) return;
+      const nowTime = new Date();
+      liveTime.textContent = nowTime.toLocaleTimeString('en-GB', { hour12: false });
+      liveDate.textContent = nowTime.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    };
+    update();
+    setInterval(update, 1000);
+  }
+
+  window.saveTimeClockAction = async function(action) {
+    const select = document.getElementById('timeclockEmployeeSelect');
+    const member = getTimeClockMembers().find(item => item.uid === select.value);
+    if (!member) {
+      showToast('Choose an employee first', 'error');
+      return;
+    }
+
+    const { status } = getTimeClockStatus(member.uid);
+    if (action === 'clock-in' && status !== 'clocked-out') return showToast(`${member.name} is already on the clock`, 'error');
+    if (action === 'clock-out' && status === 'clocked-out') return showToast(`${member.name} is already clocked out`, 'error');
+    if (action === 'break-out' && status !== 'clocked-in') return showToast('Break Out requires an active shift', 'error');
+    if (action === 'break-in' && status !== 'on-break') return showToast('Break In requires an active break', 'error');
+
+    const stamp = formatMilitaryDateTime(new Date());
+    const labels = {
+      'clock-in': 'Clock In',
+      'clock-out': 'Clock Out',
+      'break-out': 'Break Out',
+      'break-in': 'Break In'
+    };
+
+    try {
+      await addDoc(collection(db, 'timeClock'), {
+        employeeId: member.id,
+        employeeUid: member.uid,
+        employeeName: member.name,
+        employeeRole: member.role,
+        action,
+        label: labels[action],
+        date: stamp.date,
+        time24: stamp.time,
+        timestampMs: Date.now(),
+        createdAt: serverTimestamp()
+      });
+      showToast(`${labels[action]} saved for ${member.name}`, 'success');
+    } catch (e) {
+      const msg = e?.code === 'permission-denied'
+        ? 'Time clock save blocked by Firestore permissions'
+        : 'Error saving time clock punch';
+      showToast(msg, 'error');
+      console.error(e);
+    }
+  };
+
+  document.getElementById('timeclockEmployeeSelect')?.addEventListener('change', updateTimeClockTerminal);
+  startTimeClockDisplay();
 
   window.saveBalance = async function() {
     const amt = parseFloat(document.getElementById('balanceInput').value);
@@ -2136,19 +2978,53 @@
   window.deleteEvent = async (id) => { await deleteDoc(doc(db,'events',id)); showToast('Event removed','success'); };
 
   // ── TEAM ──
+  function resetEmployeeModal() {
+    document.getElementById('empDocId').value = '';
+    document.getElementById('employeeModalTitle').textContent = 'CREATE ACCOUNT';
+    document.getElementById('employeeModalSub').textContent = 'Creates a Firebase login for this employee. Give them their email and temporary password to sign in.';
+    document.getElementById('empEmail').readOnly = false;
+    document.getElementById('empPasswordRow').style.display = '';
+    document.getElementById('fillTestEmployeeBtn').style.display = '';
+    document.getElementById('credentialCard').style.display = 'none';
+    document.getElementById('empError').style.display = 'none';
+    document.getElementById('createEmpBtn').textContent = 'Create Account';
+    document.getElementById('createEmpBtn').disabled = false;
+    ['empFirst','empLast','empEmail','empPhone','empPosition','empPassword','empHireDate','empNotes'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('empRole').value = 'operator';
+    document.getElementById('empStatus').value = 'active';
+  }
+
   window.saveEmployee = async function() {
+    const docId    = document.getElementById('empDocId').value;
     const first    = document.getElementById('empFirst').value.trim();
     const last     = document.getElementById('empLast').value.trim();
     const email    = document.getElementById('empEmail').value.trim();
+    const phone    = document.getElementById('empPhone').value.trim();
+    const position = document.getElementById('empPosition').value.trim();
     const password = document.getElementById('empPassword').value.trim();
-    const role     = document.getElementById('empRole').value;
+    const role     = normalizeRole(document.getElementById('empRole').value);
+    const hireDate = document.getElementById('empHireDate').value;
+    const status   = document.getElementById('empStatus').value;
+    const notes    = document.getElementById('empNotes').value.trim();
     const errBox   = document.getElementById('empError');
     const btn      = document.getElementById('createEmpBtn');
     errBox.style.display = 'none';
-    if (!first || !email || !password) { errBox.textContent='First name, email, and password are required.'; errBox.style.display='block'; return; }
-    if (password.length < 6) { errBox.textContent='Password must be at least 6 characters.'; errBox.style.display='block'; return; }
-    btn.textContent = 'Creating...'; btn.disabled = true;
+    if (!first || !email || (!docId && !password)) { errBox.textContent='First name, email, and password are required.'; errBox.style.display='block'; return; }
+    if (!docId && password.length < 6) { errBox.textContent='Password must be at least 6 characters.'; errBox.style.display='block'; return; }
+    btn.textContent = docId ? 'Saving...' : 'Creating...'; btn.disabled = true;
     try {
+      if (docId) {
+        await updateDoc(doc(db,'team',docId), {
+          first, last, name: `${first} ${last}`.trim(), email, phone, role, position,
+          hireDate, status, notes, permissions: {
+            ...(defaultPermissionsForRole(role)),
+            ...(team.find(m => m.id === docId)?.permissions || {})
+          }
+        });
+        showToast(`${first}'s profile updated ✓`,'success');
+        closeEmployeeModal();
+        return;
+      }
       let secondaryApp;
       try { secondaryApp = initializeSecondaryApp(firebaseConfig,'secondary'); }
       catch(e) { secondaryApp = initializeSecondaryApp.app('secondary'); }
@@ -2156,12 +3032,19 @@
       const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
       await updateProfile(userCred.user, { displayName:`${first} ${last}`.trim() });
       await secondaryAuth.signOut();
-      await addDoc(collection(db,'team'), { first, last, email, role, uid:userCred.user.uid, createdAt:serverTimestamp() });
+      await addDoc(collection(db,'team'), {
+        first, last, name: `${first} ${last}`.trim(), email, phone, role, position,
+        hireDate, status, notes, uid:userCred.user.uid,
+        permissions: defaultPermissionsForRole(role),
+        createdAt:serverTimestamp()
+      });
       document.getElementById('credEmail').textContent    = email;
       document.getElementById('credPassword').textContent = password;
       document.getElementById('credentialCard').style.display = 'block';
       btn.textContent = '+ Create Another'; btn.disabled = false;
-      ['empFirst','empLast','empEmail','empPassword'].forEach(id => document.getElementById(id).value='');
+      ['empFirst','empLast','empEmail','empPhone','empPosition','empPassword','empHireDate','empNotes'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('empRole').value = 'operator';
+      document.getElementById('empStatus').value = 'active';
       showToast(`${first}'s account created ✓`,'success');
     } catch(err) {
       btn.textContent = 'Create Account'; btn.disabled = false;
@@ -2172,40 +3055,173 @@
       errBox.textContent = msg; errBox.style.display = 'block';
     }
   };
+  window.fillTestEmployee = function() {
+    resetEmployeeModal();
+    document.getElementById('empFirst').value = 'Test';
+    document.getElementById('empLast').value = 'Driver';
+    document.getElementById('empEmail').value = 'testdriver@majc.local';
+    document.getElementById('empPhone').value = '(555) 010-0200';
+    document.getElementById('empPosition').value = 'Operator';
+    document.getElementById('empPassword').value = 'MAJC2026!';
+    document.getElementById('empRole').value = 'operator';
+    document.getElementById('empHireDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('empStatus').value = 'active';
+    document.getElementById('empNotes').value = 'Test employee for permission checks.';
+  };
   window.closeEmployeeModal = function() {
     closeModal('employeeModal');
-    document.getElementById('credentialCard').style.display = 'none';
-    document.getElementById('empError').style.display = 'none';
-    document.getElementById('createEmpBtn').textContent = 'Create Account';
-    document.getElementById('createEmpBtn').disabled = false;
-    ['empFirst','empLast','empEmail','empPassword'].forEach(id => document.getElementById(id).value='');
+    resetEmployeeModal();
   };
   window.deleteEmployee = async (id) => { await deleteDoc(doc(db,'team',id)); showToast('Employee removed','success'); };
+  function renderEmployeeHubOnboarding(employee) {
+    const onboarding = employee.onboarding || {};
+    const items = [
+      ['Account Created', onboarding.accountCreated],
+      ['Permissions Assigned', onboarding.permissionsAssigned],
+      ['App Login Tested', onboarding.appLoginTested],
+      ['Safety Orientation Completed', onboarding.safetyOrientationCompleted],
+      ['Equipment Walk-Through Completed', onboarding.equipmentWalkthroughCompleted],
+      ['Job Shadow Completed', onboarding.jobShadowCompleted],
+      ['First Solo Day Completed', onboarding.firstSoloDayCompleted]
+    ];
+    const hasData = Object.keys(onboarding).length > 0;
+    const list = document.getElementById('profileOnboardingList');
+    if (!hasData) {
+      list.innerHTML = '<div class="profile-empty">No onboarding checklist has been recorded for this employee yet.</div>';
+      return;
+    }
+    list.innerHTML = items.map(([label, done]) => `
+      <div class="profile-list-item">
+        <div class="profile-list-copy">
+          <div class="profile-list-title">${label}</div>
+        </div>
+        <div class="profile-status-badge ${done ? 'profile-status-done' : 'profile-status-empty'}">${done ? 'Completed' : 'Pending'}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderEmployeeHubTraining(employee) {
+    const training = Array.isArray(employee.training) ? employee.training : [];
+    const list = document.getElementById('profileTrainingList');
+    if (!training.length) {
+      list.innerHTML = '<div class="profile-empty">No training items have been added for this employee yet.</div>';
+      return;
+    }
+    list.innerHTML = training.map(item => {
+      const status = item.status || 'not started';
+      const statusClass = status === 'completed' ? 'profile-status-done' : status === 'in progress' ? 'profile-status-progress' : 'profile-status-empty';
+      return `
+        <div class="profile-list-item">
+          <div class="profile-list-copy">
+            <div class="profile-list-title">${item.title || 'Training Item'}</div>
+            ${item.notes ? `<div class="profile-list-note">${item.notes}</div>` : ''}
+          </div>
+          <div class="profile-status-badge ${statusClass}">${status}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.switchEmployeeHubTab = function(tab, btn) {
+    document.querySelectorAll('.profile-tab').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.profile-tab-panel').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`employeeHub-${tab}`).classList.add('active');
+  };
+  window.openEmployeeProfile = function(payload) {
+    const employee = typeof payload === 'string' ? JSON.parse(payload) : payload;
+    const role = normalizeRole(employee.role);
+    const perms = { ...defaultPermissionsForRole(role), ...(employee.permissions || {}) };
+    const fullName = employee.name || `${employee.first||''} ${employee.last||''}`.trim() || 'Unknown';
+    document.getElementById('employeeProfileSub').textContent = employee.core ? 'Core account' : 'Team member details';
+    document.getElementById('profileName').textContent = fullName;
+    document.getElementById('profileEmail').textContent = employee.email || '—';
+    document.getElementById('profilePhone').textContent = employee.phone || '—';
+    document.getElementById('profileOverviewName').textContent = fullName;
+    document.getElementById('profileOverviewEmail').textContent = employee.email || '—';
+    document.getElementById('profileOverviewPhone').textContent = employee.phone || '—';
+    document.getElementById('profilePosition').textContent = employee.position || '—';
+    document.getElementById('profileRole').textContent = role;
+    document.getElementById('profileStatus').textContent = employee.status || 'active';
+    document.getElementById('profileHireDate').textContent = employee.hireDate || '—';
+    document.getElementById('profileNotes').textContent = employee.notes || 'No notes added.';
+    document.getElementById('profileRoleBadge').textContent = role;
+    document.getElementById('profileRoleBadge').className = `role-badge ${role==='admin' ? 'role-admin' : role==='operator' ? 'role-operator' : 'role-limited'}`;
+    document.getElementById('profileStatusBadge').textContent = employee.status || 'active';
+    document.getElementById('profileStatusBadge').className = `team-status-pill team-status-${employee.status || 'active'}`;
+    document.getElementById('profilePositionBadge').textContent = employee.position || 'Position —';
+    document.getElementById('profileHireDateBadge').textContent = employee.hireDate ? `Hired ${employee.hireDate}` : 'Hire Date —';
+    const permissionBadges = [
+      ['schedule', perms.schedule === true],
+      ['estimates', perms.estimates === true],
+      ['admin', perms.admin === true]
+    ].map(([name, enabled]) => `<span class="profile-perm ${enabled ? 'on' : ''}">${name} ${enabled ? 'on' : 'off'}</span>`).join('');
+    document.getElementById('profilePermissions').innerHTML = permissionBadges;
+    document.getElementById('profileOverviewPermissions').innerHTML = permissionBadges;
+    renderEmployeeHubOnboarding(employee);
+    renderEmployeeHubTraining(employee);
+    const overviewBtn = document.querySelector('.profile-tab');
+    if (overviewBtn) switchEmployeeHubTab('overview', overviewBtn);
+    document.getElementById('editEmployeeProfileBtn').style.display = employee.core ? 'none' : 'inline-flex';
+    document.getElementById('editEmployeeProfileBtn').dataset.employee = JSON.stringify(employee);
+    openModal('employeeProfileModal');
+  };
+  window.openEditEmployee = function(payload) {
+    const employee = typeof payload === 'string' ? JSON.parse(payload) : payload;
+    resetEmployeeModal();
+    document.getElementById('empDocId').value = employee.id || '';
+    document.getElementById('employeeModalTitle').textContent = 'EDIT EMPLOYEE';
+    document.getElementById('employeeModalSub').textContent = 'Update this employee profile. Email and login stay tied to the existing account.';
+    document.getElementById('empEmail').readOnly = true;
+    document.getElementById('empPasswordRow').style.display = 'none';
+    document.getElementById('fillTestEmployeeBtn').style.display = 'none';
+    document.getElementById('createEmpBtn').textContent = 'Save Changes';
+    document.getElementById('empFirst').value = employee.first || '';
+    document.getElementById('empLast').value = employee.last || '';
+    document.getElementById('empEmail').value = employee.email || '';
+    document.getElementById('empPhone').value = employee.phone || '';
+    document.getElementById('empPosition').value = employee.position || '';
+    document.getElementById('empRole').value = normalizeRole(employee.role);
+    document.getElementById('empHireDate').value = employee.hireDate || '';
+    document.getElementById('empStatus').value = employee.status || 'active';
+    document.getElementById('empNotes').value = employee.notes || '';
+    openModal('employeeModal');
+  };
+  window.editEmployeeFromProfile = function() {
+    const payload = document.getElementById('editEmployeeProfileBtn').dataset.employee;
+    if (!payload) return;
+    closeModal('employeeProfileModal');
+    openEditEmployee(payload);
+  };
   function renderTeam() {
     const tbody = document.getElementById('teamTableBody');
     const core  = [
-      { first:'Jessica', last:'(Owner)', email:'—', role:'admin', core:true, permissions:{ schedule:true, estimates:true } },
-      { first:'Matt',    last:'(Owner)', email:'—', role:'admin', core:true, permissions:{ schedule:true, estimates:true } },
+      { first:'Jessica', last:'(Owner)', name:'Jessica (Owner)', email:'—', role:'admin', status:'active', position:'Owner / Admin', core:true, permissions:{ schedule:true, estimates:true, admin:true } },
+      { first:'Matt',    last:'(Owner)', name:'Matt (Owner)', email:'—', role:'admin', status:'active', position:'Owner / Operator', core:true, permissions:{ schedule:true, estimates:true, admin:true } },
     ];
     const all = [...core, ...team];
     document.getElementById('teamCount').textContent = `${all.length} members`;
     tbody.innerHTML = all.map(m => {
-      const initials  = (m.first[0]||'') + (m.last?.[0]||'');
-      const roleClass = m.role==='admin' ? 'role-admin' : m.role==='driver' ? 'role-driver' : 'role-staff';
-      const perms     = m.permissions || {};
-      const scheduleOn  = perms.schedule  !== false;
+      const role = normalizeRole(m.role);
+      const initials  = ((m.first||m.name||'')[0]||'') + ((m.last||'')[0]||'');
+      const roleClass = role==='admin' ? 'role-admin' : role==='operator' ? 'role-operator' : 'role-limited';
+      const perms     = { ...defaultPermissionsForRole(role), ...(m.permissions || {}) };
+      const scheduleOn  = perms.schedule === true;
       const estimatesOn = perms.estimates === true;
+      const status = m.status || 'active';
+      const fullName = m.name || `${m.first||''} ${m.last||''}`.trim();
       return `<tr>
-        <td><span class="avatar">${initials.toUpperCase()}</span>${m.first} ${m.last||''}</td>
-        <td style="color:var(--muted);font-size:0.82rem">${m.email}</td>
-        <td><span class="role-badge ${roleClass}">${m.role}</span></td>
+        <td><button class="team-link-btn" onclick='openEmployeeProfile(${JSON.stringify(JSON.stringify(m))})'><span class="avatar">${initials.toUpperCase()}</span>${fullName}${m.position?`<div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">${m.position}</div>`:''}</button></td>
+        <td style="color:var(--muted);font-size:0.82rem">${m.email}${m.phone?`<div style="margin-top:2px;">${m.phone}</div>`:''}${m.hireDate?`<div style="margin-top:2px;">Hired ${m.hireDate}</div>`:''}</td>
+        <td><span class="role-badge ${roleClass}">${role}</span></td>
+        <td><span class="team-status-pill team-status-${status}">${status}</span></td>
         <td class="perm-toggle">
           ${m.core ? '✓' : `<input type="checkbox" ${scheduleOn?'checked':''} onchange="togglePermission('${m.id}','schedule',this.checked)" title="Schedule access"/>`}
         </td>
         <td class="perm-toggle">
           ${m.core ? '✓' : `<input type="checkbox" ${estimatesOn?'checked':''} onchange="togglePermission('${m.id}','estimates',this.checked)" title="Estimates access"/>`}
         </td>
-        <td>${m.core ? '<span style="color:var(--muted);font-size:0.75rem">Core account</span>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${m.id}')">Remove</button>`}</td>
+        <td>${m.core ? '<span style="color:var(--muted);font-size:0.75rem">Core account</span>' : `${m.notes?`<div style="font-size:0.74rem;color:var(--muted);margin-bottom:6px;max-width:220px;">${m.notes}</div>`:''}<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${m.id}')">Remove</button>`}</td>
       </tr>`;
     }).join('');
 
@@ -2213,12 +3229,13 @@
     const currentVal   = driverSelect.value;
     driverSelect.innerHTML = '<option value="">Unassigned</option>';
     all.forEach(m => {
-      const fullName = `${m.first} ${m.last||''}`.trim();
+      const fullName = m.name || `${m.first} ${m.last||''}`.trim();
       const opt = document.createElement('option');
       opt.value = fullName; opt.textContent = fullName;
       driverSelect.appendChild(opt);
     });
     driverSelect.value = currentVal;
+    populateTimeClockEmployees();
   }
 
   window.togglePermission = async function(uid, permission, value) {
@@ -2227,6 +3244,164 @@
       showToast(`Permission updated ✓`, 'success');
     } catch(e) { showToast('Error updating permission','error'); console.error(e); }
   };
+
+  function crmBadgeClass(status) {
+    return status === 'Completed' ? 'done' : status === 'Overdue' ? 'due' : status === 'Scheduled' ? 'soon' : '';
+  }
+
+  function getCRMFollowupState(contact) {
+    const status = contact.followUpStatus || 'Not Started';
+    if (!contact.nextFollowUpDate || status === 'Completed') return status;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const next = new Date(`${contact.nextFollowUpDate}T00:00:00`);
+    const diffDays = Math.round((next - today) / 86400000);
+    if (diffDays < 0) return 'Overdue';
+    if (diffDays <= 3) return 'Scheduled';
+    return status;
+  }
+
+  function getCRMErrorMessage(error) {
+    if (!error) return 'Error saving CRM contact.';
+    if (error.code === 'permission-denied') {
+      return 'CRM save blocked by Firestore permissions for this account.';
+    }
+    if (error.code === 'unavailable') {
+      return 'CRM save is temporarily unavailable. Please try again.';
+    }
+    return error.message || 'Error saving CRM contact.';
+  }
+
+  function resetCRMModal() {
+    document.getElementById('crm-id').value = '';
+    document.getElementById('crmModalTitle').textContent = 'ADD CRM CONTACT';
+    document.getElementById('crmSaveBtn').textContent = 'Save Contact';
+    document.getElementById('crmError').style.display = 'none';
+    ['crm-first','crm-last','crm-phone','crm-email','crm-company','crm-service','crm-last-contact','crm-next-followup','crm-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('crm-source').value = 'Website';
+    document.getElementById('crm-status').value = 'New Lead';
+    document.getElementById('crm-followup-status').value = 'Not Started';
+  }
+
+  window.openCRMModal = function() {
+    resetCRMModal();
+    openModal('crmModal');
+  };
+
+  window.openEditCRM = function(id) {
+    const contact = crmContacts.find(c => c.id === id);
+    if (!contact) return;
+    resetCRMModal();
+    document.getElementById('crm-id').value = contact.id;
+    document.getElementById('crmModalTitle').textContent = 'EDIT CRM CONTACT';
+    document.getElementById('crmSaveBtn').textContent = 'Save Changes';
+    document.getElementById('crm-first').value = contact.firstName || '';
+    document.getElementById('crm-last').value = contact.lastName || '';
+    document.getElementById('crm-phone').value = contact.phone || '';
+    document.getElementById('crm-email').value = contact.email || '';
+    document.getElementById('crm-company').value = contact.company || '';
+    document.getElementById('crm-source').value = contact.leadSource || 'Website';
+    document.getElementById('crm-service').value = contact.serviceInterestedIn || '';
+    document.getElementById('crm-status').value = contact.status || 'New Lead';
+    document.getElementById('crm-last-contact').value = contact.lastContactDate || '';
+    document.getElementById('crm-next-followup').value = contact.nextFollowUpDate || '';
+    document.getElementById('crm-followup-status').value = contact.followUpStatus || 'Not Started';
+    document.getElementById('crm-notes').value = contact.notes || '';
+    openModal('crmModal');
+  };
+
+  window.closeCRMModal = function() {
+    closeModal('crmModal');
+    resetCRMModal();
+  };
+
+  window.saveCRM = async function() {
+    const id = document.getElementById('crm-id').value;
+    const firstName = document.getElementById('crm-first').value.trim();
+    const lastName = document.getElementById('crm-last').value.trim();
+    const phone = document.getElementById('crm-phone').value.trim();
+    const email = document.getElementById('crm-email').value.trim();
+    const company = document.getElementById('crm-company').value.trim();
+    const leadSource = document.getElementById('crm-source').value;
+    const serviceInterestedIn = document.getElementById('crm-service').value.trim();
+    const status = document.getElementById('crm-status').value;
+    const lastContactDate = document.getElementById('crm-last-contact').value;
+    const nextFollowUpDate = document.getElementById('crm-next-followup').value;
+    const followUpStatus = document.getElementById('crm-followup-status').value;
+    const notes = document.getElementById('crm-notes').value.trim();
+    const errBox = document.getElementById('crmError');
+    const btn = document.getElementById('crmSaveBtn');
+    errBox.style.display = 'none';
+    if (!firstName || !lastName) {
+      errBox.textContent = 'First and last name are required.';
+      errBox.style.display = 'block';
+      return;
+    }
+    btn.textContent = id ? 'Saving...' : 'Creating...';
+    btn.disabled = true;
+    const data = {
+      firstName, lastName, fullName: `${firstName} ${lastName}`.trim(),
+      phone, email, company, leadSource, serviceInterestedIn, status,
+      lastContactDate, nextFollowUpDate, followUpStatus, notes,
+      updatedAt: serverTimestamp()
+    };
+    try {
+      if (id) {
+        await updateDoc(doc(db,'crm',id), data);
+      } else {
+        data.contactId = `CRM-${Date.now().toString().slice(-6)}`;
+        data.dateAdded = new Date().toISOString().split('T')[0];
+        data.createdAt = serverTimestamp();
+        await addDoc(collection(db,'crm'), data);
+      }
+      showToast(id ? 'CRM contact updated ✓' : 'CRM contact added ✓','success');
+      closeCRMModal();
+    } catch (e) {
+      const message = getCRMErrorMessage(e);
+      errBox.textContent = message;
+      errBox.style.display = 'block';
+      showToast(message, 'error');
+      console.error(e);
+    } finally {
+      btn.textContent = id ? 'Save Changes' : 'Save Contact';
+      btn.disabled = false;
+    }
+  };
+
+  window.deleteCRM = async function(id) {
+    await deleteDoc(doc(db,'crm',id));
+    showToast('CRM contact removed','success');
+  };
+
+  function renderCRM() {
+    const tbody = document.getElementById('crmTableBody');
+    document.getElementById('crmCount').textContent = `${crmContacts.length} record${crmContacts.length!==1?'s':''}`;
+    document.getElementById('crm-stat-total').textContent = crmContacts.length;
+    document.getElementById('crm-stat-new').textContent = crmContacts.filter(c => (c.status || 'New Lead') === 'New Lead').length;
+    document.getElementById('crm-stat-due').textContent = crmContacts.filter(c => getCRMFollowupState(c) === 'Overdue').length;
+    document.getElementById('crm-stat-won').textContent = crmContacts.filter(c => (c.status || '') === 'Won').length;
+
+    if (!crmContacts.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">No CRM contacts yet.</td></tr>';
+      return;
+    }
+
+    const sorted = [...crmContacts].sort((a,b) => (b.dateAdded || '').localeCompare(a.dateAdded || ''));
+    tbody.innerHTML = sorted.map(contact => {
+      const followupState = getCRMFollowupState(contact);
+      const rowClass = followupState === 'Overdue' ? 'crm-row-overdue' : followupState === 'Scheduled' && contact.nextFollowUpDate ? 'crm-row-upcoming' : '';
+      return `<tr class="${rowClass}">
+        <td>${contact.dateAdded || '—'}</td>
+        <td><strong>${contact.fullName || `${contact.firstName || ''} ${contact.lastName || ''}`.trim() || 'Unnamed'}</strong>${contact.company ? `<div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">${contact.company}</div>` : ''}</td>
+        <td>${contact.leadSource || '—'}</td>
+        <td>${contact.serviceInterestedIn || '—'}</td>
+        <td>${contact.status || '—'}</td>
+        <td>${contact.nextFollowUpDate || '—'}</td>
+        <td><span class="crm-status-badge ${crmBadgeClass(followupState)}">${followupState}</span></td>
+        <td><button class="btn btn-secondary btn-sm" onclick="openEditCRM('${contact.id}')">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteCRM('${contact.id}')">Remove</button></td>
+      </tr>`;
+    }).join('');
+  }
 
   // ── ESTIMATES ──
 
@@ -3005,6 +4180,7 @@
     if (name === 'services') loadServices();
     if (name === 'pnl') renderPnl();
     if (name === 'tasks') renderAdminTasks();
+    if (name === 'timeclock') renderTimeClock();
     if (name === 'finances') { updateFinancesMonthLabel(); updateFinanceStats(); renderTransactions(); }
   };
 
@@ -3022,3 +4198,4 @@
 </script>
 </body>
 </html>
+
