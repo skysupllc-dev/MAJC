@@ -2309,6 +2309,8 @@
   let currentAdminUid = null;
   let adminTaskFilter = 'all';
   let pnlView = 'weekly';
+  const activeListeners = {};
+  const loadedSections = new Set();
   const ADMIN_UIDS = ['R29clFw9tZbJlQOTjs0kbY4z6sw1', 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2'];
 
   function normalizeRole(role) {
@@ -2367,51 +2369,116 @@
   }
 
   // ── LOAD ALL ──
-  function loadAll() {
+  function attachListener(key, subscribe) {
+    if (activeListeners[key]) return;
+    activeListeners[key] = subscribe();
+  }
+
+  function getListenerErrorMessage(label, error) {
+    if (error?.code === 'permission-denied') return `${label} unavailable for this account`;
+    return `${label} failed to load`;
+  }
+
+  function ensureFinanceData() {
     updateFinancesMonthLabel();
 
-    onSnapshot(doc(db, 'finances', 'balance'), snap => {
+    attachListener('finances.balance', () => onSnapshot(doc(db, 'finances', 'balance'), snap => {
       if (snap.exists()) {
         startingBalance = snap.data().amount || 0;
         document.getElementById('balanceInput').value = startingBalance;
       }
       updateFinanceStats();
-    });
-    onSnapshot(query(collection(db, 'transactions'), orderBy('createdAt','desc')), snap => {
+    }, error => {
+      console.error('Finances balance listener error:', error);
+      showToast(getListenerErrorMessage('Finances', error), 'error');
+    }));
+
+    attachListener('transactions', () => onSnapshot(query(collection(db, 'transactions'), orderBy('createdAt','desc')), snap => {
       transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderTransactions();
       updateFinanceStats();
-    });
-    onSnapshot(collection(db, 'bills'), snap => {
+    }, error => {
+      console.error('Transactions listener error:', error);
+      showToast(getListenerErrorMessage('Transactions', error), 'error');
+    }));
+
+    attachListener('bills', () => onSnapshot(collection(db, 'bills'), snap => {
       bills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderBills();
       updateFinanceStats();
       document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b)).length;
-    });
-    onSnapshot(collection(db, 'events'), snap => {
-      events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderCalendar();
-    });
-    onSnapshot(collection(db, 'crm'), snap => {
-      crmContacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderCRM();
-    });
-    onSnapshot(collection(db, 'team'), snap => {
-      team = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderTeam();
-      buildAdminTaskTabs();
-    });
-    onSnapshot(collection(db, 'fleet'), snap => {
-      trucks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (trucks.length === 0) seedFleet(); else renderFleet();
-    });
-    onSnapshot(query(collection(db, 'income'), orderBy('createdAt','desc')), snap => {
+    }, error => {
+      console.error('Bills listener error:', error);
+      showToast(getListenerErrorMessage('Bills', error), 'error');
+    }));
+
+    attachListener('income', () => onSnapshot(query(collection(db, 'income'), orderBy('createdAt','desc')), snap => {
       income = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderIncome();
       renderPnl();
-      updateFinanceStats(); // re-run since income affects available
-    });
-    onSnapshot(
+      updateFinanceStats();
+    }, error => {
+      console.error('Income listener error:', error);
+      showToast(getListenerErrorMessage('Income', error), 'error');
+    }));
+  }
+
+  function ensureScheduleData() {
+    attachListener('events', () => onSnapshot(collection(db, 'events'), snap => {
+      events = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCalendar();
+    }, error => {
+      console.error('Events listener error:', error);
+      showToast(getListenerErrorMessage('Schedule', error), 'error');
+    }));
+  }
+
+  function ensureCRMData() {
+    attachListener('crm', () => onSnapshot(collection(db, 'crm'), snap => {
+      crmContacts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCRM();
+    }, error => {
+      console.error('CRM listener error:', error);
+      showToast(getListenerErrorMessage('CRM', error), 'error');
+    }));
+  }
+
+  function ensureTeamData() {
+    attachListener('team', () => onSnapshot(collection(db, 'team'), snap => {
+      team = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderTeam();
+      buildAdminTaskTabs();
+      renderTimeClock();
+    }, error => {
+      console.error('Team listener error:', error);
+      showToast(getListenerErrorMessage('Team', error), 'error');
+    }));
+  }
+
+  function ensureFleetData() {
+    attachListener('fleet', () => onSnapshot(collection(db, 'fleet'), snap => {
+      trucks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (trucks.length === 0) seedFleet(); else renderFleet();
+    }, error => {
+      console.error('Fleet listener error:', error);
+      showToast(getListenerErrorMessage('Fleet', error), 'error');
+    }));
+  }
+
+  function ensureTaskData() {
+    ensureTeamData();
+    attachListener('tasks', () => onSnapshot(collection(db, 'tasks'), snap => {
+      allAdminTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderAdminTasks();
+    }, error => {
+      console.error('Tasks listener error:', error);
+      showToast(getListenerErrorMessage('Tasks', error), 'error');
+    }));
+  }
+
+  function ensureTimeClockData() {
+    ensureTeamData();
+    attachListener('timeClock', () => onSnapshot(
       query(collection(db, 'timeClock'), orderBy('timestampMs','desc')),
       snap => {
         timeClockEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2419,14 +2486,30 @@
       },
       error => {
         console.error('Time clock listener error:', error);
-        showToast('Time clock feed unavailable', 'error');
+        showToast(getListenerErrorMessage('Time clock', error), 'error');
       }
-    );
-    onSnapshot(collection(db, 'tasks'), snap => {
-      allAdminTasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderAdminTasks();
-    });
-    loadServices();
+    ));
+  }
+
+  async function ensureSectionData(section) {
+    if (loadedSections.has(section)) return;
+    loadedSections.add(section);
+
+    if (section === 'finances' || section === 'bills' || section === 'income' || section === 'pnl') {
+      ensureFinanceData();
+      return;
+    }
+    if (section === 'schedule') return ensureScheduleData();
+    if (section === 'crm') return ensureCRMData();
+    if (section === 'team') return ensureTeamData();
+    if (section === 'fleet') return ensureFleetData();
+    if (section === 'tasks') return ensureTaskData();
+    if (section === 'timeclock') return ensureTimeClockData();
+    if (section === 'services' || section === 'estimates') await loadServices();
+  }
+
+  function loadAll() {
+    ensureSectionData('finances');
   }
 
   // ── FINANCES ──
@@ -4300,6 +4383,7 @@
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     document.getElementById(`section-${name}`).classList.add('active');
     el.classList.add('active');
+    ensureSectionData(name);
     if (name === 'schedule') renderCalendar();
     if (name === 'services') loadServices();
     if (name === 'pnl') renderPnl();
