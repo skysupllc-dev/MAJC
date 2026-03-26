@@ -148,7 +148,19 @@
     }
     .timeclock-grid {
       display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
-      gap: 20px; margin-bottom: 32px; animation: fadeSlideIn 0.7s ease 0.16s both;
+      gap: 20px; animation: fadeSlideIn 0.7s ease 0.16s both;
+    }
+    .timeclock-modal-body {
+      width: min(980px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .timeclock-card-sub {
+      margin-top: 6px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.45;
     }
     .timeclock-terminal {
       background: linear-gradient(180deg, rgba(28,31,26,0.98) 0%, rgba(22,24,19,0.97) 100%);
@@ -481,6 +493,24 @@
       <div class="glance-value" id="glanceTasks">—</div>
       <div class="glance-sub" id="glanceTasksSub">Your board</div>
     </div>
+    <div class="glance-card clickable" id="timeclockCard" onclick="openTimeClockModal()">
+      <div class="glance-icon">TC</div>
+      <div class="glance-label">Time Clock</div>
+      <div class="glance-value" id="glanceTimeClockWorked">00:00</div>
+      <div class="glance-sub" id="glanceTimeClockStatus">Clocked Out</div>
+      <div class="glance-supporting">
+        <div>
+          <div class="glance-support-label">Break Today</div>
+          <div class="glance-support-value" id="glanceTimeClockBreak">00:00</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="glance-support-label">Punches</div>
+          <div class="glance-support-value" id="glanceTimeClockPunches">0 today</div>
+        </div>
+      </div>
+      <div class="timeclock-card-sub" id="glanceTimeClockLast">Tap to clock in, clock out, or manage breaks.</div>
+      <div class="tap-hint">Tap to open time clock</div>
+    </div>
     <div class="glance-card clickable" id="financeCard" onclick="openBalanceModal()">
       <div class="glance-icon">💰</div>
       <div class="glance-label">Available to Spend</div>
@@ -567,61 +597,6 @@
       </div>
       <div class="workflow-alert-list" id="workflowAlertList">
         <div class="empty-state"><span>✓</span>Loading workflow alerts...</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="workflow-section">
-    <div class="section-header">
-      <div class="section-title">TIME CLOCK</div>
-      <div class="section-line"></div>
-      <div class="section-badge" id="timeclockBadge">LIVE</div>
-    </div>
-    <div class="timeclock-grid">
-      <div class="timeclock-terminal">
-        <div class="timeclock-live" id="dashTimeClockLive">00:00:00</div>
-        <div class="timeclock-live-date" id="dashTimeClockDate">—</div>
-        <div class="timeclock-status clocked-out" id="dashTimeClockStatus">Clocked Out</div>
-        <div class="timeclock-copy" id="dashTimeClockCopy">Your punches save in military time and update your worked and break totals automatically.</div>
-        <div class="timeclock-mini-grid">
-          <div class="timeclock-mini">
-            <div class="timeclock-mini-label">Worked Today</div>
-            <div class="timeclock-mini-value" id="dashWorkedToday">00:00</div>
-          </div>
-          <div class="timeclock-mini">
-            <div class="timeclock-mini-label">Break Today</div>
-            <div class="timeclock-mini-value" id="dashBreakToday">00:00</div>
-          </div>
-        </div>
-        <div class="timeclock-actions">
-          <button class="btn-event done" id="dashClockInBtn" onclick="dashSaveTimeClockAction('clock-in')">Clock In</button>
-          <button class="btn-event followup" id="dashClockOutBtn" onclick="dashSaveTimeClockAction('clock-out')">Clock Out</button>
-          <button class="btn-event" id="dashBreakOutBtn" onclick="dashSaveTimeClockAction('break-out')">Break Out</button>
-          <button class="btn-event estimate" id="dashBreakInBtn" onclick="dashSaveTimeClockAction('break-in')">Break In</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="timeclock-summary">
-          <div class="timeclock-summary-card">
-            <div class="timeclock-summary-label">Punches Today</div>
-            <div class="timeclock-summary-value" id="dashPunchCount">0</div>
-          </div>
-          <div class="timeclock-summary-card">
-            <div class="timeclock-summary-label">Worked This Week</div>
-            <div class="timeclock-summary-value" id="dashWorkedWeek">00:00</div>
-          </div>
-          <div class="timeclock-summary-card">
-            <div class="timeclock-summary-label">Break This Week</div>
-            <div class="timeclock-summary-value" id="dashBreakWeek">00:00</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="today-date">RECENT PUNCHES</div>
-          <div class="timeclock-log" id="dashTimeClockLog">
-            <div class="timeclock-empty">No punches recorded yet.</div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -739,6 +714,65 @@
     <div id="bills-detail-list" style="display:flex;flex-direction:column;gap:8px;max-height:440px;overflow-y:auto;"></div>
     <div class="modal-dark-actions" style="margin-top:16px;">
       <button class="btn-dark-secondary" onclick="document.getElementById('billsDetailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="timeClockModal">
+  <div class="modal-dark timeclock-modal-body">
+    <div class="row-flex" style="margin-bottom:4px;">
+      <div>
+        <div class="modal-dark-title" style="margin-bottom:6px;">TIME CLOCK</div>
+        <div class="modal-dark-sub" style="margin-bottom:0;">Punch in the field using military time.</div>
+      </div>
+      <button class="btn-dark-secondary" onclick="closeTimeClockModal()">Close</button>
+    </div>
+    <div class="timeclock-grid">
+      <div class="timeclock-terminal">
+        <div class="timeclock-live" id="dashTimeClockLive">00:00:00</div>
+        <div class="timeclock-live-date" id="dashTimeClockDate">—</div>
+        <div class="timeclock-status clocked-out" id="dashTimeClockStatus">Clocked Out</div>
+        <div class="timeclock-copy" id="dashTimeClockCopy">Your punches save in military time and update your worked and break totals automatically.</div>
+        <div class="timeclock-mini-grid">
+          <div class="timeclock-mini">
+            <div class="timeclock-mini-label">Worked Today</div>
+            <div class="timeclock-mini-value" id="dashWorkedToday">00:00</div>
+          </div>
+          <div class="timeclock-mini">
+            <div class="timeclock-mini-label">Break Today</div>
+            <div class="timeclock-mini-value" id="dashBreakToday">00:00</div>
+          </div>
+        </div>
+        <div class="timeclock-actions">
+          <button class="btn-event done" id="dashClockInBtn" onclick="dashSaveTimeClockAction('clock-in')">Clock In</button>
+          <button class="btn-event followup" id="dashClockOutBtn" onclick="dashSaveTimeClockAction('clock-out')">Clock Out</button>
+          <button class="btn-event" id="dashBreakOutBtn" onclick="dashSaveTimeClockAction('break-out')">Break Out</button>
+          <button class="btn-event estimate" id="dashBreakInBtn" onclick="dashSaveTimeClockAction('break-in')">Break In</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="timeclock-summary">
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Punches Today</div>
+            <div class="timeclock-summary-value" id="dashPunchCount">0</div>
+          </div>
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Worked This Week</div>
+            <div class="timeclock-summary-value" id="dashWorkedWeek">00:00</div>
+          </div>
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Break This Week</div>
+            <div class="timeclock-summary-value" id="dashBreakWeek">00:00</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="today-date">RECENT PUNCHES</div>
+          <div class="timeclock-log" id="dashTimeClockLog">
+            <div class="timeclock-empty">No punches recorded yet.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1097,7 +1131,7 @@
 
   function renderDashTimeClock() {
     const liveTime = document.getElementById('dashTimeClockLive');
-    if (!liveTime || !currentUser) return;
+    if (!currentUser) return;
 
     const entries = getCurrentUserTimeClockEntries();
     const today = getLocalDateString(liveNow);
@@ -1113,32 +1147,50 @@
     const weekTotals = calculateTimeClockTotals(weekEntries, liveNow);
     const statusLabel = todayTotals.status === 'clocked-in' ? 'Clocked In' : todayTotals.status === 'on-break' ? 'On Break' : 'Clocked Out';
 
-    document.getElementById('dashTimeClockDate').textContent = liveNow.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }).toUpperCase();
+    const liveDateEl = document.getElementById('dashTimeClockDate');
+    if (liveDateEl) liveDateEl.textContent = liveNow.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }).toUpperCase();
     const statusEl = document.getElementById('dashTimeClockStatus');
-    statusEl.className = `timeclock-status ${todayTotals.status}`;
-    statusEl.textContent = statusLabel;
+    if (statusEl) {
+      statusEl.className = `timeclock-status ${todayTotals.status}`;
+      statusEl.textContent = statusLabel;
+    }
 
-    document.getElementById('dashWorkedToday').textContent = formatDuration(todayTotals.workedMs);
-    document.getElementById('dashBreakToday').textContent = formatDuration(todayTotals.breakMs);
-    document.getElementById('dashWorkedWeek').textContent = formatDuration(weekTotals.workedMs);
-    document.getElementById('dashBreakWeek').textContent = formatDuration(weekTotals.breakMs);
-    document.getElementById('dashPunchCount').textContent = todayEntries.length;
-    document.getElementById('timeclockBadge').textContent = statusLabel.toUpperCase();
+    const workedTodayEl = document.getElementById('dashWorkedToday');
+    const breakTodayEl = document.getElementById('dashBreakToday');
+    const workedWeekEl = document.getElementById('dashWorkedWeek');
+    const breakWeekEl = document.getElementById('dashBreakWeek');
+    const punchCountEl = document.getElementById('dashPunchCount');
+    if (workedTodayEl) workedTodayEl.textContent = formatDuration(todayTotals.workedMs);
+    if (breakTodayEl) breakTodayEl.textContent = formatDuration(todayTotals.breakMs);
+    if (workedWeekEl) workedWeekEl.textContent = formatDuration(weekTotals.workedMs);
+    if (breakWeekEl) breakWeekEl.textContent = formatDuration(weekTotals.breakMs);
+    if (punchCountEl) punchCountEl.textContent = todayEntries.length;
 
     const copy = document.getElementById('dashTimeClockCopy');
     if (todayTotals.lastEntry) {
-      copy.textContent = `${getTimeClockActionLabel(todayTotals.lastEntry.action)} recorded at ${todayTotals.lastEntry.time24} on ${todayTotals.lastEntry.date}.`;
+      if (copy) copy.textContent = `${getTimeClockActionLabel(todayTotals.lastEntry.action)} recorded at ${todayTotals.lastEntry.time24} on ${todayTotals.lastEntry.date}.`;
+      document.getElementById('glanceTimeClockLast').textContent = `${getTimeClockActionLabel(todayTotals.lastEntry.action)} at ${todayTotals.lastEntry.time24}`;
     } else {
-      copy.textContent = 'Your punches save in military time and update your worked and break totals automatically.';
+      if (copy) copy.textContent = 'Your punches save in military time and update your worked and break totals automatically.';
+      document.getElementById('glanceTimeClockLast').textContent = 'Tap to clock in, clock out, or manage breaks.';
     }
 
-    document.getElementById('dashClockInBtn').disabled = todayTotals.status !== 'clocked-out';
-    document.getElementById('dashClockOutBtn').disabled = todayTotals.status === 'clocked-out';
-    document.getElementById('dashBreakOutBtn').disabled = todayTotals.status !== 'clocked-in';
-    document.getElementById('dashBreakInBtn').disabled = todayTotals.status !== 'on-break';
+    const dashClockInBtn = document.getElementById('dashClockInBtn');
+    const dashClockOutBtn = document.getElementById('dashClockOutBtn');
+    const dashBreakOutBtn = document.getElementById('dashBreakOutBtn');
+    const dashBreakInBtn = document.getElementById('dashBreakInBtn');
+    if (dashClockInBtn) dashClockInBtn.disabled = todayTotals.status !== 'clocked-out';
+    if (dashClockOutBtn) dashClockOutBtn.disabled = todayTotals.status === 'clocked-out';
+    if (dashBreakOutBtn) dashBreakOutBtn.disabled = todayTotals.status !== 'clocked-in';
+    if (dashBreakInBtn) dashBreakInBtn.disabled = todayTotals.status !== 'on-break';
+
+    document.getElementById('glanceTimeClockWorked').textContent = formatDuration(todayTotals.workedMs);
+    document.getElementById('glanceTimeClockBreak').textContent = formatDuration(todayTotals.breakMs);
+    document.getElementById('glanceTimeClockStatus').textContent = statusLabel;
+    document.getElementById('glanceTimeClockPunches').textContent = `${todayEntries.length} today`;
 
     const log = document.getElementById('dashTimeClockLog');
-    log.innerHTML = todayEntries.slice().reverse().map(entry => `
+    if (log) log.innerHTML = todayEntries.slice().reverse().map(entry => `
       <div class="timeclock-log-item">
         <div>
           <div class="timeclock-log-title">${getCurrentMemberName()}</div>
@@ -1283,6 +1335,15 @@
       error => console.error('timeClock listener:', error)
     ));
   }
+
+  window.openTimeClockModal = function() {
+    document.getElementById('timeClockModal').classList.add('open');
+    renderDashTimeClock();
+  };
+
+  window.closeTimeClockModal = function() {
+    document.getElementById('timeClockModal').classList.remove('open');
+  };
 
   window.dashSaveTimeClockAction = async function(action) {
     if (!currentUser) return;
@@ -1499,6 +1560,12 @@
     if (!canViewFinancials) return;
     document.getElementById('billsDetailModal').classList.add('open');
   };
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
 
   // Close detail modals on overlay click
   ['balanceDetailModal','billsDetailModal'].forEach(id => {
