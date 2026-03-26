@@ -1156,6 +1156,18 @@
             <select class="form-select" id="timeclockEmployeeSelect"></select>
           </div>
           <div class="timeclock-note" id="timeclockCurrentNote">Select an employee to record a punch. All saved times use 24-hour format.</div>
+          <div class="timeclock-summary-grid" style="margin-bottom:18px;">
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">Worked Today</div>
+              <div class="timeclock-mini-value" id="timeclockCurrentWorked">00:00</div>
+              <div class="timeclock-mini-sub">Selected employee total</div>
+            </div>
+            <div class="timeclock-mini-stat">
+              <div class="timeclock-mini-label">Break Today</div>
+              <div class="timeclock-mini-value" id="timeclockCurrentBreak">00:00</div>
+              <div class="timeclock-mini-sub">Selected employee total</div>
+            </div>
+          </div>
           <div class="timeclock-actions">
             <button class="btn btn-success" id="timeclockClockInBtn" onclick="saveTimeClockAction('clock-in')">Clock In</button>
             <button class="btn btn-danger" id="timeclockClockOutBtn" onclick="saveTimeClockAction('clock-out')">Clock Out</button>
@@ -2570,6 +2582,13 @@
     };
   }
 
+  function formatClockDuration(ms) {
+    const safe = Math.max(0, Math.floor((ms || 0) / 1000));
+    const hours = String(Math.floor(safe / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((safe % 3600) / 60)).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
   function getTimeClockMembers() {
     const core = [
       { id: 'core-jessica', uid: 'R29clFw9tZbJlQOTjs0kbY4z6sw1', first: 'Jessica', last: '(Owner)', name: 'Jessica (Owner)', role: 'admin', status: 'active', core: true },
@@ -2617,6 +2636,47 @@
     return { status, lastEntry };
   }
 
+  function calculateTimeClockTotals(entries, cutoff = new Date()) {
+    let workedMs = 0;
+    let breakMs = 0;
+    let status = 'clocked-out';
+    let lastWorkStart = null;
+    let lastBreakStart = null;
+    let lastEntry = null;
+
+    entries.forEach(entry => {
+      const ts = entry.timestampMs || 0;
+      if (!ts) return;
+      if (entry.action === 'clock-in') {
+        status = 'clocked-in';
+        lastWorkStart = ts;
+        lastBreakStart = null;
+      } else if (entry.action === 'break-out' && status === 'clocked-in' && lastWorkStart != null) {
+        workedMs += Math.max(0, ts - lastWorkStart);
+        lastWorkStart = null;
+        lastBreakStart = ts;
+        status = 'on-break';
+      } else if (entry.action === 'break-in' && status === 'on-break' && lastBreakStart != null) {
+        breakMs += Math.max(0, ts - lastBreakStart);
+        lastBreakStart = null;
+        lastWorkStart = ts;
+        status = 'clocked-in';
+      } else if (entry.action === 'clock-out') {
+        if (status === 'clocked-in' && lastWorkStart != null) workedMs += Math.max(0, ts - lastWorkStart);
+        if (status === 'on-break' && lastBreakStart != null) breakMs += Math.max(0, ts - lastBreakStart);
+        lastWorkStart = null;
+        lastBreakStart = null;
+        status = 'clocked-out';
+      }
+      lastEntry = entry;
+    });
+
+    const cutoffMs = cutoff instanceof Date ? cutoff.getTime() : Number(cutoff || Date.now());
+    if (status === 'clocked-in' && lastWorkStart != null) workedMs += Math.max(0, cutoffMs - lastWorkStart);
+    if (status === 'on-break' && lastBreakStart != null) breakMs += Math.max(0, cutoffMs - lastBreakStart);
+    return { workedMs, breakMs, status, lastEntry };
+  }
+
   function getTimeClockStatusLabel(status) {
     if (status === 'clocked-in') return 'Clocked In';
     if (status === 'on-break') return 'On Break';
@@ -2661,6 +2721,8 @@
       statusEl.className = 'timeclock-status clocked-out';
       statusEl.textContent = 'Clocked Out';
       noteEl.textContent = 'Select an employee to record a punch. All saved times use 24-hour format.';
+      document.getElementById('timeclockCurrentWorked').textContent = '00:00';
+      document.getElementById('timeclockCurrentBreak').textContent = '00:00';
       ['timeclockClockInBtn','timeclockClockOutBtn','timeclockBreakOutBtn','timeclockBreakInBtn'].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.disabled = true;
@@ -2669,8 +2731,12 @@
     }
 
     const { status, lastEntry } = getTimeClockStatus(employeeUid);
+    const todayEntries = getEmployeeTimeClockEntries(employeeUid).filter(entry => entry.date === formatMilitaryDateTime(new Date()).date);
+    const totals = calculateTimeClockTotals(todayEntries);
     statusEl.className = `timeclock-status ${status}`;
     statusEl.textContent = getTimeClockStatusLabel(status);
+    document.getElementById('timeclockCurrentWorked').textContent = formatClockDuration(totals.workedMs);
+    document.getElementById('timeclockCurrentBreak').textContent = formatClockDuration(totals.breakMs);
 
     if (lastEntry) {
       noteEl.textContent = `${member.name} last punched ${lastEntry.label || lastEntry.action} at ${lastEntry.time24} on ${lastEntry.date}.`;
@@ -4406,3 +4472,4 @@
 </script>
 </body>
 </html>
+
