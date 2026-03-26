@@ -24,7 +24,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top, rgba(78,124,69,0.16), transparent 30%),
+        linear-gradient(180deg, #11130f 0%, var(--bg) 34%, #0a0b09 100%);
       color: var(--text);
       font-family: 'Barlow', sans-serif;
       min-height: 100vh;
@@ -35,8 +37,9 @@
     nav {
       display: flex; justify-content: space-between; align-items: center;
       padding: 16px 28px;
-      background: var(--surface); border-bottom: 1px solid var(--border);
+      background: rgba(22,24,19,0.92); border-bottom: 1px solid var(--border);
       position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(14px);
     }
     .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 4px; color: var(--accent); }
     .nav-logo span { color: var(--text); }
@@ -80,8 +83,13 @@
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px; margin-bottom: 16px; animation: fadeSlideIn 0.7s ease 0.1s both;
     }
-    .glance-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 22px 24px; position: relative; transition: border-color 0.2s; }
-    .glance-card:hover { border-color: var(--accent); }
+    .glance-card {
+      background: linear-gradient(180deg, rgba(28,31,26,0.98) 0%, rgba(24,27,22,0.96) 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; position: relative;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+    }
+    .glance-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 20px 42px rgba(0,0,0,0.22); }
     .glance-card.clickable { cursor: pointer; }
     .glance-card.clickable:hover { border-color: var(--accent); background: #1f2219; }
     .glance-card .tap-hint { font-size: 0.65rem; color: var(--muted); margin-top: 6px; opacity: 0.6; }
@@ -91,6 +99,19 @@
     .glance-value.danger { color: var(--danger); }
     .glance-sub { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
     .glance-icon { position: absolute; top: 18px; right: 20px; font-size: 1.4rem; opacity: 0.35; }
+    .glance-supporting {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      padding-top: 10px; margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .glance-support-label {
+      font-size: 0.64rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    }
+    .glance-support-value {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; color: var(--text);
+    }
+    .glance-support-value.good { color: #80b876; }
+    .glance-support-value.warn { color: var(--accent); }
+    .glance-support-value.bad  { color: #e07070; }
 
     /* ── JOB STATUS ROW ── */
     .job-status-grid {
@@ -98,8 +119,10 @@
       gap: 12px; margin-bottom: 32px; animation: fadeSlideIn 0.7s ease 0.15s both;
     }
     .job-stat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 16px 18px;
+      background: linear-gradient(180deg, rgba(28,31,26,0.96) 0%, rgba(22,24,19,0.98) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.14);
     }
     .job-stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
     .job-stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 1px; color: var(--text); line-height: 1; }
@@ -118,19 +141,141 @@
     .section-badge { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; }
 
     /* ── PANEL ── */
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+    .panel {
+      background: linear-gradient(180deg, rgba(28,31,26,0.98) 0%, rgba(22,24,19,0.97) 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+    }
+    .timeclock-grid {
+      display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+      gap: 20px; margin-bottom: 32px; animation: fadeSlideIn 0.7s ease 0.16s both;
+    }
+    .timeclock-terminal {
+      background: linear-gradient(180deg, rgba(28,31,26,0.98) 0%, rgba(22,24,19,0.97) 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+    }
+    .timeclock-live {
+      font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 2px;
+      line-height: 1; color: var(--accent); margin: 4px 0 8px;
+    }
+    .timeclock-live-date {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+    }
+    .timeclock-status {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px;
+      border-radius: 999px; border: 1px solid var(--border); font-size: 0.74rem;
+      letter-spacing: 1px; text-transform: uppercase; font-weight: 700; margin-bottom: 16px;
+    }
+    .timeclock-status.clocked-in { background: rgba(78,124,69,0.18); color: #9cc891; border-color: rgba(78,124,69,0.28); }
+    .timeclock-status.on-break { background: rgba(200,146,42,0.14); color: #e5bb62; border-color: rgba(200,146,42,0.25); }
+    .timeclock-status.clocked-out { background: rgba(255,255,255,0.03); color: var(--muted); }
+    .timeclock-copy { font-size: 0.84rem; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+    .timeclock-mini-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;
+    }
+    .timeclock-mini {
+      background: rgba(14,15,13,0.55); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .timeclock-mini-label {
+      font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .timeclock-mini-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.65rem; letter-spacing: 1px; line-height: 1; color: var(--text);
+    }
+    .timeclock-actions {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .timeclock-actions .btn-event {
+      padding: 10px 12px; font-size: 0.82rem; text-align: center; justify-content: center;
+    }
+    .timeclock-summary {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px;
+    }
+    .timeclock-summary-card {
+      background: linear-gradient(180deg, rgba(28,31,26,0.98) 0%, rgba(22,24,19,0.97) 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+    }
+    .timeclock-summary-label {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.66rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .timeclock-summary-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; line-height: 1;
+    }
+    .timeclock-log { display: flex; flex-direction: column; gap: 10px; }
+    .timeclock-log-item {
+      display: flex; justify-content: space-between; gap: 14px; align-items: flex-start;
+      background: rgba(14,15,13,0.55); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .timeclock-log-title { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .timeclock-log-meta { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+    .timeclock-log-time {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; letter-spacing: 1px; color: var(--accent); white-space: nowrap;
+    }
+    .timeclock-empty { text-align: center; color: var(--muted); font-size: 0.84rem; padding: 22px 0; }
     .today-date { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
     .empty-state { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 32px 0; }
     .empty-state span { display: block; font-size: 1.8rem; margin-bottom: 8px; opacity: 0.4; }
 
+    .workflow-section { margin-bottom: 32px; animation: fadeSlideIn 0.7s ease 0.18s both; }
+    .workflow-panel {
+      background: linear-gradient(135deg, rgba(26,28,20,0.98) 0%, rgba(30,33,27,0.98) 100%);
+      border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+    }
+    .workflow-summary {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px; margin-bottom: 16px;
+    }
+    .workflow-metric {
+      background: rgba(14,15,13,0.62); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px; padding: 12px 14px;
+    }
+    .workflow-metric-label {
+      font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .workflow-metric-value {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 1px; line-height: 1;
+    }
+    .workflow-metric-value.warn { color: var(--accent); }
+    .workflow-metric-value.bad { color: #e07070; }
+    .workflow-metric-value.good { color: #80b876; }
+    .workflow-alert-list { display: flex; flex-direction: column; gap: 10px; }
+    .workflow-alert-item {
+      display: flex; justify-content: space-between; gap: 14px; align-items: flex-start;
+      padding: 14px 16px; background: rgba(14,15,13,0.72); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 10px; transition: border-color 0.2s, transform 0.2s;
+    }
+    .workflow-alert-item:hover { border-color: rgba(200,146,42,0.35); transform: translateY(-1px); }
+    .workflow-alert-item[data-level="high"] { border-left: 3px solid var(--danger); }
+    .workflow-alert-item[data-level="med"] { border-left: 3px solid var(--accent); }
+    .workflow-alert-item[data-level="low"] { border-left: 3px solid var(--accent2); }
+    .workflow-alert-copy { min-width: 0; }
+    .workflow-alert-title { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .workflow-alert-meta { font-size: 0.76rem; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .workflow-alert-pill {
+      font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+      border-radius: 999px; padding: 5px 9px; white-space: nowrap;
+      border: 1px solid rgba(255,255,255,0.08); color: var(--text);
+    }
+    .workflow-alert-pill.high { background: rgba(192,57,43,0.14); color: #ef9a90; }
+    .workflow-alert-pill.med  { background: rgba(200,146,42,0.14); color: #e5bb62; }
+    .workflow-alert-pill.low  { background: rgba(78,124,69,0.18); color: #9cc891; }
+
     /* ── EVENTS ── */
     .event-list { display: flex; flex-direction: column; gap: 12px; }
     .event-item {
-      background: var(--surface); border-radius: 8px;
+      background: linear-gradient(180deg, rgba(22,24,19,0.98) 0%, rgba(19,21,17,0.98) 100%); border-radius: 10px;
       border-left: 3px solid var(--border);
-      transition: border-color 0.2s; overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; overflow: hidden;
     }
-    .event-item:hover { border-left-color: var(--accent); }
+    .event-item:hover { border-left-color: var(--accent); transform: translateY(-1px); box-shadow: 0 14px 28px rgba(0,0,0,0.18); }
+    .event-item.workflow-warning { border-left-color: var(--accent); }
+    .event-item.workflow-danger { border-left-color: var(--danger); }
     .event-main { display: flex; align-items: flex-start; gap: 14px; padding: 14px; }
     .event-time { font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; letter-spacing: 1px; color: var(--accent); white-space: nowrap; padding-top: 2px; min-width: 58px; }
     .event-body { flex: 1; min-width: 0; }
@@ -144,6 +289,15 @@
     .ev-inprogress { background: rgba(200,146,42,0.2); color: var(--accent); }
     .ev-completed  { background: rgba(100,100,100,0.2); color: var(--muted); }
     .ev-cancelled  { background: rgba(192,57,43,0.2); color: #e07070; }
+    .event-workflow-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .workflow-pill {
+      font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      padding: 3px 8px; border-radius: 999px; border: 1px solid transparent;
+    }
+    .workflow-pill.warn { background: rgba(200,146,42,0.14); color: #e5bb62; border-color: rgba(200,146,42,0.22); }
+    .workflow-pill.danger { background: rgba(192,57,43,0.14); color: #ef9a90; border-color: rgba(192,57,43,0.22); }
+    .workflow-pill.good { background: rgba(78,124,69,0.18); color: #9cc891; border-color: rgba(78,124,69,0.24); }
+    .event-workflow-note { font-size: 0.75rem; color: var(--muted); margin-top: 8px; line-height: 1.45; }
     .event-details { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
     .event-detail  { font-size: 0.78rem; color: var(--muted); }
     .event-actions { display: flex; gap: 6px; padding: 8px 14px 12px 86px; flex-wrap: wrap; }
@@ -159,6 +313,8 @@
     .btn-event.estimate:hover { background: var(--blue-lt); color: #fff; }
     .btn-event.inprog { border-color: rgba(200,146,42,0.4); color: var(--accent); }
     .btn-event.done   { border-color: rgba(78,124,69,0.4); color: #80b876; }
+    .btn-event.followup { border-color: rgba(192,57,43,0.35); color: #ef9a90; }
+    .btn-event.followup:hover { border-color: var(--danger); color: #fff; background: rgba(192,57,43,0.35); }
 
     /* ── BILLS ── */
     .bill-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--surface); border-radius: 6px; margin-bottom: 10px; border-left: 3px solid var(--border); }
@@ -169,6 +325,12 @@
     .bill-amount { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--danger); text-align: right; }
     .bill-amount.paid { color: var(--accent2); }
     .bill-status { font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+    .modal-callout {
+      padding: 12px 14px; margin-bottom: 16px; border-radius: 8px;
+      background: rgba(200,146,42,0.12); border: 1px solid rgba(200,146,42,0.2); color: var(--text);
+    }
+    .modal-callout strong { display: block; font-size: 0.86rem; margin-bottom: 4px; }
+    .modal-callout span { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
 
     /* ── SHIMMER ── */
     .shimmer { background: linear-gradient(90deg, var(--surface) 25%, var(--card) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 4px; height: 18px; margin-bottom: 8px; }
@@ -182,6 +344,8 @@
     .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
     .kanban-board { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
     @media (max-width: 640px) { .kanban-board { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .timeclock-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .timeclock-actions { grid-template-columns: 1fr; } }
     .kanban-col { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; min-height: 300px; }
     .kanban-col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
     .kanban-col-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
@@ -317,21 +481,31 @@
       <div class="glance-value" id="glanceTasks">—</div>
       <div class="glance-sub" id="glanceTasksSub">Your board</div>
     </div>
-    <div class="glance-card clickable" onclick="openBalanceModal()">
+    <div class="glance-card clickable" id="financeCard" onclick="openBalanceModal()">
       <div class="glance-icon">💰</div>
       <div class="glance-label">Available to Spend</div>
       <div class="glance-value money" id="glanceMoney">$—</div>
-      <div class="glance-sub">Set by Jessica</div>
+      <div class="glance-sub" id="glanceMoneySub">Set by Jessica</div>
+      <div class="glance-supporting">
+        <div>
+          <div class="glance-support-label">Today Balance</div>
+          <div class="glance-support-value" id="glanceMoneyToday">$—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="glance-support-label">Bills Due Soon</div>
+          <div class="glance-support-value warn" id="glanceBillsSoon">Checking...</div>
+        </div>
+      </div>
       <div class="tap-hint">Tap for breakdown</div>
     </div>
-    <div class="glance-card clickable" onclick="openBillsModal()">
+    <div class="glance-card clickable" id="billsTodayCard" onclick="openBillsModal()">
       <div class="glance-icon">🔴</div>
       <div class="glance-label">Bills Due Today</div>
       <div class="glance-value danger" id="glanceBills">—</div>
       <div class="glance-sub" id="glanceBillsSub">Checking...</div>
       <div class="tap-hint">Tap to view all</div>
     </div>
-    <div class="glance-card clickable" onclick="openBillsModal()">
+    <div class="glance-card clickable" id="billsMonthCard" onclick="openBillsModal()">
       <div class="glance-icon">📋</div>
       <div class="glance-label">Bills Still Due This Month</div>
       <div class="glance-value danger" id="glanceBillsRemaining">$—</div>
@@ -366,9 +540,95 @@
     </div>
   </div>
 
+  <div class="workflow-section">
+    <div class="section-header">
+      <div class="section-title">WORKFLOW ALERTS</div>
+      <div class="section-line"></div>
+      <div class="section-badge" id="workflowBadge">CHECKING</div>
+    </div>
+    <div class="workflow-panel">
+      <div class="workflow-summary">
+        <div class="workflow-metric">
+          <div class="workflow-metric-label">Missing Estimates</div>
+          <div class="workflow-metric-value warn" id="workflowMissingEstimates">0</div>
+        </div>
+        <div class="workflow-metric">
+          <div class="workflow-metric-label">Overdue Tasks</div>
+          <div class="workflow-metric-value bad" id="workflowOverdueTasks">0</div>
+        </div>
+        <div class="workflow-metric">
+          <div class="workflow-metric-label">Incomplete Jobs</div>
+          <div class="workflow-metric-value bad" id="workflowIncompleteJobs">0</div>
+        </div>
+        <div class="workflow-metric">
+          <div class="workflow-metric-label">Workflow Healthy</div>
+          <div class="workflow-metric-value good" id="workflowHealthy">0</div>
+        </div>
+      </div>
+      <div class="workflow-alert-list" id="workflowAlertList">
+        <div class="empty-state"><span>✓</span>Loading workflow alerts...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow-section">
+    <div class="section-header">
+      <div class="section-title">TIME CLOCK</div>
+      <div class="section-line"></div>
+      <div class="section-badge" id="timeclockBadge">LIVE</div>
+    </div>
+    <div class="timeclock-grid">
+      <div class="timeclock-terminal">
+        <div class="timeclock-live" id="dashTimeClockLive">00:00:00</div>
+        <div class="timeclock-live-date" id="dashTimeClockDate">—</div>
+        <div class="timeclock-status clocked-out" id="dashTimeClockStatus">Clocked Out</div>
+        <div class="timeclock-copy" id="dashTimeClockCopy">Your punches save in military time and update your worked and break totals automatically.</div>
+        <div class="timeclock-mini-grid">
+          <div class="timeclock-mini">
+            <div class="timeclock-mini-label">Worked Today</div>
+            <div class="timeclock-mini-value" id="dashWorkedToday">00:00</div>
+          </div>
+          <div class="timeclock-mini">
+            <div class="timeclock-mini-label">Break Today</div>
+            <div class="timeclock-mini-value" id="dashBreakToday">00:00</div>
+          </div>
+        </div>
+        <div class="timeclock-actions">
+          <button class="btn-event done" id="dashClockInBtn" onclick="dashSaveTimeClockAction('clock-in')">Clock In</button>
+          <button class="btn-event followup" id="dashClockOutBtn" onclick="dashSaveTimeClockAction('clock-out')">Clock Out</button>
+          <button class="btn-event" id="dashBreakOutBtn" onclick="dashSaveTimeClockAction('break-out')">Break Out</button>
+          <button class="btn-event estimate" id="dashBreakInBtn" onclick="dashSaveTimeClockAction('break-in')">Break In</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="timeclock-summary">
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Punches Today</div>
+            <div class="timeclock-summary-value" id="dashPunchCount">0</div>
+          </div>
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Worked This Week</div>
+            <div class="timeclock-summary-value" id="dashWorkedWeek">00:00</div>
+          </div>
+          <div class="timeclock-summary-card">
+            <div class="timeclock-summary-label">Break This Week</div>
+            <div class="timeclock-summary-value" id="dashBreakWeek">00:00</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="today-date">RECENT PUNCHES</div>
+          <div class="timeclock-log" id="dashTimeClockLog">
+            <div class="timeclock-empty">No punches recorded yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SCHEDULE + BILLS -->
   <div class="two-col">
-    <div>
+    <div id="billsPanelWrap">
       <div class="section-header">
         <div class="section-title">TODAY'S SCHEDULE</div>
         <div class="section-line"></div>
@@ -479,6 +739,22 @@
     <div id="bills-detail-list" style="display:flex;flex-direction:column;gap:8px;max-height:440px;overflow-y:auto;"></div>
     <div class="modal-dark-actions" style="margin-top:16px;">
       <button class="btn-dark-secondary" onclick="document.getElementById('billsDetailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="completeJobModal">
+  <div class="modal-dark" style="max-width:460px;">
+    <div class="modal-dark-title">COMPLETE JOB</div>
+    <div class="modal-dark-sub" id="completeJobSub">Create or confirm estimate?</div>
+    <div class="modal-callout">
+      <strong id="completeJobTitle">Financial follow-up required</strong>
+      <span id="completeJobSummary">Before closing this job, confirm how it moves into the estimate stage so it does not disappear without follow-up.</span>
+    </div>
+    <div class="modal-dark-actions">
+      <button class="btn-dark-primary" id="completeJobCreateBtn" onclick="createEstimateFromCompletion()">Create Estimate</button>
+      <button class="btn-dark-secondary" id="completeJobConfirmBtn" onclick="confirmJobCompletion()">Complete & Flag Follow-Up</button>
+      <button class="btn-dark-secondary" onclick="closeCompleteJobModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -635,18 +911,259 @@
 
   // ── STATE ──
   let currentUser   = null;
+  let currentMember = null;
   let currentEmp    = 'mine';
+  let allEvents     = [];
+  let allEstimates  = [];
   let allTasks      = [];
   let billsTotal    = 0;
   let startBalance  = 0;
   let txTotal       = 0;
   let incomeTotal   = 0;
   let allBills      = [];
+  let billsDueSoon  = [];
   let recentTx      = [];
   let dashLineItems = [];
   let allServices   = [];
+  let currentRole   = 'limited';
+  let currentPermissions = { schedule:false, estimates:false, admin:false };
+  let isAdminUser   = false;
   let canEstimate   = false;
+  let canManageSchedule = false;
+  let canManageTasks = false;
+  let canViewFinancials = false;
   let estimateCounter = 0;
+  let pendingCompletionEventId = '';
+  let allTimeClockEntries = [];
+  let liveNow = new Date();
+  const dashboardListeners = {};
+
+  function normalizeRole(role) {
+    if (role === 'driver') return 'operator';
+    if (role === 'staff') return 'limited';
+    return role || 'limited';
+  }
+
+  function defaultPermissionsForRole(role) {
+    const normalized = normalizeRole(role);
+    if (normalized === 'admin') return { schedule:true, estimates:true, admin:true };
+    if (normalized === 'operator') return { schedule:true, estimates:false, admin:false };
+    return { schedule:false, estimates:false, admin:false };
+  }
+
+  function applyMemberAccess(member) {
+    currentMember = member || null;
+    currentRole = normalizeRole(member?.role || (isAdminUser ? 'admin' : 'limited'));
+    currentPermissions = { ...defaultPermissionsForRole(currentRole), ...(member?.permissions || {}) };
+    isAdminUser = ADMIN_UIDS.includes(currentUser?.uid) || currentRole === 'admin' || currentPermissions.admin === true;
+    canEstimate = isAdminUser || currentPermissions.estimates === true;
+    canManageSchedule = isAdminUser || currentPermissions.schedule === true || currentRole === 'operator';
+    canManageTasks = isAdminUser || currentRole === 'operator';
+    canViewFinancials = isAdminUser;
+    updateDashboardAccess();
+    if (currentUser) buildTabs(currentUser);
+  }
+
+  function updateDashboardAccess() {
+    document.getElementById('adminBtn').style.display = isAdminUser ? 'inline-block' : 'none';
+    document.getElementById('financeCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsTodayCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsMonthCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsPanelWrap').style.display = canViewFinancials ? '' : 'none';
+    ['input-todo','input-inprog','input-done','btn-todo','btn-inprog','btn-done'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = canManageTasks ? '' : 'none';
+    });
+  }
+
+  function getCurrentUserNames() {
+    const fullName = currentMember?.name || `${currentMember?.first || ''} ${currentMember?.last || ''}`.trim() || currentUser?.displayName || '';
+    const firstName = currentMember?.first || currentUser?.displayName?.split(' ')[0] || '';
+    return [fullName, firstName].filter(Boolean);
+  }
+
+  function getAccessibleEvents(sourceEvents) {
+    return (sourceEvents || []).filter(e => {
+      if (isAdminUser) return true;
+      const names = getCurrentUserNames();
+      if (names.length === 0) return !e.driver;
+      return !e.driver || names.includes(e.driver);
+    });
+  }
+
+  function getLocalDateString(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  }
+
+  function getWeekStartLocal(date = new Date()) {
+    const d = new Date(date);
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() - d.getDay());
+    return d;
+  }
+
+  function formatMilitaryStamp(date = new Date()) {
+    return {
+      date: getLocalDateString(date),
+      time24: date.toLocaleTimeString('en-GB', { hour12: false })
+    };
+  }
+
+  function formatDuration(ms) {
+    const safe = Math.max(0, Math.floor((ms || 0) / 1000));
+    const hours = String(Math.floor(safe / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((safe % 3600) / 60)).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  function getTimeClockActionLabel(action) {
+    const labels = {
+      'clock-in': 'Clock In',
+      'clock-out': 'Clock Out',
+      'break-out': 'Break Out',
+      'break-in': 'Break In'
+    };
+    return labels[action] || action;
+  }
+
+  function getCurrentMemberName() {
+    return currentMember?.name
+      || `${currentMember?.first || ''} ${currentMember?.last || ''}`.trim()
+      || currentUser?.displayName
+      || currentUser?.email
+      || 'Current User';
+  }
+
+  function getCurrentMemberRole() {
+    return normalizeRole(currentMember?.role || (ADMIN_UIDS.includes(currentUser?.uid) ? 'admin' : 'limited'));
+  }
+
+  function getCurrentUserTimeClockEntries() {
+    if (!currentUser?.uid) return [];
+    return allTimeClockEntries
+      .filter(entry => entry.employeeUid === currentUser.uid)
+      .sort((a, b) => (a.timestampMs || 0) - (b.timestampMs || 0));
+  }
+
+  function calculateTimeClockTotals(entries, cutoff = liveNow) {
+    let workedMs = 0;
+    let breakMs = 0;
+    let status = 'clocked-out';
+    let lastWorkStart = null;
+    let lastBreakStart = null;
+    let lastEntry = null;
+
+    entries.forEach(entry => {
+      const ts = entry.timestampMs || 0;
+      if (!ts) return;
+      if (entry.action === 'clock-in') {
+        status = 'clocked-in';
+        lastWorkStart = ts;
+        lastBreakStart = null;
+      } else if (entry.action === 'break-out' && status === 'clocked-in' && lastWorkStart != null) {
+        workedMs += Math.max(0, ts - lastWorkStart);
+        lastWorkStart = null;
+        lastBreakStart = ts;
+        status = 'on-break';
+      } else if (entry.action === 'break-in' && status === 'on-break' && lastBreakStart != null) {
+        breakMs += Math.max(0, ts - lastBreakStart);
+        lastBreakStart = null;
+        lastWorkStart = ts;
+        status = 'clocked-in';
+      } else if (entry.action === 'clock-out') {
+        if (status === 'clocked-in' && lastWorkStart != null) {
+          workedMs += Math.max(0, ts - lastWorkStart);
+        }
+        if (status === 'on-break' && lastBreakStart != null) {
+          breakMs += Math.max(0, ts - lastBreakStart);
+        }
+        lastWorkStart = null;
+        lastBreakStart = null;
+        status = 'clocked-out';
+      }
+      lastEntry = entry;
+    });
+
+    const cutoffMs = cutoff instanceof Date ? cutoff.getTime() : Number(cutoff || Date.now());
+    if (status === 'clocked-in' && lastWorkStart != null) {
+      workedMs += Math.max(0, cutoffMs - lastWorkStart);
+    }
+    if (status === 'on-break' && lastBreakStart != null) {
+      breakMs += Math.max(0, cutoffMs - lastBreakStart);
+    }
+
+    return { workedMs, breakMs, status, lastEntry };
+  }
+
+  function renderDashTimeClock() {
+    const liveTime = document.getElementById('dashTimeClockLive');
+    if (!liveTime || !currentUser) return;
+
+    const entries = getCurrentUserTimeClockEntries();
+    const today = getLocalDateString(liveNow);
+    const todayEntries = entries.filter(entry => entry.date === today);
+    const weekStart = getWeekStartLocal(liveNow);
+    const weekEntries = entries.filter(entry => {
+      if (!entry.date) return false;
+      const entryDate = new Date(`${entry.date}T00:00:00`);
+      return entryDate >= weekStart;
+    });
+
+    const todayTotals = calculateTimeClockTotals(todayEntries, liveNow);
+    const weekTotals = calculateTimeClockTotals(weekEntries, liveNow);
+    const statusLabel = todayTotals.status === 'clocked-in' ? 'Clocked In' : todayTotals.status === 'on-break' ? 'On Break' : 'Clocked Out';
+
+    document.getElementById('dashTimeClockDate').textContent = liveNow.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' }).toUpperCase();
+    const statusEl = document.getElementById('dashTimeClockStatus');
+    statusEl.className = `timeclock-status ${todayTotals.status}`;
+    statusEl.textContent = statusLabel;
+
+    document.getElementById('dashWorkedToday').textContent = formatDuration(todayTotals.workedMs);
+    document.getElementById('dashBreakToday').textContent = formatDuration(todayTotals.breakMs);
+    document.getElementById('dashWorkedWeek').textContent = formatDuration(weekTotals.workedMs);
+    document.getElementById('dashBreakWeek').textContent = formatDuration(weekTotals.breakMs);
+    document.getElementById('dashPunchCount').textContent = todayEntries.length;
+    document.getElementById('timeclockBadge').textContent = statusLabel.toUpperCase();
+
+    const copy = document.getElementById('dashTimeClockCopy');
+    if (todayTotals.lastEntry) {
+      copy.textContent = `${getTimeClockActionLabel(todayTotals.lastEntry.action)} recorded at ${todayTotals.lastEntry.time24} on ${todayTotals.lastEntry.date}.`;
+    } else {
+      copy.textContent = 'Your punches save in military time and update your worked and break totals automatically.';
+    }
+
+    document.getElementById('dashClockInBtn').disabled = todayTotals.status !== 'clocked-out';
+    document.getElementById('dashClockOutBtn').disabled = todayTotals.status === 'clocked-out';
+    document.getElementById('dashBreakOutBtn').disabled = todayTotals.status !== 'clocked-in';
+    document.getElementById('dashBreakInBtn').disabled = todayTotals.status !== 'on-break';
+
+    const log = document.getElementById('dashTimeClockLog');
+    log.innerHTML = todayEntries.slice().reverse().map(entry => `
+      <div class="timeclock-log-item">
+        <div>
+          <div class="timeclock-log-title">${getCurrentMemberName()}</div>
+          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved to time clock</div>
+        </div>
+        <div class="timeclock-log-time">${entry.time24}</div>
+      </div>
+    `).join('') || '<div class="timeclock-empty">No punches recorded yet today.</div>';
+  }
+
+  function startDashboardClock() {
+    const tick = () => {
+      liveNow = new Date();
+      const liveEl = document.getElementById('dashTimeClockLive');
+      if (liveEl) liveEl.textContent = liveNow.toLocaleTimeString('en-GB', { hour12: false });
+      renderDashTimeClock();
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  function attachDashboardListener(key, subscribe) {
+    if (dashboardListeners[key]) return;
+    dashboardListeners[key] = subscribe();
+  }
 
   // ── AUTH ──
   onAuthStateChanged(auth, async user => {
@@ -656,48 +1173,248 @@
     document.getElementById('navUser').textContent = user.email;
     document.getElementById('greetName').innerHTML = `${name.toUpperCase()}<em>,</em> LET'S BUILD TODAY.`;
 
-    const isAdmin = ADMIN_UIDS.includes(user.uid);
-    if (isAdmin) {
-      document.getElementById('adminBtn').style.display = 'inline-block';
-      canEstimate = true;
-    } else {
-      // Check team permissions
-      onSnapshot(collection(db,'team'), snap => {
-        const member = snap.docs.find(d => d.data().uid === user.uid);
-        if (member) {
-          const perms = member.data().permissions || {};
-          canEstimate = perms.estimates === true;
-        }
-      });
-    }
+    isAdminUser = ADMIN_UIDS.includes(user.uid);
+    applyMemberAccess(null);
+    attachDashboardListener('team', () => onSnapshot(collection(db,'team'), snap => {
+      const memberDoc = snap.docs.find(d => d.data().uid === user.uid);
+      const member = memberDoc ? { id: memberDoc.id, ...memberDoc.data() } : null;
+      if (member && member.status && member.status !== 'active') {
+        signOut(auth).then(() => window.location.href = 'login.html');
+        return;
+      }
+      applyMemberAccess(member);
+      ensureDashboardDataAccess();
+      renderTasks();
+      updateWorkflowAlerts();
+      renderDashTimeClock();
+    }));
 
-    loadSchedule();
-    loadBills();
-    loadBalance();
-    loadTransactions();
     loadTasks();
+    loadTimeClock();
+    ensureDashboardDataAccess();
     buildTabs(user);
-    loadServicesForEstimate();
-    loadEstimateCounter();
-    loadIncome();
   });
 
   document.getElementById('logoutBtn').addEventListener('click', () =>
     signOut(auth).then(() => window.location.href = 'login.html'));
 
+  function ensureDashboardDataAccess() {
+    attachDashboardListener('events', () => onSnapshot(collection(db, 'events'), snap => {
+      allEvents = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      renderToday();
+      updateJobStatus(allEvents);
+      updateWorkflowAlerts();
+    }, error => console.error('events listener:', error)));
+
+    attachDashboardListener('tasks', () => onSnapshot(collection(db,'tasks'), snap => {
+      allTasks = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      renderTasks();
+      updateWorkflowAlerts();
+    }, error => console.error('tasks listener:', error)));
+
+    if (ADMIN_UIDS.includes(currentUser?.uid)) {
+      attachDashboardListener('estimates', () => onSnapshot(collection(db, 'estimates'), snap => {
+        allEstimates = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        updateJobStatus(allEvents);
+        updateWorkflowAlerts();
+      }, error => console.error('estimates listener:', error)));
+
+      attachDashboardListener('bills', () => onSnapshot(collection(db, 'bills'), snap => {
+        const bills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allBills = bills;
+        renderBills(bills);
+        updateMonthlyBillCard(bills);
+      }, error => console.error('bills listener:', error)));
+
+      attachDashboardListener('finances.balance', () => onSnapshot(doc(db,'finances','balance'), snap => {
+        startBalance = snap.exists() ? (snap.data().amount || 0) : 0;
+        updateAvailable();
+      }, error => console.error('finances listener:', error)));
+
+      attachDashboardListener('transactions', () => onSnapshot(collection(db,'transactions'), snap => {
+        const now2 = new Date();
+        const monthStr = now2.toISOString().slice(0,7);
+        const lastDay = new Date(now2.getFullYear(), now2.getMonth()+1, 0).getDate();
+        const monthStart = monthStr + '-01';
+        const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
+        recentTx = snap.docs.map(d => d.data())
+          .filter(t => t.date && t.date >= monthStart && t.date <= monthEnd)
+          .sort((a,b) => (b.date||'').localeCompare(a.date||''))
+          .slice(0, 8);
+        txTotal = recentTx.reduce((s,t) => s + (t.amount || 0), 0);
+        updateAvailable();
+      }, error => console.error('transactions listener:', error)));
+
+      attachDashboardListener('income', () => onSnapshot(collection(db,'income'), snap => {
+        const now2 = new Date();
+        const monthStr = now2.toISOString().slice(0,7);
+        const lastDay = new Date(now2.getFullYear(), now2.getMonth()+1, 0).getDate();
+        const monthStart = monthStr + '-01';
+        const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
+        const monthIncome = snap.docs.map(d => d.data()).filter(i => i.date && i.date >= monthStart && i.date <= monthEnd);
+        incomeTotal = monthIncome.reduce((s,i) => s+(i.amount||0), 0);
+        updateAvailable();
+      }, error => console.error('income listener:', error)));
+
+      attachDashboardListener('services', () => {
+        loadServicesForEstimate();
+        return () => {};
+      });
+
+      attachDashboardListener('estimateCounter', () => {
+        loadEstimateCounter();
+        return () => {};
+      });
+    }
+  }
+
   window.updateEventStatus = async function(id, status) {
+    if (!canManageSchedule) return;
     await updateDoc(doc(db,'events',id), { status, updatedAt: serverTimestamp() });
+  };
+
+  function loadTimeClock() {
+    attachDashboardListener('timeClock', () => onSnapshot(
+      query(collection(db, 'timeClock'), orderBy('timestampMs', 'desc')),
+      snap => {
+        allTimeClockEntries = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        renderDashTimeClock();
+      },
+      error => console.error('timeClock listener:', error)
+    ));
+  }
+
+  window.dashSaveTimeClockAction = async function(action) {
+    if (!currentUser) return;
+
+    const entries = getCurrentUserTimeClockEntries().filter(entry => entry.date === getLocalDateString(liveNow));
+    const totals = calculateTimeClockTotals(entries, liveNow);
+    if (action === 'clock-in' && totals.status !== 'clocked-out') return;
+    if (action === 'clock-out' && totals.status === 'clocked-out') return;
+    if (action === 'break-out' && totals.status !== 'clocked-in') return;
+    if (action === 'break-in' && totals.status !== 'on-break') return;
+
+    const stamp = formatMilitaryStamp(new Date());
+    try {
+      await addDoc(collection(db, 'timeClock'), {
+        employeeUid: currentUser.uid,
+        employeeId: currentMember?.id || currentUser.uid,
+        employeeName: getCurrentMemberName(),
+        employeeRole: getCurrentMemberRole(),
+        action,
+        label: getTimeClockActionLabel(action),
+        date: stamp.date,
+        time24: stamp.time24,
+        timestampMs: Date.now(),
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('save time clock:', error);
+    }
+  };
+
+  function loadEstimates() {
+    if (!ADMIN_UIDS.includes(currentUser?.uid)) return;
+    attachDashboardListener('estimates', () => onSnapshot(collection(db, 'estimates'), snap => {
+      allEstimates = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      updateJobStatus(allEvents);
+      updateWorkflowAlerts();
+    }, error => console.error('estimates listener:', error)));
+  }
+
+  function getEstimateForEvent(eventId) {
+    return allEstimates.find(est => est.eventId === eventId) || null;
+  }
+
+  function getEstimateTotal(est) {
+    if (!est || !Array.isArray(est.lineItems)) return 0;
+    const subtotal = est.lineItems.reduce((sum, item) => sum + ((Number(item.qty) || 0) * (Number(item.rate) || 0)), 0);
+    const markup = Number(est.markup) || 0;
+    return subtotal + (subtotal * markup / 100);
+  }
+
+  function getTaskDueStatus(dueDate) {
+    if (!dueDate) return null;
+    const due = new Date(`${dueDate}T00:00:00`);
+    const today = new Date(`${todayStr}T00:00:00`);
+    if (due < today) return 'overdue';
+    if (dueDate === todayStr) return 'today';
+    return 'upcoming';
+  }
+
+  function isIncompleteWorkflowEvent(ev) {
+    if (!ev || ev.status === 'completed' || ev.status === 'cancelled') return false;
+    return ev.date && ev.date <= todayStr;
+  }
+
+  function isMissingEstimateEvent(ev) {
+    if (!ev || ev.status === 'cancelled') return false;
+    return ev.status === 'completed' && !getEstimateForEvent(ev.id);
+  }
+
+  function getBillsDueSoon(sourceBills) {
+    return (sourceBills || [])
+      .filter(b => b.status !== 'paid' && typeof b.dueDay === 'number')
+      .map(b => {
+        let dueDate = new Date(now.getFullYear(), now.getMonth(), b.dueDay);
+        if (dueDate < new Date(`${todayStr}T00:00:00`)) {
+          dueDate = new Date(now.getFullYear(), now.getMonth() + 1, b.dueDay);
+        }
+        const dateStr = dueDate.toISOString().split('T')[0];
+        const daysAway = Math.round((dueDate - new Date(`${todayStr}T00:00:00`)) / 86400000);
+        return { ...b, nextDueDate: dateStr, daysAway };
+      })
+      .filter(b => b.daysAway >= 0 && b.daysAway <= 7)
+      .sort((a, b) => a.daysAway - b.daysAway);
+  }
+
+  window.requestEventCompletion = function(eventId) {
+    const ev = allEvents.find(item => item.id === eventId);
+    if (!ev) return;
+    pendingCompletionEventId = eventId;
+    const linkedEstimate = getEstimateForEvent(eventId);
+    document.getElementById('completeJobTitle').textContent = ev.title || 'Financial follow-up required';
+    document.getElementById('completeJobSub').textContent = linkedEstimate ? 'Estimate already linked to this job.' : 'Create or confirm estimate?';
+    document.getElementById('completeJobSummary').textContent = linkedEstimate
+      ? 'This job already has an estimate record. Confirm completion so the workflow stays visible and current.'
+      : 'Before closing this job, confirm the estimate step now or complete it with a visible follow-up flag for Jessica.';
+
+    const createBtn = document.getElementById('completeJobCreateBtn');
+    const confirmBtn = document.getElementById('completeJobConfirmBtn');
+    createBtn.style.display = canEstimate ? 'inline-flex' : 'none';
+    createBtn.textContent = linkedEstimate ? 'Add Estimate Update' : 'Create Estimate';
+    confirmBtn.textContent = linkedEstimate ? 'Mark Completed' : 'Complete & Flag Follow-Up';
+    document.getElementById('completeJobModal').classList.add('open');
+  };
+
+  window.closeCompleteJobModal = function() {
+    pendingCompletionEventId = '';
+    document.getElementById('completeJobModal').classList.remove('open');
+  };
+
+  window.confirmJobCompletion = async function() {
+    if (!pendingCompletionEventId) return;
+    await updateEventStatus(pendingCompletionEventId, 'completed');
+    closeCompleteJobModal();
+  };
+
+  window.createEstimateFromCompletion = function() {
+    if (!pendingCompletionEventId) return;
+    const eventId = pendingCompletionEventId;
+    document.getElementById('completeJobModal').classList.remove('open');
+    openEstimateFromEvent(eventId);
   };
 
   // ── SCHEDULE ──
   function loadSchedule() {
     onSnapshot(collection(db, 'events'), snap => {
-      const allEventsData = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-      const todayEvents = allEventsData
+      allEvents = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      const todayEvents = getAccessibleEvents(allEvents)
         .filter(e => e.date === todayStr)
         .sort((a,b) => (a.time||'').localeCompare(b.time||''));
 
-      updateJobStatus(allEventsData);
+      updateJobStatus(allEvents);
+      updateWorkflowAlerts();
 
       const list = document.getElementById('eventList');
 
@@ -712,7 +1429,7 @@
       const statusLabel = s => s==='inprogress'?'In Progress':s==='completed'?'Completed':s==='cancelled'?'Cancelled':'Scheduled';
 
       list.innerHTML = todayEvents.map(ev => `
-        <div class="event-item">
+        <div class="event-item ${isMissingEstimateEvent(ev) ? 'workflow-danger' : isIncompleteWorkflowEvent(ev) ? 'workflow-warning' : ''}">
           <div class="event-main">
             <div class="event-time">${formatTime(ev.time)}</div>
             <div class="event-body">
@@ -727,12 +1444,20 @@
                 ${ev.driver   ? `<span class="event-detail">👷 ${ev.driver}</span>` : ''}
                 ${ev.notes    ? `<span class="event-detail">📝 ${ev.notes}</span>` : ''}
               </div>
+              <div class="event-workflow-pills">
+                ${getEstimateForEvent(ev.id) ? '<span class="workflow-pill good">Estimate Linked</span>' : '<span class="workflow-pill warn">No Estimate</span>'}
+                ${isMissingEstimateEvent(ev) ? '<span class="workflow-pill danger">Follow-Up Needed</span>' : ''}
+                ${isIncompleteWorkflowEvent(ev) ? '<span class="workflow-pill warn">Incomplete Workflow</span>' : ''}
+              </div>
+              ${isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">Completed jobs should move into estimate follow-up before they fall out of sight.</div>' : ''}
+              ${isIncompleteWorkflowEvent(ev) && !isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">This job is still open for today or earlier and needs to keep moving through the workflow.</div>' : ''}
             </div>
           </div>
           <div class="event-actions">
             ${canEstimate && ev.status !== 'completed' && ev.status !== 'cancelled' ? `<button class="btn-event estimate" onclick="openEstimateFromEvent('${ev.id}')">📝 Create Estimate</button>` : ''}
-            ${ev.status === 'scheduled'  ? `<button class="btn-event inprog" onclick="updateEventStatus('${ev.id}','inprogress')">▶ Start Job</button>` : ''}
-            ${ev.status === 'inprogress' ? `<button class="btn-event done" onclick="updateEventStatus('${ev.id}','completed')">✓ Complete</button>` : ''}
+            ${canManageSchedule && ev.status === 'scheduled'  ? `<button class="btn-event inprog" onclick="updateEventStatus('${ev.id}','inprogress')">▶ Start Job</button>` : ''}
+            ${canManageSchedule && ev.status === 'inprogress' ? `<button class="btn-event done" onclick="requestEventCompletion('${ev.id}')">✓ Complete Job</button>` : ''}
+            ${canEstimate && isMissingEstimateEvent(ev) ? `<button class="btn-event followup" onclick="openEstimateFromEvent('${ev.id}')">Finish Estimate</button>` : ''}
           </div>
         </div>
       `).join('');
@@ -744,6 +1469,7 @@
   }
 
   window.openBalanceModal = function() {
+    if (!canViewFinancials) return;
     const available = startBalance + incomeTotal - txTotal;
     document.getElementById('modal-starting').textContent      = fmt(startBalance);
     document.getElementById('modal-income-total').textContent  = `+${fmt(incomeTotal)}`;
@@ -770,6 +1496,7 @@
   };
 
   window.openBillsModal = function() {
+    if (!canViewFinancials) return;
     document.getElementById('billsDetailModal').classList.add('open');
   };
 
@@ -782,27 +1509,31 @@
 
   // ── JOB STATUS ──
   function updateJobStatus(allEvents) {
+    const visibleEvents = getAccessibleEvents(allEvents);
     const now = new Date();
     const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
     const weekEnd   = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
     const wsStr = weekStart.toISOString().split('T')[0];
     const weStr = weekEnd.toISOString().split('T')[0];
 
-    const thisWeek   = allEvents.filter(e => e.date >= wsStr && e.date <= weStr);
+    const thisWeek   = visibleEvents.filter(e => e.date >= wsStr && e.date <= weStr);
     const scheduled  = thisWeek.filter(e => e.status === 'scheduled' || !e.status).length;
     const inProgress = thisWeek.filter(e => e.status === 'inprogress').length;
     const completed  = thisWeek.filter(e => e.status === 'completed').length;
+    const estValue   = thisWeek.reduce((sum, ev) => sum + getEstimateTotal(getEstimateForEvent(ev.id)), 0);
 
     document.getElementById('jobsScheduled').textContent  = scheduled;
     document.getElementById('jobsInProgress').textContent = inProgress;
     document.getElementById('jobsCompleted').textContent  = completed;
-    document.getElementById('jobsEstValue').textContent   = '—';
+    document.getElementById('jobsEstValue').textContent   = estValue ? fmt(estValue) : '—';
   }
 
   // ── BILLS ──
   function loadBills() {
     onSnapshot(collection(db, 'bills'), snap => {
       const bills    = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      allBills       = bills;
+      billsDueSoon   = getBillsDueSoon(bills);
       const dueToday = bills.filter(b => b.dueDay === todayDay);
       billsTotal     = dueToday.reduce((s,b) => s+(b.amount||0), 0);
       const list     = document.getElementById('billList');
@@ -839,6 +1570,7 @@
         </div>`).join('') : '<div style="color:var(--muted);text-align:center;padding:20px;">No bills due today.</div>';
 
       updateAvailable();
+      updateWorkflowAlerts();
     });
   }
 
@@ -881,18 +1613,86 @@
     const el = document.getElementById('glanceMoney');
     el.textContent = fmt(available);
     el.className = 'glance-value ' + (available >= 0 ? 'money' : 'danger');
+    document.getElementById('glanceMoneyToday').textContent = fmt(available);
+    document.getElementById('glanceMoneySub').textContent = available >= 0 ? 'Ready for active jobs today' : 'Review spending before new purchases';
+
+    const soonAmount = billsDueSoon.reduce((sum, bill) => sum + (bill.amount || 0), 0);
+    const soonEl = document.getElementById('glanceBillsSoon');
+    if (!billsDueSoon.length) {
+      soonEl.textContent = 'Clear 7 days';
+      soonEl.className = 'glance-support-value good';
+    } else if (billsDueSoon.length === 1) {
+      soonEl.textContent = `${fmt(soonAmount)} in ${billsDueSoon[0].daysAway}d`;
+      soonEl.className = 'glance-support-value warn';
+    } else {
+      soonEl.textContent = `${billsDueSoon.length} bills · ${fmt(soonAmount)}`;
+      soonEl.className = 'glance-support-value bad';
+    }
+  }
+
+  function updateWorkflowAlerts() {
+    const visibleEvents = getAccessibleEvents(allEvents);
+    const missingEstimateJobs = visibleEvents.filter(isMissingEstimateEvent);
+    const incompleteJobs = visibleEvents.filter(isIncompleteWorkflowEvent);
+    const overdueTasks = allTasks.filter(task => task.stage !== 'done' && getTaskDueStatus(task.dueDate) === 'overdue');
+
+    document.getElementById('workflowMissingEstimates').textContent = missingEstimateJobs.length;
+    document.getElementById('workflowOverdueTasks').textContent = overdueTasks.length;
+    document.getElementById('workflowIncompleteJobs').textContent = incompleteJobs.length;
+
+    const healthyCount = Math.max(visibleEvents.length - missingEstimateJobs.length - incompleteJobs.length, 0);
+    document.getElementById('workflowHealthy').textContent = healthyCount;
+
+    const alerts = [
+      ...missingEstimateJobs.slice(0, 3).map(ev => ({
+        level: 'high',
+        pill: 'Estimate Missing',
+        title: ev.title || 'Completed job',
+        meta: `${ev.date || 'No date'} · Completed but still missing an estimate record.`
+      })),
+      ...overdueTasks.slice(0, 3).map(task => ({
+        level: 'high',
+        pill: 'Task Overdue',
+        title: task.text || 'Task',
+        meta: `${task.employeeName || 'Unassigned'} · Due ${task.dueDate || 'unknown'}`
+      })),
+      ...incompleteJobs
+        .filter(ev => !missingEstimateJobs.some(item => item.id === ev.id))
+        .slice(0, 4)
+        .map(ev => ({
+          level: ev.date < todayStr ? 'high' : 'med',
+          pill: ev.date < todayStr ? 'Job Overdue' : 'Needs Progress',
+          title: ev.title || 'Open job',
+          meta: `${ev.date || 'No date'} · ${ev.status === 'inprogress' ? 'Still in progress' : 'Still scheduled'}`
+        }))
+    ];
+
+    document.getElementById('workflowBadge').textContent = alerts.length ? `${alerts.length} ACTIVE` : 'ALL CLEAR';
+
+    const list = document.getElementById('workflowAlertList');
+    if (!alerts.length) {
+      list.innerHTML = '<div class="empty-state"><span>✓</span>Workflow is clear. No missing estimates, overdue tasks, or stalled jobs.</div>';
+      return;
+    }
+
+    list.innerHTML = alerts.map(alert => `
+      <div class="workflow-alert-item" data-level="${alert.level}">
+        <div class="workflow-alert-copy">
+          <div class="workflow-alert-title">${alert.title}</div>
+          <div class="workflow-alert-meta">${alert.meta}</div>
+        </div>
+        <div class="workflow-alert-pill ${alert.level}">${alert.pill}</div>
+      </div>
+    `).join('');
   }
 
   // ── TASKS ──
   function loadTasks() {
-    onSnapshot(collection(db,'tasks'), snap => {
-      allTasks = snap.docs.map(d => ({ id:d.id, ...d.data() }));
-      renderTasks();
-    });
+    ensureDashboardDataAccess();
   }
   function buildTabs(user) {
     const tabs    = document.getElementById('employeeTabs');
-    const isAdmin = ADMIN_UIDS.includes(user.uid);
+    const isAdmin = isAdminUser;
     tabs.innerHTML = `
       <button class="tab-btn active" data-emp="mine" onclick="switchTab(this)">My Tasks</button>
       ${isAdmin ? '<button class="tab-btn" data-emp="all" onclick="switchTab(this)">All Employees</button>' : ''}
@@ -944,6 +1744,7 @@
     } else {
       remindCard.style.display = 'none';
     }
+    updateWorkflowAlerts();
   }
   function buildCard(task) {
     const card = document.createElement('div');
@@ -965,6 +1766,7 @@
     return card;
   }
   window.addTask = async function(stage) {
+    if (!canManageTasks) return;
     const input = document.getElementById(`input-${stage}`);
     const text  = input.value.trim();
     if (!text || !currentUser) return;
@@ -972,10 +1774,10 @@
     input.value = '';
     document.getElementById(`btn-${stage}`).style.display = 'none';
   };
-  window.moveTask    = async (id, s) => updateDoc(doc(db,'tasks',id),{stage:s});
-  window.toggleCheck = async (id, s) => updateDoc(doc(db,'tasks',id),{stage:s==='done'?'todo':'done'});
+  window.moveTask    = async (id, s) => { if (!canManageTasks) return; await updateDoc(doc(db,'tasks',id),{stage:s}); };
+  window.toggleCheck = async (id, s) => { if (!canManageTasks) return; await updateDoc(doc(db,'tasks',id),{stage:s==='done'?'todo':'done'}); };
   window.allowDrop   = e => e.preventDefault();
-  window.dropTask    = async function(e, s) { e.preventDefault(); await updateDoc(doc(db,'tasks',e.dataTransfer.getData('text/plain')),{stage:s}); };
+  window.dropTask    = async function(e, s) { e.preventDefault(); if (!canManageTasks) return; await updateDoc(doc(db,'tasks',e.dataTransfer.getData('text/plain')),{stage:s}); };
   ['todo','inprog','done'].forEach(col => {
     const input = document.getElementById(`input-${col}`);
     const btn   = document.getElementById(`btn-${col}`);
@@ -985,6 +1787,8 @@
   });
 
   // ── ESTIMATES ─────────────────────────────────────────────────────
+
+  startDashboardClock();
 
   async function loadServicesForEstimate() {
     try {
@@ -1004,7 +1808,6 @@
   window.openEstimateFromEvent = function(eventId) {
     if (!canEstimate) return;
     // Find event from live data — events come from the snapshot
-    const eventItems = document.querySelectorAll('[data-event-id]');
     // Pull from DOM-stored data or re-query
     document.getElementById('est-event-id').value = eventId;
     // Pre-fill from what we have — event details are in the rendered DOM
@@ -1032,6 +1835,7 @@
 
   window.closeEstimateModal = function() {
     document.getElementById('estimateModal').classList.remove('open');
+    pendingCompletionEventId = '';
   };
 
   window.showServicePicker = function() {
@@ -1128,6 +1932,10 @@
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
+      if (pendingCompletionEventId && eventId === pendingCompletionEventId) {
+        await updateEventStatus(eventId, 'completed');
+        pendingCompletionEventId = '';
+      }
       estimateCounter = newNum;
       showDashEstMsg(status==='submitted' ? 'Estimate submitted! Jessica will review it.' : 'Draft saved.', 'success');
       setTimeout(() => closeEstimateModal(), 1500);
@@ -1141,10 +1949,13 @@
   function hideDashEstMsg() { document.getElementById('dash-est-msg').style.display = 'none'; }
 
   // Close modals on overlay click
-  ['estimateModal','svcPickerModal'].forEach(id => {
+  ['estimateModal','svcPickerModal','completeJobModal'].forEach(id => {
     document.getElementById(id).addEventListener('click', e => {
       if (e.target === document.getElementById(id)) document.getElementById(id).classList.remove('open');
     });
+  });
+  document.getElementById('completeJobModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('completeJobModal')) pendingCompletionEventId = '';
   });
 
   // ── HELPERS ──
