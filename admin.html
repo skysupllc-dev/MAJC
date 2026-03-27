@@ -1263,8 +1263,8 @@
           <div class="timeclock-board">
             <div class="panel" style="margin-bottom:0;">
               <div class="panel-header">
-                <div class="panel-title">TODAY'S PUNCH LOG</div>
-                <div class="panel-meta">Newest entries first - 24-hour timestamps</div>
+                <div class="panel-title">RECENT PUNCH LOG</div>
+                <div class="panel-meta" id="timeclockLogMeta">Today plus the previous 6 days - newest entries first</div>
               </div>
               <div class="timeclock-log" id="timeclockLog"></div>
             </div>
@@ -2687,6 +2687,27 @@
     return new Date(`${dateKey}T23:59:59`);
   }
 
+  function getTimeClockEditWindowStart(now = new Date()) {
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - 6);
+    return start;
+  }
+
+  function isTimeClockEditDateAllowed(dateValue, now = new Date()) {
+    if (!dateValue) return false;
+    const target = new Date(`${dateValue}T00:00:00`);
+    if (Number.isNaN(target.getTime())) return false;
+    const min = getTimeClockEditWindowStart(now);
+    const max = new Date(now);
+    max.setHours(23, 59, 59, 999);
+    return target >= min && target <= max;
+  }
+
+  function isTimeClockEntryEditable(entry, now = new Date()) {
+    return isTimeClockEditDateAllowed(entry?.date, now);
+  }
+
   function getTimeClockWeekSheetData(members, now = new Date()) {
     const weekDateKeys = getWeekDateKeys(now);
     const dailyTotals = weekDateKeys.map(() => 0);
@@ -2983,8 +3004,10 @@
     const members = getTimeClockMembers();
     const today = formatMilitaryDateTime(new Date()).date;
     const entriesToday = timeClockEntries.filter(entry => entry.date === today);
+    const recentEditEntries = timeClockEntries.filter(entry => isTimeClockEntryEditable(entry));
     const roster = document.getElementById('timeclockRoster');
     const log = document.getElementById('timeclockLog');
+    const logMeta = document.getElementById('timeclockLogMeta');
 
     if (!roster || !log) return;
 
@@ -3014,17 +3037,22 @@
         </div>`;
     }).join('') || '<div class="timeclock-empty">No employees available for time tracking.</div>';
 
-    log.innerHTML = entriesToday.map(entry => `
+    if (logMeta) {
+      const minDate = getLocalDateString(getTimeClockEditWindowStart());
+      logMeta.textContent = `Editable punches from ${minDate} through ${today} - newest entries first`;
+    }
+
+    log.innerHTML = recentEditEntries.map(entry => `
       <div class="timeclock-log-item">
         <div>
           <div class="timeclock-log-title">${entry.employeeName}</div>
-          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved to time clock</div>
+          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved for ${entry.date}</div>
         </div>
         <div class="timeclock-log-actions">
           <div class="timeclock-log-time">${entry.time24}</div>
           <button class="btn btn-secondary btn-sm" onclick="openEditTimeClockPunch('${entry.id}')">Edit</button>
         </div>
-      </div>`).join('') || '<div class="timeclock-empty">No punches have been recorded yet today.</div>';
+      </div>`).join('') || '<div class="timeclock-empty">No editable punches found in the last 7 days.</div>';
 
     const statIn = document.getElementById('timeclockStatIn');
     const statBreak = document.getElementById('timeclockStatBreak');
@@ -3112,10 +3140,19 @@
       showToast('Punch record not found', 'error');
       return;
     }
+    if (!isTimeClockEntryEditable(entry)) {
+      showToast('Only punches from the last 7 days can be edited', 'error');
+      return;
+    }
+    const minDate = getLocalDateString(getTimeClockEditWindowStart());
+    const maxDate = getLocalDateString(new Date());
     document.getElementById('timeclockEditId').value = entry.id;
     populateTimeClockMemberSelect('timeclockEditEmployee', entry.employeeUid || '');
     document.getElementById('timeclockEditAction').value = entry.action || 'clock-in';
-    document.getElementById('timeclockEditDate').value = entry.date || formatMilitaryDateTime(new Date()).date;
+    const editDateInput = document.getElementById('timeclockEditDate');
+    editDateInput.min = minDate;
+    editDateInput.max = maxDate;
+    editDateInput.value = entry.date || formatMilitaryDateTime(new Date()).date;
     document.getElementById('timeclockEditTime').value = (entry.time24 || '00:00:00').slice(0, 8);
     openModal('timeclockEditModal');
   };
@@ -3134,6 +3171,10 @@
 
     if (!id || !member || !date || !time24) {
       showToast('Complete all punch fields before saving', 'error');
+      return;
+    }
+    if (!isTimeClockEditDateAllowed(date)) {
+      showToast('Admins can only edit punches from the last 7 days', 'error');
       return;
     }
 
