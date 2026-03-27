@@ -1467,6 +1467,23 @@
     </div>
 
     <!-- ══ TASKS ══ -->
+    <div class="modal-overlay" id="pnlExpenseModal">
+      <div class="modal" style="max-width:760px;">
+        <div class="modal-title" id="pnlExpenseModalTitle">CATEGORY PURCHASES</div>
+        <div class="modal-sub" id="pnlExpenseModalSub">Recent purchases in this category.</div>
+        <div class="view-toggle" style="margin:12px 0 16px 0;">
+          <button class="view-toggle-btn active" id="pnlExpenseWeekBtn" onclick="switchPnlExpenseView('weekly', this)">This Week</button>
+          <button class="view-toggle-btn" id="pnlExpenseMonthBtn" onclick="switchPnlExpenseView('monthly', this)">This Month</button>
+        </div>
+        <div id="pnlExpenseModalBody">
+          <div style="text-align:center;color:var(--muted);padding:24px 0;">No purchases found.</div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closePnlExpenseModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <div class="page-section" id="section-tasks">
       <div class="page-header">
         <div>
@@ -2401,6 +2418,8 @@
   let adminTaskFilter = 'all';
   let timeClockLogDate = '';
   let pnlView = 'weekly';
+  let pnlExpenseModalCategory = '';
+  let pnlExpenseView = 'weekly';
   const activeListeners = {};
   const loadedSections = new Set();
   const ADMIN_UIDS = ['R29clFw9tZbJlQOTjs0kbY4z6sw1', 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2'];
@@ -3831,12 +3850,16 @@
   function getCRMErrorMessage(error) {
     if (!error) return 'Error saving CRM contact.';
     if (error.code === 'permission-denied') {
-      return 'CRM save blocked by Firestore permissions for this account.';
+      return 'CRM changes are only available for authorized owner accounts in the current Firestore rules.';
     }
     if (error.code === 'unavailable') {
       return 'CRM save is temporarily unavailable. Please try again.';
     }
     return error.message || 'Error saving CRM contact.';
+  }
+
+  function canEditCRM() {
+    return ADMIN_UIDS.includes(currentAdminUid || auth.currentUser?.uid || '');
   }
 
   function resetCRMModal() {
@@ -3851,11 +3874,19 @@
   }
 
   window.openCRMModal = function() {
+    if (!canEditCRM()) {
+      showToast('CRM editing is limited to owner accounts on this database', 'error');
+      return;
+    }
     resetCRMModal();
     openModal('crmModal');
   };
 
   window.openEditCRM = function(id) {
+    if (!canEditCRM()) {
+      showToast('CRM editing is limited to owner accounts on this database', 'error');
+      return;
+    }
     const contact = crmContacts.find(c => c.id === id);
     if (!contact) return;
     resetCRMModal();
@@ -3899,6 +3930,13 @@
     const errBox = document.getElementById('crmError');
     const btn = document.getElementById('crmSaveBtn');
     errBox.style.display = 'none';
+    if (!canEditCRM()) {
+      const message = 'CRM changes are limited to owner accounts on this database.';
+      errBox.textContent = message;
+      errBox.style.display = 'block';
+      showToast(message, 'error');
+      return;
+    }
     if (!firstName || !lastName) {
       errBox.textContent = 'First and last name are required.';
       errBox.style.display = 'block';
@@ -4492,6 +4530,92 @@
     }
   }
 
+  function getPnlExpenseDateRange(view = pnlExpenseView) {
+    const now2 = new Date();
+    if (view === 'monthly') {
+      const start = new Date(now2.getFullYear(), now2.getMonth(), 1).toISOString().split('T')[0];
+      const end   = new Date(now2.getFullYear(), now2.getMonth()+1, 0).toISOString().split('T')[0];
+      return { start, end, label: now2.toLocaleDateString('en-US',{month:'long',year:'numeric'}) };
+    }
+    const start = new Date(now2); start.setDate(now2.getDate() - now2.getDay());
+    const end   = new Date(start); end.setDate(start.getDate() + 6);
+    return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0], label: `Week of ${start.toLocaleDateString('en-US',{month:'short',day:'numeric'})}` };
+  }
+
+  function normalizeExpenseCategory(category) {
+    const trimmed = String(category || '').trim();
+    return trimmed || 'Other';
+  }
+
+  function getPnlExpenseTransactions(category) {
+    const { start, end } = getPnlExpenseDateRange();
+    if (!start || !end) return [];
+    return transactions
+      .filter(t => normalizeExpenseCategory(t.category) === category && t.date && t.date >= start && t.date <= end)
+      .sort((a, b) => (b.date || '').localeCompare(a.date || '') || Number(b.amount || 0) - Number(a.amount || 0));
+  }
+
+  function renderPnlExpenseCategoryModal() {
+    if (!pnlExpenseModalCategory) return;
+    const { label } = getPnlExpenseDateRange();
+    const category = pnlExpenseModalCategory;
+    const purchases = getPnlExpenseTransactions(category);
+    const titleEl = document.getElementById('pnlExpenseModalTitle');
+    const subEl = document.getElementById('pnlExpenseModalSub');
+    const bodyEl = document.getElementById('pnlExpenseModalBody');
+    if (!titleEl || !subEl || !bodyEl) return;
+
+    titleEl.textContent = `${category.toUpperCase()} PURCHASES`;
+    subEl.textContent = `Recent purchases in ${category} for ${label}.`;
+
+    if (!purchases.length) {
+      bodyEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 0;">No purchases found for ${category} in this range.</div>`;
+    } else {
+      bodyEl.innerHTML = `
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th></tr>
+          </thead>
+          <tbody>
+            ${purchases.map(t => `
+              <tr>
+                <td style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted)">${t.date || '-'}</td>
+                <td><strong>${t.desc || 'Expense'}</strong></td>
+                <td><span class="pill" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)">${normalizeExpenseCategory(t.category)}</span></td>
+                <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--danger);font-weight:600">-${fmt(t.amount)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    document.querySelectorAll('#pnlExpenseModal .view-toggle-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(pnlExpenseView === 'monthly' ? 'pnlExpenseMonthBtn' : 'pnlExpenseWeekBtn')?.classList.add('active');
+  }
+
+  window.openPnlExpenseCategoryModal = function(category) {
+    pnlExpenseModalCategory = category;
+    pnlExpenseView = 'weekly';
+    renderPnlExpenseCategoryModal();
+
+    openModal('pnlExpenseModal');
+  };
+
+  window.switchPnlExpenseView = function(view, btn) {
+    pnlExpenseView = view;
+    renderPnlExpenseCategoryModal();
+    if (btn) {
+      document.querySelectorAll('#pnlExpenseModal .view-toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  };
+
+  window.closePnlExpenseModal = function() {
+    pnlExpenseModalCategory = '';
+    closeModal('pnlExpenseModal');
+  };
+
   window.renderPnl = function() {
     const { start, end, label } = getPnlDateRange();
     document.getElementById('pnl-period-label').textContent = label;
@@ -4527,11 +4651,26 @@
       </div>`;
     }).join('');
 
-    const expenseCategories = ['Fuel','Maintenance','Payroll','Insurance','Equipment','Office / Admin','Other'];
+    const defaultExpenseOrder = ['Fuel','Maintenance','Payroll','Personal Pay','Insurance','Equipment','Office / Admin','Loan Payments','Other'];
+    const seenExpenseCategories = new Set();
+    const expenseCategories = [];
+    defaultExpenseOrder.forEach(cat => {
+      seenExpenseCategories.add(cat);
+      expenseCategories.push(cat);
+    });
+    filteredExpenses.forEach(t => {
+      const category = normalizeExpenseCategory(t.category);
+      if (!seenExpenseCategories.has(category)) {
+        seenExpenseCategories.add(category);
+        expenseCategories.push(category);
+      }
+    });
+
     document.getElementById('pnl-expense-breakdown').innerHTML = expenseCategories.map(cat => {
-      const total = filteredExpenses.filter(t=>t.category===cat).reduce((s,t)=>s+(t.amount||0),0);
+      const categoryPurchases = filteredExpenses.filter(t => normalizeExpenseCategory(t.category) === cat);
+      const total = categoryPurchases.reduce((s,t)=>s+(t.amount||0),0);
       const pct   = totalExpenses > 0 ? (total/totalExpenses*100).toFixed(0) : 0;
-      return `<div style="margin-bottom:12px;">
+      return `<div style="margin-bottom:12px;cursor:pointer;" onclick="openPnlExpenseCategoryModal('${cat.replace(/'/g, "\\'")}')">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
           <span style="font-size:0.82rem;font-weight:500;">${cat}</span>
           <span style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--danger);">${fmt(total)}</span>
@@ -4539,6 +4678,7 @@
         <div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:var(--danger);border-radius:3px;transition:width 0.3s;"></div>
         </div>
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">${categoryPurchases.length} recent purchase${categoryPurchases.length === 1 ? '' : 's'}</div>
       </div>`;
     }).join('');
   };
@@ -4771,4 +4911,3 @@
 </script>
 </body>
 </html>
-
