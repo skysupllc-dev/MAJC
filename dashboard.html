@@ -696,6 +696,10 @@
         <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--accent2);" id="modal-income-total">+$0.00</span>
       </div>
       <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--danger);">
+        <span style="font-size:0.85rem;color:var(--muted);">Bills This Month</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--danger);" id="modal-bills-total">-$0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--danger);">
         <span style="font-size:0.85rem;color:var(--muted);">Transactions Out</span>
         <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--danger);" id="modal-tx-total">−$0.00</span>
       </div>
@@ -1298,13 +1302,25 @@
       updateWorkflowAlerts();
     }, error => console.error('tasks listener:', error)));
 
-    if (ADMIN_UIDS.includes(currentUser?.uid)) {
+    if (canEstimate) {
       attachDashboardListener('estimates', () => onSnapshot(collection(db, 'estimates'), snap => {
         allEstimates = snap.docs.map(d => ({ id:d.id, ...d.data() }));
         updateJobStatus(allEvents);
         updateWorkflowAlerts();
       }, error => console.error('estimates listener:', error)));
 
+      attachDashboardListener('services', () => {
+        loadServicesForEstimate();
+        return () => {};
+      });
+
+      attachDashboardListener('estimateCounter', () => {
+        loadEstimateCounter();
+        return () => {};
+      });
+    }
+
+    if (canViewFinancials) {
       attachDashboardListener('bills', () => onSnapshot(collection(db, 'bills'), snap => {
         const bills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         allBills = bills;
@@ -1323,11 +1339,11 @@
         const lastDay = new Date(now2.getFullYear(), now2.getMonth()+1, 0).getDate();
         const monthStart = monthStr + '-01';
         const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
-        recentTx = snap.docs.map(d => d.data())
+        const monthTx = snap.docs.map(d => ({ id:d.id, ...d.data() }))
           .filter(t => t.date && t.date >= monthStart && t.date <= monthEnd)
-          .sort((a,b) => (b.date||'').localeCompare(a.date||''))
-          .slice(0, 8);
-        txTotal = recentTx.reduce((s,t) => s + (t.amount || 0), 0);
+          .sort((a,b) => (b.date||'').localeCompare(a.date||''));
+        recentTx = monthTx.slice(0, 8);
+        txTotal = monthTx.reduce((s,t) => s + (t.amount || 0), 0);
         updateAvailable();
       }, error => console.error('transactions listener:', error)));
 
@@ -1341,16 +1357,6 @@
         incomeTotal = monthIncome.reduce((s,i) => s+(i.amount||0), 0);
         updateAvailable();
       }, error => console.error('income listener:', error)));
-
-      attachDashboardListener('services', () => {
-        loadServicesForEstimate();
-        return () => {};
-      });
-
-      attachDashboardListener('estimateCounter', () => {
-        loadEstimateCounter();
-        return () => {};
-      });
     }
   }
 
@@ -1463,6 +1469,130 @@
       .sort((a, b) => a.daysAway - b.daysAway);
   }
 
+  function updateMonthlyBillCard(sourceBills) {
+    const unpaidThisMonth = (sourceBills || []).filter(b =>
+      b &&
+      b.status !== 'paid' &&
+      typeof b.dueDay === 'number' &&
+      b.dueDay >= 1 &&
+      b.dueDay <= 31
+    );
+    billsTotal = unpaidThisMonth.reduce((sum, bill) => sum + (bill.amount || 0), 0);
+
+    const billsEl = document.getElementById('glanceBillsRemaining');
+    const subEl = document.getElementById('glanceBillsRemainingSub');
+    if (billsEl) billsEl.textContent = fmt(billsTotal);
+    if (subEl) {
+      subEl.textContent = unpaidThisMonth.length
+        ? `${unpaidThisMonth.length} unpaid this month`
+        : 'No unpaid bills this month';
+    }
+
+    updateAvailable();
+  }
+
+  function renderToday() {
+    const todayEvents = getAccessibleEvents(allEvents)
+      .filter(e => e.date === todayStr)
+      .sort((a,b) => (a.time||'').localeCompare(b.time||''));
+
+    const list = document.getElementById('eventList');
+    if (!list) return;
+
+    if (!todayEvents.length) {
+      list.innerHTML = '<div class="empty-state"><span>📅</span>No events scheduled today.</div>';
+      document.getElementById('glanceEvents').textContent    = '0';
+      document.getElementById('glanceEventsSub').textContent = 'Nothing today';
+      return;
+    }
+
+    const statusClass = s => s==='inprogress'?'ev-inprogress':s==='completed'?'ev-completed':s==='cancelled'?'ev-cancelled':'ev-scheduled';
+    const statusLabel = s => s==='inprogress'?'In Progress':s==='completed'?'Completed':s==='cancelled'?'Cancelled':'Scheduled';
+
+    list.innerHTML = todayEvents.map(ev => `
+      <div class="event-item ${isMissingEstimateEvent(ev) ? 'workflow-danger' : isIncompleteWorkflowEvent(ev) ? 'workflow-warning' : ''}">
+        <div class="event-main">
+          <div class="event-time">${formatTime(ev.time)}</div>
+          <div class="event-body">
+            <div class="event-title-row">
+              <span class="event-title">${ev.title}</span>
+              <span class="event-status-pill ${statusClass(ev.status)}">${statusLabel(ev.status)}</span>
+            </div>
+            <div class="event-details">
+              ${ev.customer ? `<span class="event-detail">👤 ${ev.customer}${ev.phone?' · '+ev.phone:''}</span>` : ''}
+              ${ev.address  ? `<span class="event-detail">📍 ${ev.address}</span>` : ''}
+              ${ev.truck    ? `<span class="event-detail">🚛 ${ev.truck}</span>` : ''}
+              ${ev.driver   ? `<span class="event-detail">👷 ${ev.driver}</span>` : ''}
+              ${ev.notes    ? `<span class="event-detail">📝 ${ev.notes}</span>` : ''}
+            </div>
+            <div class="event-workflow-pills">
+              ${getEstimateForEvent(ev.id) ? '<span class="workflow-pill good">Estimate Linked</span>' : '<span class="workflow-pill warn">No Estimate</span>'}
+              ${isMissingEstimateEvent(ev) ? '<span class="workflow-pill danger">Follow-Up Needed</span>' : ''}
+              ${isIncompleteWorkflowEvent(ev) ? '<span class="workflow-pill warn">Incomplete Workflow</span>' : ''}
+            </div>
+            ${isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">Completed jobs should move into estimate follow-up before they fall out of sight.</div>' : ''}
+            ${isIncompleteWorkflowEvent(ev) && !isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">This job is still open for today or earlier and needs to keep moving through the workflow.</div>' : ''}
+          </div>
+        </div>
+        <div class="event-actions">
+          ${canEstimate && ev.status !== 'completed' && ev.status !== 'cancelled' ? `<button class="btn-event estimate" onclick="openEstimateFromEvent('${ev.id}')">📝 Create Estimate</button>` : ''}
+          ${canManageSchedule && ev.status === 'scheduled'  ? `<button class="btn-event inprog" onclick="updateEventStatus('${ev.id}','inprogress')">▶ Start Job</button>` : ''}
+          ${canManageSchedule && ev.status === 'inprogress' ? `<button class="btn-event done" onclick="requestEventCompletion('${ev.id}')">✓ Complete Job</button>` : ''}
+          ${canEstimate && isMissingEstimateEvent(ev) ? `<button class="btn-event followup" onclick="openEstimateFromEvent('${ev.id}')">Finish Estimate</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('glanceEvents').textContent    = todayEvents.length;
+    document.getElementById('glanceEventsSub').textContent =
+      `Next: ${todayEvents[0].title}${todayEvents[0].time ? ' @ '+formatTime(todayEvents[0].time) : ''}`;
+  }
+
+  function renderBills(sourceBills = allBills) {
+    const bills = sourceBills || [];
+    allBills = bills;
+    billsDueSoon = getBillsDueSoon(bills);
+    updateMonthlyBillCard(bills);
+
+    const dueToday = bills.filter(b => b.dueDay === todayDay);
+    const dueTodayTotal = dueToday.reduce((sum, bill) => sum + (bill.amount || 0), 0);
+    const list = document.getElementById('billList');
+    if (!list) return;
+
+    if (!dueToday.length) {
+      list.innerHTML = '<div class="empty-state"><span>✅</span>No bills due today!</div>';
+      document.getElementById('glanceBills').textContent    = '0';
+      document.getElementById('glanceBillsSub').textContent = 'Clear today';
+    } else {
+      list.innerHTML = dueToday.map(b => `
+        <div class="bill-item ${b.status==='paid'?'paid':'due-today'}">
+          <div>
+            <div class="bill-name">${b.name}</div>
+            <div class="bill-meta">${b.status==='paid'?'✓ Paid':'⚠ Due Today'} · ${capitalize(b.freq||'Monthly')}</div>
+          </div>
+          <div>
+            <div class="bill-amount ${b.status==='paid'?'paid':''}">${fmt(b.amount)}</div>
+            ${b.notes?`<div class="bill-status">${b.notes}</div>`:''}
+          </div>
+        </div>`).join('');
+      document.getElementById('glanceBills').textContent    = dueToday.length;
+      document.getElementById('glanceBillsSub').textContent = `${fmt(dueTodayTotal)} total due`;
+    }
+
+    document.getElementById('billsDetailSub').textContent = dueToday.length ? `${dueToday.length} bill${dueToday.length!==1?'s':''} — ${fmt(dueTodayTotal)} total` : 'No bills due today';
+    document.getElementById('bills-detail-list').innerHTML = dueToday.length ? dueToday.map(b => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid ${b.status==='paid'?'var(--accent2)':'var(--danger)'};">
+        <div>
+          <div style="font-size:0.88rem;font-weight:500;">${b.name}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:2px;">${b.status==='paid'?'✓ Paid':'Due Today'} · ${capitalize(b.freq||'Monthly')}</div>
+          ${b.notes?`<div style="font-size:0.72rem;color:var(--muted);">${b.notes}</div>`:''}
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:600;color:${b.status==='paid'?'var(--accent2)':'var(--danger)'};">${fmt(b.amount)}</div>
+      </div>`).join('') : '<div style="color:var(--muted);text-align:center;padding:20px;">No bills due today.</div>';
+
+    updateWorkflowAlerts();
+  }
+
   window.requestEventCompletion = function(eventId) {
     const ev = allEvents.find(item => item.id === eventId);
     if (!ev) return;
@@ -1565,9 +1695,10 @@
 
   window.openBalanceModal = function() {
     if (!canViewFinancials) return;
-    const available = startBalance + incomeTotal - txTotal;
+    const available = startBalance + incomeTotal - billsTotal - txTotal;
     document.getElementById('modal-starting').textContent      = fmt(startBalance);
     document.getElementById('modal-income-total').textContent  = `+${fmt(incomeTotal)}`;
+    document.getElementById('modal-bills-total').textContent   = `-${fmt(billsTotal)}`;
     document.getElementById('modal-tx-total').textContent      = `−${fmt(txTotal)}`;
     document.getElementById('modal-available').textContent     = fmt(available);
     document.getElementById('modal-available').style.color     = available >= 0 ? 'var(--accent2)' : 'var(--danger)';
@@ -1635,8 +1766,8 @@
       const bills    = snap.docs.map(d => ({ id:d.id, ...d.data() }));
       allBills       = bills;
       billsDueSoon   = getBillsDueSoon(bills);
+      updateMonthlyBillCard(bills);
       const dueToday = bills.filter(b => b.dueDay === todayDay);
-      billsTotal     = dueToday.reduce((s,b) => s+(b.amount||0), 0);
       const list     = document.getElementById('billList');
       if (!dueToday.length) {
         list.innerHTML = '<div class="empty-state"><span>✅</span>No bills due today!</div>';
@@ -1669,8 +1800,6 @@
           </div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:600;color:${b.status==='paid'?'var(--accent2)':'var(--danger)'};">${fmt(b.amount)}</div>
         </div>`).join('') : '<div style="color:var(--muted);text-align:center;padding:20px;">No bills due today.</div>';
-
-      updateAvailable();
       updateWorkflowAlerts();
     });
   }
@@ -1710,7 +1839,7 @@
     });
   }
   function updateAvailable() {
-    const available = startBalance + incomeTotal - txTotal;
+    const available = startBalance + incomeTotal - billsTotal - txTotal;
     const el = document.getElementById('glanceMoney');
     el.textContent = fmt(available);
     el.className = 'glance-value ' + (available >= 0 ? 'money' : 'danger');
