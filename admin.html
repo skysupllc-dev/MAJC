@@ -1604,6 +1604,18 @@
   </div>
 </div>
 
+<!-- DELETE BILL CONFIRM -->
+<div class="modal-overlay" id="billDeleteModal">
+  <div class="modal">
+    <div class="modal-title">DELETE BILL?</div>
+    <div class="modal-sub" id="billDeleteModalSub">This bill will be permanently removed.</div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="confirmDeleteBill()">Yes, Delete Bill</button>
+      <button class="btn btn-secondary" onclick="cancelDeleteBill()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD / EDIT EVENT -->
 <div class="modal-overlay" id="eventModal">
   <div class="modal" style="max-width:560px;">
@@ -2323,6 +2335,7 @@
   let adminTaskFilter = 'all';
   let pnlView = 'weekly';
   let billsResetInFlight = false;
+  let pendingBillDeleteId = '';
   const activeListeners = {};
   const loadedSections = new Set();
   const ADMIN_UIDS = ['R29clFw9tZbJlQOTjs0kbY4z6sw1', 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2'];
@@ -3152,21 +3165,31 @@
     });
     showToast('Bill restored','success');
   };
-  window.deleteBill = async (id) => {
+  window.deleteBill = function(id) {
     const bill = bills.find(item => item.id === id);
     if (!bill) {
       showToast('Bill not found', 'error');
       return;
     }
 
-    const confirmation = window.prompt(`Type the bill name to delete it:\n${bill.name}`);
-    if (confirmation === null) return;
-    if (confirmation.trim() !== bill.name) {
-      showToast('Bill name did not match. Delete cancelled.', 'error');
+    pendingBillDeleteId = id;
+    document.getElementById('billDeleteModalSub').textContent = `Delete "${bill.name}" and return to the bills screen?`;
+    openModal('billDeleteModal');
+  };
+  window.cancelDeleteBill = function() {
+    pendingBillDeleteId = '';
+    closeModal('billDeleteModal');
+  };
+  window.confirmDeleteBill = async function() {
+    if (!pendingBillDeleteId) {
+      closeModal('billDeleteModal');
       return;
     }
 
-    await deleteDoc(doc(db,'bills',id));
+    const billId = pendingBillDeleteId;
+    pendingBillDeleteId = '';
+    closeModal('billDeleteModal');
+    await deleteDoc(doc(db,'bills',billId));
     showToast('Bill removed','success');
   };
   function renderBills() {
@@ -3188,7 +3211,7 @@
         <td style="display:flex;gap:6px">
           <button class="btn btn-success btn-sm" onclick="markBillPaid('${b.id}')">✓ Paid</button>
           <button class="btn btn-secondary btn-sm" onclick="${isSkipped ? `unskipBill('${b.id}')` : `skipBill('${b.id}')`}">${isSkipped ? 'Unskip' : 'Skip'}</button>
-          <button class="btn btn-secondary btn-sm" onclick="deleteBill('${b.id}')" title="Requires typing the bill name to confirm">Delete...</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteBill('${b.id}')">Delete...</button>
         </td></tr>`;
     }).join('');
   }
