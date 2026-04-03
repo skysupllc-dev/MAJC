@@ -896,66 +896,6 @@
       background: var(--surface);
       font-size: 0.84rem;
     }
-    .timeclock-sheet-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--surface);
-    }
-    .timeclock-sheet {
-      width: 100%;
-      min-width: 860px;
-      border-collapse: collapse;
-    }
-    .timeclock-sheet th,
-    .timeclock-sheet td {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      text-align: center;
-      font-size: 0.82rem;
-      vertical-align: middle;
-    }
-    .timeclock-sheet th {
-      background: var(--card);
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .timeclock-sheet th:first-child,
-    .timeclock-sheet td:first-child {
-      text-align: left;
-      position: sticky;
-      left: 0;
-      z-index: 1;
-      background: inherit;
-    }
-    .timeclock-sheet th:first-child {
-      z-index: 2;
-      background: var(--card);
-    }
-    .timeclock-sheet td:first-child {
-      background: var(--surface);
-      font-weight: 600;
-      color: var(--text);
-    }
-    .timeclock-sheet tbody tr:hover td {
-      background: #fcfaf6;
-    }
-    .timeclock-sheet .timeclock-sheet-total-row td {
-      background: var(--accent-lt);
-      font-weight: 700;
-      color: var(--text);
-    }
-    .timeclock-sheet .timeclock-sheet-total-row td:first-child {
-      background: var(--accent-lt);
-    }
-    .timeclock-sheet-weekly {
-      color: var(--accent);
-      font-family: 'DM Mono', monospace;
-      letter-spacing: 0.6px;
-    }
     @media (max-width: 980px) {
       .timeclock-shell,
       .timeclock-board { grid-template-columns: 1fr; }
@@ -1088,7 +1028,7 @@
         <div class="stat-card green">
           <div class="stat-label">Available to Spend</div>
           <div class="stat-value" id="stat-available">$0.00</div>
-          <div class="stat-sub"></div>
+          <div class="stat-sub">What Matt sees</div>
         </div>
       </div>
 
@@ -1263,14 +1203,8 @@
           <div class="timeclock-board">
             <div class="panel" style="margin-bottom:0;">
               <div class="panel-header">
-                <div>
-                  <div class="panel-title">RECENT PUNCH LOG</div>
-                  <div class="panel-meta" id="timeclockLogMeta">Today plus the previous 6 days - newest entries first</div>
-                </div>
-                <div class="form-group" style="margin-bottom:0;min-width:180px;">
-                  <label class="form-label" for="timeclockLogDate">View Date</label>
-                  <input class="form-input" type="date" id="timeclockLogDate"/>
-                </div>
+                <div class="panel-title">TODAY'S PUNCH LOG</div>
+                <div class="panel-meta">Newest entries first - 24-hour timestamps</div>
               </div>
               <div class="timeclock-log" id="timeclockLog"></div>
             </div>
@@ -1281,19 +1215,6 @@
                 <div class="panel-meta" id="timeclockTeamMeta">0 employees tracked</div>
               </div>
               <div id="timeclockRoster"></div>
-            </div>
-          </div>
-
-          <div class="panel" style="margin-top:20px;margin-bottom:0;">
-            <div class="panel-header">
-              <div class="panel-title">WEEKLY HOURS SPREADSHEET</div>
-              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <div class="panel-meta" id="timeclockWeekMeta">Current week</div>
-                <button class="btn btn-secondary btn-sm" type="button" onclick="exportWeeklyTimeClockSheet()">Export CSV</button>
-              </div>
-            </div>
-            <div class="timeclock-sheet-wrap" id="timeclockWeeklySheetWrap">
-              <div class="timeclock-empty">Weekly totals will appear here as punches are recorded.</div>
             </div>
           </div>
         </div>
@@ -1467,23 +1388,6 @@
     </div>
 
     <!-- ══ TASKS ══ -->
-    <div class="modal-overlay" id="pnlExpenseModal">
-      <div class="modal" style="max-width:760px;">
-        <div class="modal-title" id="pnlExpenseModalTitle">CATEGORY PURCHASES</div>
-        <div class="modal-sub" id="pnlExpenseModalSub">Recent purchases in this category.</div>
-        <div class="view-toggle" style="margin:12px 0 16px 0;">
-          <button class="view-toggle-btn active" id="pnlExpenseWeekBtn" onclick="switchPnlExpenseView('weekly', this)">This Week</button>
-          <button class="view-toggle-btn" id="pnlExpenseMonthBtn" onclick="switchPnlExpenseView('monthly', this)">This Month</button>
-        </div>
-        <div id="pnlExpenseModalBody">
-          <div style="text-align:center;color:var(--muted);padding:24px 0;">No purchases found.</div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closePnlExpenseModal()">Close</button>
-        </div>
-      </div>
-    </div>
-
     <div class="page-section" id="section-tasks">
       <div class="page-header">
         <div>
@@ -2416,10 +2320,8 @@
   let weekOffset = 0, startingBalance = 0;
   let currentAdminUid = null;
   let adminTaskFilter = 'all';
-  let timeClockLogDate = '';
   let pnlView = 'weekly';
-  let pnlExpenseModalCategory = '';
-  let pnlExpenseView = 'weekly';
+  let billsResetInFlight = false;
   const activeListeners = {};
   const loadedSections = new Set();
   const ADMIN_UIDS = ['R29clFw9tZbJlQOTjs0kbY4z6sw1', 'EYlO9qTN6yVa5FXeYpj9t8CvIbr2'];
@@ -2513,8 +2415,9 @@
       showToast(getListenerErrorMessage('Transactions', error), 'error');
     }));
 
-    attachListener('bills', () => onSnapshot(collection(db, 'bills'), snap => {
+    attachListener('bills', () => onSnapshot(collection(db, 'bills'), async snap => {
       bills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      await resetBillsForNewMonth();
       renderBills();
       updateFinanceStats();
       document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b)).length;
@@ -2629,7 +2532,7 @@
     const { start, end } = getFinancesMonthRange();
 
     // Bills due this month: count each bill with a dueDay that falls in the month
-    const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31 && b.status !== 'paid');
+    const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31 && !isBillPaidThisMonth(b));
     const billsTotal = billsThisMonth.reduce((s, b) => s + (b.amount || 0), 0);
 
     // Transactions this month (filter by date field)
@@ -2670,6 +2573,62 @@
     return false;
   }
 
+  function getCurrentBillMonthKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function getBillTimestampDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value.toDate === 'function') return value.toDate();
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+
+  function getBillPaidMonthKey(bill) {
+    const paidAtDate = getBillTimestampDate(bill.paidAt);
+    if (paidAtDate) {
+      return `${paidAtDate.getFullYear()}-${String(paidAtDate.getMonth() + 1).padStart(2, '0')}`;
+    }
+    return typeof bill.paidMonth === 'string' ? bill.paidMonth : null;
+  }
+
+  function isBillPaidThisMonth(bill, monthKey = getCurrentBillMonthKey()) {
+    return bill.status === 'paid' && getBillPaidMonthKey(bill) === monthKey;
+  }
+
+  async function resetBillsForNewMonth() {
+    const currentMonthKey = getCurrentBillMonthKey();
+    const billsToReset = bills.filter(b => b.status === 'paid' && getBillPaidMonthKey(b) !== currentMonthKey);
+    if (!billsToReset.length || billsResetInFlight) return;
+
+    billsResetInFlight = true;
+    try {
+      await Promise.all(
+        billsToReset.map(bill =>
+          updateDoc(doc(db, 'bills', bill.id), {
+            status: 'active',
+            paidMonth: null,
+            paidAt: null
+          })
+        )
+      );
+
+      const billsToResetIds = new Set(billsToReset.map(bill => bill.id));
+      bills = bills.map(bill =>
+        billsToResetIds.has(bill.id)
+          ? { ...bill, status: 'active', paidMonth: null, paidAt: null }
+          : bill
+      );
+    } catch (error) {
+      console.error('Monthly bill reset failed:', error);
+      showToast('Unable to reset monthly bills automatically', 'error');
+    } finally {
+      billsResetInFlight = false;
+    }
+  }
+
   function fmt(n) { return '$' + Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
   function formatMilitaryDateTime(date) {
@@ -2687,164 +2646,6 @@
     const minutes = String(Math.floor((safe % 3600) / 60)).padStart(2, '0');
     return `${hours}:${minutes}`;
   }
-
-  function getLocalDateString(date = new Date()) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-  }
-
-  function getWeekStartLocal(date = new Date()) {
-    const d = new Date(date);
-    d.setHours(0,0,0,0);
-    d.setDate(d.getDate() - d.getDay());
-    return d;
-  }
-
-  function getWeekDateKeys(date = new Date()) {
-    const start = getWeekStartLocal(date);
-    return Array.from({ length: 7 }, (_, index) => {
-      const day = new Date(start);
-      day.setDate(start.getDate() + index);
-      return getLocalDateString(day);
-    });
-  }
-
-  function getDayCutoff(dateKey, now = new Date()) {
-    if (dateKey === getLocalDateString(now)) return now;
-    return new Date(`${dateKey}T23:59:59`);
-  }
-
-  function getTimeClockEditWindowStart(now = new Date()) {
-    const start = new Date(now);
-    start.setHours(0, 0, 0, 0);
-    start.setDate(start.getDate() - 6);
-    return start;
-  }
-
-  function isTimeClockEditDateAllowed(dateValue, now = new Date()) {
-    if (!dateValue) return false;
-    const target = new Date(`${dateValue}T00:00:00`);
-    if (Number.isNaN(target.getTime())) return false;
-    const min = getTimeClockEditWindowStart(now);
-    const max = new Date(now);
-    max.setHours(23, 59, 59, 999);
-    return target >= min && target <= max;
-  }
-
-  function isTimeClockEntryEditable(entry, now = new Date()) {
-    return isTimeClockEditDateAllowed(entry?.date, now);
-  }
-
-  function getSelectedTimeClockLogDate() {
-    const today = getLocalDateString();
-    return isTimeClockEditDateAllowed(timeClockLogDate) ? timeClockLogDate : today;
-  }
-
-  function getTimeClockWeekSheetData(members, now = new Date()) {
-    const weekDateKeys = getWeekDateKeys(now);
-    const dailyTotals = weekDateKeys.map(() => 0);
-    const rows = members.map(member => {
-      const history = getEmployeeTimeClockEntries(member.uid);
-      const dayCells = weekDateKeys.map((dateKey, index) => {
-        const dayEntries = history.filter(entry => entry.date === dateKey);
-        const totals = calculateTimeClockTotals(dayEntries, getDayCutoff(dateKey, now));
-        dailyTotals[index] += totals.workedMs;
-        return totals.workedMs;
-      });
-      const weeklyTotal = dayCells.reduce((sum, value) => sum + value, 0);
-      return { member, dayCells, weeklyTotal };
-    });
-    const weekGrandTotal = dailyTotals.reduce((sum, value) => sum + value, 0);
-    return { weekDateKeys, dailyTotals, rows, weekGrandTotal };
-  }
-
-  function formatWeekRangeLabel(dateKeys) {
-    if (!dateKeys.length) return 'Current week';
-    const start = new Date(`${dateKeys[0]}T00:00:00`);
-    const end = new Date(`${dateKeys[dateKeys.length - 1]}T00:00:00`);
-    const startLabel = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const endLabel = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    return `${startLabel} - ${endLabel}`;
-  }
-
-  function formatWeekdayLabel(dateKey) {
-    const day = new Date(`${dateKey}T00:00:00`);
-    return day.toLocaleDateString('en-US', { weekday: 'short' });
-  }
-
-  function renderTimeClockWeeklySheet(members, now = new Date()) {
-    const wrap = document.getElementById('timeclockWeeklySheetWrap');
-    const meta = document.getElementById('timeclockWeekMeta');
-    if (!wrap || !meta) return;
-
-    const { weekDateKeys, dailyTotals, rows, weekGrandTotal } = getTimeClockWeekSheetData(members, now);
-    meta.textContent = `${formatWeekRangeLabel(weekDateKeys)} - Sunday through Saturday`;
-
-    if (!members.length) {
-      wrap.innerHTML = '<div class="timeclock-empty">No employees available for weekly totals.</div>';
-      return;
-    }
-
-    wrap.innerHTML = `
-      <table class="timeclock-sheet">
-        <thead>
-          <tr>
-            <th>Employee</th>
-            ${weekDateKeys.map(dateKey => `<th>${formatWeekdayLabel(dateKey)}<br>${dateKey.slice(5)}</th>`).join('')}
-            <th>Week Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(row => `
-            <tr>
-              <td>${row.member.name}</td>
-              ${row.dayCells.map(value => `<td>${formatClockDuration(value)}</td>`).join('')}
-              <td class="timeclock-sheet-weekly">${formatClockDuration(row.weeklyTotal)}</td>
-            </tr>
-          `).join('')}
-          <tr class="timeclock-sheet-total-row">
-            <td>Daily Total</td>
-            ${dailyTotals.map(value => `<td>${formatClockDuration(value)}</td>`).join('')}
-            <td class="timeclock-sheet-weekly">${formatClockDuration(weekGrandTotal)}</td>
-          </tr>
-        </tbody>
-      </table>
-    `;
-  }
-
-  function escapeCsvValue(value) {
-    const text = String(value ?? '');
-    return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-  }
-
-  window.exportWeeklyTimeClockSheet = function() {
-    const members = getTimeClockMembers();
-    if (!members.length) {
-      showToast('No employees available to export', 'error');
-      return;
-    }
-
-    const { weekDateKeys, dailyTotals, rows, weekGrandTotal } = getTimeClockWeekSheetData(members);
-    const csvRows = [
-      ['Employee', ...weekDateKeys, 'Week Total'],
-      ...rows.map(row => [
-        row.member.name,
-        ...row.dayCells.map(value => formatClockDuration(value)),
-        formatClockDuration(row.weeklyTotal)
-      ]),
-      ['Daily Total', ...dailyTotals.map(value => formatClockDuration(value)), formatClockDuration(weekGrandTotal)]
-    ];
-
-    const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(',')).join('\n');
-    const fileLabel = `${weekDateKeys[0] || getLocalDateString()}_to_${weekDateKeys[weekDateKeys.length - 1] || getLocalDateString()}`;
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `MAJC-Weekly-Time-Sheet-${fileLabel}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Weekly time sheet exported', 'success');
-  };
 
   function getTimeClockMembers() {
     const core = [
@@ -2871,35 +2672,26 @@
     return timeClockEntries
       .filter(entry => entry.employeeUid === employeeUid)
       .sort((a, b) => {
-        const aTime = getTimeClockEntryTimestamp(a);
-        const bTime = getTimeClockEntryTimestamp(b);
+        const aTime = a.createdAt?.seconds ? a.createdAt.seconds * 1000 : (a.timestampMs || 0);
+        const bTime = b.createdAt?.seconds ? b.createdAt.seconds * 1000 : (b.timestampMs || 0);
         return aTime - bTime;
       });
   }
 
-  function getTimeClockEntryTimestamp(entry) {
-    if (!entry) return 0;
-    if (Number.isFinite(entry.timestampMs) && entry.timestampMs > 0) return entry.timestampMs;
-    if (entry.createdAt?.seconds) return entry.createdAt.seconds * 1000;
-    if (entry.date && entry.time24) {
-      const parsed = new Date(`${entry.date}T${entry.time24}`);
-      if (!Number.isNaN(parsed.getTime())) return parsed.getTime();
-    }
-    return 0;
-  }
-
-  function getTimeClockStatus(employeeUid, now = new Date()) {
+  function getTimeClockStatus(employeeUid) {
     const history = getEmployeeTimeClockEntries(employeeUid);
-    const todayKey = getLocalDateString(now);
-    const todayEntries = history.filter(entry => entry.date === todayKey);
-    const lastEntry = history[history.length - 1] || null;
+    let status = 'clocked-out';
+    let lastEntry = null;
 
-    if (!todayEntries.length) {
-      return { status: 'clocked-out', lastEntry, todayEntries };
-    }
+    history.forEach(entry => {
+      if (entry.action === 'clock-in') status = 'clocked-in';
+      if (entry.action === 'clock-out') status = 'clocked-out';
+      if (entry.action === 'break-out' && status === 'clocked-in') status = 'on-break';
+      if (entry.action === 'break-in' && status === 'on-break') status = 'clocked-in';
+      lastEntry = entry;
+    });
 
-    const totals = calculateTimeClockTotals(todayEntries, now);
-    return { status: totals.status || 'clocked-out', lastEntry, todayEntries };
+    return { status, lastEntry };
   }
 
   function calculateTimeClockTotals(entries, cutoff = new Date()) {
@@ -2911,7 +2703,7 @@
     let lastEntry = null;
 
     entries.forEach(entry => {
-      const ts = getTimeClockEntryTimestamp(entry);
+      const ts = entry.timestampMs || 0;
       if (!ts) return;
       if (entry.action === 'clock-in') {
         status = 'clocked-in';
@@ -2980,9 +2772,6 @@
     if (!select) return;
     const statusEl = document.getElementById('timeclockCurrentStatus');
     const noteEl = document.getElementById('timeclockCurrentNote');
-    const workedEl = document.getElementById('timeclockCurrentWorked');
-    const breakEl = document.getElementById('timeclockCurrentBreak');
-    if (!statusEl || !noteEl || !workedEl || !breakEl) return;
     const employeeUid = select.value;
     const member = getTimeClockMembers().find(item => item.uid === employeeUid);
 
@@ -2990,8 +2779,8 @@
       statusEl.className = 'timeclock-status clocked-out';
       statusEl.textContent = 'Clocked Out';
       noteEl.textContent = 'Select an employee to record a punch. All saved times use 24-hour format.';
-      workedEl.textContent = '00:00';
-      breakEl.textContent = '00:00';
+      document.getElementById('timeclockCurrentWorked').textContent = '00:00';
+      document.getElementById('timeclockCurrentBreak').textContent = '00:00';
       ['timeclockClockInBtn','timeclockClockOutBtn','timeclockBreakOutBtn','timeclockBreakInBtn'].forEach(id => {
         const btn = document.getElementById(id);
         if (btn) btn.disabled = true;
@@ -3004,8 +2793,8 @@
     const totals = calculateTimeClockTotals(todayEntries);
     statusEl.className = `timeclock-status ${status}`;
     statusEl.textContent = getTimeClockStatusLabel(status);
-    workedEl.textContent = formatClockDuration(totals.workedMs);
-    breakEl.textContent = formatClockDuration(totals.breakMs);
+    document.getElementById('timeclockCurrentWorked').textContent = formatClockDuration(totals.workedMs);
+    document.getElementById('timeclockCurrentBreak').textContent = formatClockDuration(totals.breakMs);
 
     if (lastEntry) {
       noteEl.textContent = `${member.name} last punched ${lastEntry.label || lastEntry.action} at ${lastEntry.time24} on ${lastEntry.date}.`;
@@ -3018,10 +2807,10 @@
     const breakOutBtn = document.getElementById('timeclockBreakOutBtn');
     const breakInBtn = document.getElementById('timeclockBreakInBtn');
 
-    if (clockInBtn) clockInBtn.disabled = status !== 'clocked-out';
-    if (clockOutBtn) clockOutBtn.disabled = status === 'clocked-out';
-    if (breakOutBtn) breakOutBtn.disabled = status !== 'clocked-in';
-    if (breakInBtn) breakInBtn.disabled = status !== 'on-break';
+    clockInBtn.disabled = status !== 'clocked-out';
+    clockOutBtn.disabled = status === 'clocked-out';
+    breakOutBtn.disabled = status !== 'clocked-in';
+    breakInBtn.disabled = status !== 'on-break';
   }
 
   function populateTimeClockEmployees() {
@@ -3044,24 +2833,12 @@
     const members = getTimeClockMembers();
     const today = formatMilitaryDateTime(new Date()).date;
     const entriesToday = timeClockEntries.filter(entry => entry.date === today);
-    const recentEditEntries = timeClockEntries.filter(entry => isTimeClockEntryEditable(entry));
-    const selectedLogDate = getSelectedTimeClockLogDate();
-    const entriesForSelectedDate = recentEditEntries.filter(entry => entry.date === selectedLogDate);
     const roster = document.getElementById('timeclockRoster');
     const log = document.getElementById('timeclockLog');
-    const logMeta = document.getElementById('timeclockLogMeta');
-    const logDateInput = document.getElementById('timeclockLogDate');
 
     if (!roster || !log) return;
 
     populateTimeClockEmployees();
-
-    if (logDateInput) {
-      const minDate = getLocalDateString(getTimeClockEditWindowStart());
-      logDateInput.min = minDate;
-      logDateInput.max = today;
-      logDateInput.value = selectedLogDate;
-    }
 
     let clockedIn = 0;
     let onBreak = 0;
@@ -3087,42 +2864,27 @@
         </div>`;
     }).join('') || '<div class="timeclock-empty">No employees available for time tracking.</div>';
 
-    if (logMeta) {
-      const minDate = getLocalDateString(getTimeClockEditWindowStart());
-      logMeta.textContent = `Select Date to Review Previous Punches`;
-    }
-
-    log.innerHTML = entriesForSelectedDate.map(entry => `
+    log.innerHTML = entriesToday.map(entry => `
       <div class="timeclock-log-item">
         <div>
           <div class="timeclock-log-title">${entry.employeeName}</div>
-          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved for ${entry.date}</div>
+          <div class="timeclock-log-meta">${getTimeClockActionLabel(entry.action)} saved to time clock</div>
         </div>
         <div class="timeclock-log-actions">
           <div class="timeclock-log-time">${entry.time24}</div>
           <button class="btn btn-secondary btn-sm" onclick="openEditTimeClockPunch('${entry.id}')">Edit</button>
         </div>
-      </div>`).join('') || `<div class="timeclock-empty">No editable punches found for ${selectedLogDate}.</div>`;
+      </div>`).join('') || '<div class="timeclock-empty">No punches have been recorded yet today.</div>';
 
-    const statIn = document.getElementById('timeclockStatIn');
-    const statBreak = document.getElementById('timeclockStatBreak');
-    const statOut = document.getElementById('timeclockStatOut');
-    const statPunches = document.getElementById('timeclockStatPunches');
-    const teamMeta = document.getElementById('timeclockTeamMeta');
-    const statLastPunch = document.getElementById('timeclockStatLastPunch');
+    document.getElementById('timeclockStatIn').textContent = clockedIn;
+    document.getElementById('timeclockStatBreak').textContent = onBreak;
+    document.getElementById('timeclockStatOut').textContent = clockedOut;
+    document.getElementById('timeclockStatPunches').textContent = entriesToday.length;
+    document.getElementById('timeclockTeamMeta').textContent = `${members.length} employees tracked`;
+    document.getElementById('timeclockStatLastPunch').textContent = entriesToday[0]
+      ? `Last: ${entriesToday[0].employeeName} at ${entriesToday[0].time24}`
+      : 'No punches yet';
 
-    if (statIn) statIn.textContent = clockedIn;
-    if (statBreak) statBreak.textContent = onBreak;
-    if (statOut) statOut.textContent = clockedOut;
-    if (statPunches) statPunches.textContent = entriesToday.length;
-    if (teamMeta) teamMeta.textContent = `${members.length} employees tracked`;
-    if (statLastPunch) {
-      statLastPunch.textContent = entriesToday[0]
-        ? `Last: ${entriesToday[0].employeeName} at ${entriesToday[0].time24}`
-        : 'No punches yet';
-    }
-
-    renderTimeClockWeeklySheet(members);
     updateTimeClockTerminal();
   }
 
@@ -3190,19 +2952,10 @@
       showToast('Punch record not found', 'error');
       return;
     }
-    if (!isTimeClockEntryEditable(entry)) {
-      showToast('Only punches from the last 7 days can be edited', 'error');
-      return;
-    }
-    const minDate = getLocalDateString(getTimeClockEditWindowStart());
-    const maxDate = getLocalDateString(new Date());
     document.getElementById('timeclockEditId').value = entry.id;
     populateTimeClockMemberSelect('timeclockEditEmployee', entry.employeeUid || '');
     document.getElementById('timeclockEditAction').value = entry.action || 'clock-in';
-    const editDateInput = document.getElementById('timeclockEditDate');
-    editDateInput.min = minDate;
-    editDateInput.max = maxDate;
-    editDateInput.value = entry.date || formatMilitaryDateTime(new Date()).date;
+    document.getElementById('timeclockEditDate').value = entry.date || formatMilitaryDateTime(new Date()).date;
     document.getElementById('timeclockEditTime').value = (entry.time24 || '00:00:00').slice(0, 8);
     openModal('timeclockEditModal');
   };
@@ -3221,10 +2974,6 @@
 
     if (!id || !member || !date || !time24) {
       showToast('Complete all punch fields before saving', 'error');
-      return;
-    }
-    if (!isTimeClockEditDateAllowed(date)) {
-      showToast('Admins can only edit punches from the last 7 days', 'error');
       return;
     }
 
@@ -3254,10 +3003,6 @@
   };
 
   document.getElementById('timeclockEmployeeSelect')?.addEventListener('change', updateTimeClockTerminal);
-  document.getElementById('timeclockLogDate')?.addEventListener('change', (event) => {
-    timeClockLogDate = event.target.value || '';
-    renderTimeClock();
-  });
   startTimeClockDisplay();
 
   window.saveBalance = async function() {
@@ -3356,7 +3101,14 @@
     showToast('Bill saved ✓','success');
     ['billName','billAmount','billDueDay','billNotes'].forEach(id => document.getElementById(id).value='');
   };
-  window.markBillPaid = async (id) => { await updateDoc(doc(db,'bills',id),{status:'paid'}); showToast('Marked as paid ✓','success'); };
+  window.markBillPaid = async (id) => {
+    await updateDoc(doc(db,'bills',id),{
+      status:'paid',
+      paidMonth:getCurrentBillMonthKey(),
+      paidAt:serverTimestamp()
+    });
+    showToast('Marked as paid ✓','success');
+  };
   window.deleteBill   = async (id) => { await deleteDoc(doc(db,'bills',id)); showToast('Bill removed','success'); };
   function renderBills() {
     const tbody  = document.getElementById('billTableBody');
@@ -3364,8 +3116,9 @@
     if (!sorted.length) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No bills added yet.</td></tr>'; return; }
     tbody.innerHTML = sorted.map(b => {
       const dueToday  = isDueThisWeek(b);
-      const pillClass = b.status==='paid' ? 'pill-paid' : dueToday ? 'pill-due' : 'pill-upcoming';
-      const pillLabel = b.status==='paid' ? '✓ Paid' : dueToday ? '⚠ Due Soon' : 'Upcoming';
+      const isPaid = isBillPaidThisMonth(b);
+      const pillClass = isPaid ? 'pill-paid' : dueToday ? 'pill-due' : 'pill-upcoming';
+      const pillLabel = isPaid ? '✓ Paid' : dueToday ? '⚠ Due Soon' : 'Upcoming';
       return `<tr>
         <td><strong>${b.name}</strong>${b.notes?`<div style="font-size:0.75rem;color:var(--muted);margin-top:2px">${b.notes}</div>`:''}</td>
         <td style="font-family:'DM Mono',monospace;font-weight:600">${fmt(b.amount)}</td>
@@ -3850,16 +3603,12 @@
   function getCRMErrorMessage(error) {
     if (!error) return 'Error saving CRM contact.';
     if (error.code === 'permission-denied') {
-      return 'CRM changes are only available for authorized owner accounts in the current Firestore rules.';
+      return 'CRM save blocked by Firestore permissions for this account.';
     }
     if (error.code === 'unavailable') {
       return 'CRM save is temporarily unavailable. Please try again.';
     }
     return error.message || 'Error saving CRM contact.';
-  }
-
-  function canEditCRM() {
-    return ADMIN_UIDS.includes(currentAdminUid || auth.currentUser?.uid || '');
   }
 
   function resetCRMModal() {
@@ -3874,19 +3623,11 @@
   }
 
   window.openCRMModal = function() {
-    if (!canEditCRM()) {
-      showToast('CRM editing is limited to owner accounts on this database', 'error');
-      return;
-    }
     resetCRMModal();
     openModal('crmModal');
   };
 
   window.openEditCRM = function(id) {
-    if (!canEditCRM()) {
-      showToast('CRM editing is limited to owner accounts on this database', 'error');
-      return;
-    }
     const contact = crmContacts.find(c => c.id === id);
     if (!contact) return;
     resetCRMModal();
@@ -3930,13 +3671,6 @@
     const errBox = document.getElementById('crmError');
     const btn = document.getElementById('crmSaveBtn');
     errBox.style.display = 'none';
-    if (!canEditCRM()) {
-      const message = 'CRM changes are limited to owner accounts on this database.';
-      errBox.textContent = message;
-      errBox.style.display = 'block';
-      showToast(message, 'error');
-      return;
-    }
     if (!firstName || !lastName) {
       errBox.textContent = 'First and last name are required.';
       errBox.style.display = 'block';
@@ -4530,92 +4264,6 @@
     }
   }
 
-  function getPnlExpenseDateRange(view = pnlExpenseView) {
-    const now2 = new Date();
-    if (view === 'monthly') {
-      const start = new Date(now2.getFullYear(), now2.getMonth(), 1).toISOString().split('T')[0];
-      const end   = new Date(now2.getFullYear(), now2.getMonth()+1, 0).toISOString().split('T')[0];
-      return { start, end, label: now2.toLocaleDateString('en-US',{month:'long',year:'numeric'}) };
-    }
-    const start = new Date(now2); start.setDate(now2.getDate() - now2.getDay());
-    const end   = new Date(start); end.setDate(start.getDate() + 6);
-    return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0], label: `Week of ${start.toLocaleDateString('en-US',{month:'short',day:'numeric'})}` };
-  }
-
-  function normalizeExpenseCategory(category) {
-    const trimmed = String(category || '').trim();
-    return trimmed || 'Other';
-  }
-
-  function getPnlExpenseTransactions(category) {
-    const { start, end } = getPnlExpenseDateRange();
-    if (!start || !end) return [];
-    return transactions
-      .filter(t => normalizeExpenseCategory(t.category) === category && t.date && t.date >= start && t.date <= end)
-      .sort((a, b) => (b.date || '').localeCompare(a.date || '') || Number(b.amount || 0) - Number(a.amount || 0));
-  }
-
-  function renderPnlExpenseCategoryModal() {
-    if (!pnlExpenseModalCategory) return;
-    const { label } = getPnlExpenseDateRange();
-    const category = pnlExpenseModalCategory;
-    const purchases = getPnlExpenseTransactions(category);
-    const titleEl = document.getElementById('pnlExpenseModalTitle');
-    const subEl = document.getElementById('pnlExpenseModalSub');
-    const bodyEl = document.getElementById('pnlExpenseModalBody');
-    if (!titleEl || !subEl || !bodyEl) return;
-
-    titleEl.textContent = `${category.toUpperCase()} PURCHASES`;
-    subEl.textContent = `Recent purchases in ${category} for ${label}.`;
-
-    if (!purchases.length) {
-      bodyEl.innerHTML = `<div style="text-align:center;color:var(--muted);padding:24px 0;">No purchases found for ${category} in this range.</div>`;
-    } else {
-      bodyEl.innerHTML = `
-        <table class="data-table">
-          <thead>
-            <tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th></tr>
-          </thead>
-          <tbody>
-            ${purchases.map(t => `
-              <tr>
-                <td style="font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted)">${t.date || '-'}</td>
-                <td><strong>${t.desc || 'Expense'}</strong></td>
-                <td><span class="pill" style="background:var(--bg);border:1px solid var(--border);color:var(--muted)">${normalizeExpenseCategory(t.category)}</span></td>
-                <td style="text-align:right;font-family:'DM Mono',monospace;color:var(--danger);font-weight:600">-${fmt(t.amount)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    document.querySelectorAll('#pnlExpenseModal .view-toggle-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(pnlExpenseView === 'monthly' ? 'pnlExpenseMonthBtn' : 'pnlExpenseWeekBtn')?.classList.add('active');
-  }
-
-  window.openPnlExpenseCategoryModal = function(category) {
-    pnlExpenseModalCategory = category;
-    pnlExpenseView = 'weekly';
-    renderPnlExpenseCategoryModal();
-
-    openModal('pnlExpenseModal');
-  };
-
-  window.switchPnlExpenseView = function(view, btn) {
-    pnlExpenseView = view;
-    renderPnlExpenseCategoryModal();
-    if (btn) {
-      document.querySelectorAll('#pnlExpenseModal .view-toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-  };
-
-  window.closePnlExpenseModal = function() {
-    pnlExpenseModalCategory = '';
-    closeModal('pnlExpenseModal');
-  };
-
   window.renderPnl = function() {
     const { start, end, label } = getPnlDateRange();
     document.getElementById('pnl-period-label').textContent = label;
@@ -4651,26 +4299,11 @@
       </div>`;
     }).join('');
 
-    const defaultExpenseOrder = ['Fuel','Maintenance','Payroll','Personal Pay','Insurance','Equipment','Office / Admin','Loan Payments','Other'];
-    const seenExpenseCategories = new Set();
-    const expenseCategories = [];
-    defaultExpenseOrder.forEach(cat => {
-      seenExpenseCategories.add(cat);
-      expenseCategories.push(cat);
-    });
-    filteredExpenses.forEach(t => {
-      const category = normalizeExpenseCategory(t.category);
-      if (!seenExpenseCategories.has(category)) {
-        seenExpenseCategories.add(category);
-        expenseCategories.push(category);
-      }
-    });
-
+    const expenseCategories = ['Fuel','Maintenance','Payroll','Insurance','Equipment','Office / Admin','Other'];
     document.getElementById('pnl-expense-breakdown').innerHTML = expenseCategories.map(cat => {
-      const categoryPurchases = filteredExpenses.filter(t => normalizeExpenseCategory(t.category) === cat);
-      const total = categoryPurchases.reduce((s,t)=>s+(t.amount||0),0);
+      const total = filteredExpenses.filter(t=>t.category===cat).reduce((s,t)=>s+(t.amount||0),0);
       const pct   = totalExpenses > 0 ? (total/totalExpenses*100).toFixed(0) : 0;
-      return `<div style="margin-bottom:12px;cursor:pointer;" onclick="openPnlExpenseCategoryModal('${cat.replace(/'/g, "\\'")}')">
+      return `<div style="margin-bottom:12px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
           <span style="font-size:0.82rem;font-weight:500;">${cat}</span>
           <span style="font-family:'DM Mono',monospace;font-size:0.82rem;color:var(--danger);">${fmt(total)}</span>
@@ -4678,7 +4311,6 @@
         <div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden;">
           <div style="height:100%;width:${pct}%;background:var(--danger);border-radius:3px;transition:width 0.3s;"></div>
         </div>
-        <div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">${categoryPurchases.length} recent purchase${categoryPurchases.length === 1 ? '' : 's'}</div>
       </div>`;
     }).join('');
   };
@@ -4881,13 +4513,8 @@
   window.showSection = function(name, el) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    const section = document.getElementById(`section-${name}`);
-    if (!section) {
-      console.error(`Section not found: ${name}`);
-      return;
-    }
-    section.classList.add('active');
-    if (el) el.classList.add('active');
+    document.getElementById(`section-${name}`).classList.add('active');
+    el.classList.add('active');
     ensureSectionData(name);
     if (name === 'schedule') renderCalendar();
     if (name === 'services') loadServices();
@@ -4897,8 +4524,8 @@
     if (name === 'finances') { updateFinancesMonthLabel(); updateFinanceStats(); renderTransactions(); }
   };
 
-  window.openModal  = (id) => document.getElementById(id)?.classList.add('open');
-  window.closeModal = (id) => document.getElementById(id)?.classList.remove('open');
+  window.openModal  = (id) => document.getElementById(id).classList.add('open');
+  window.closeModal = (id) => document.getElementById(id).classList.remove('open');
   document.querySelectorAll('.modal-overlay').forEach(o =>
     o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); }));
 
