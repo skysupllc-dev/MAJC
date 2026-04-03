@@ -3152,7 +3152,23 @@
     });
     showToast('Bill restored','success');
   };
-  window.deleteBill   = async (id) => { await deleteDoc(doc(db,'bills',id)); showToast('Bill removed','success'); };
+  window.deleteBill = async (id) => {
+    const bill = bills.find(item => item.id === id);
+    if (!bill) {
+      showToast('Bill not found', 'error');
+      return;
+    }
+
+    const confirmation = window.prompt(`Type the bill name to delete it:\n${bill.name}`);
+    if (confirmation === null) return;
+    if (confirmation.trim() !== bill.name) {
+      showToast('Bill name did not match. Delete cancelled.', 'error');
+      return;
+    }
+
+    await deleteDoc(doc(db,'bills',id));
+    showToast('Bill removed','success');
+  };
   function renderBills() {
     const tbody  = document.getElementById('billTableBody');
     const sorted = [...bills].sort((a,b)=>(a.dueDay||0)-(b.dueDay||0));
@@ -3172,7 +3188,7 @@
         <td style="display:flex;gap:6px">
           <button class="btn btn-success btn-sm" onclick="markBillPaid('${b.id}')">✓ Paid</button>
           <button class="btn btn-secondary btn-sm" onclick="${isSkipped ? `unskipBill('${b.id}')` : `skipBill('${b.id}')`}">${isSkipped ? 'Unskip' : 'Skip'}</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteBill('${b.id}')">Delete</button>
+          <button class="btn btn-secondary btn-sm" onclick="deleteBill('${b.id}')" title="Requires typing the bill name to confirm">Delete...</button>
         </td></tr>`;
     }).join('');
   }
