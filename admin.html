@@ -2522,7 +2522,7 @@
       await resetBillsForNewMonth();
       renderBills();
       updateFinanceStats();
-      document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b)).length;
+      document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b) && !isBillResolvedThisMonth(b)).length;
     }, error => {
       console.error('Bills listener error:', error);
       showToast(getListenerErrorMessage('Bills', error), 'error');
@@ -2634,7 +2634,7 @@
     const { start, end } = getFinancesMonthRange();
 
     // Bills due this month: count each bill with a dueDay that falls in the month
-    const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31 && !isBillPaidThisMonth(b));
+    const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31 && !isBillResolvedThisMonth(b));
     const billsTotal = billsThisMonth.reduce((s, b) => s + (b.amount || 0), 0);
 
     // Transactions this month (filter by date field)
@@ -2689,22 +2689,37 @@
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
-  function getBillPaidMonthKey(bill) {
+  function getBillResolvedMonthKey(bill) {
     const paidAtDate = getBillTimestampDate(bill.paidAt);
     if (paidAtDate) {
       return `${paidAtDate.getFullYear()}-${String(paidAtDate.getMonth() + 1).padStart(2, '0')}`;
     }
 
-    return typeof bill.paidMonth === 'string' ? bill.paidMonth : null;
+    const skippedAtDate = getBillTimestampDate(bill.skippedAt);
+    if (skippedAtDate) {
+      return `${skippedAtDate.getFullYear()}-${String(skippedAtDate.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    if (bill.status === 'paid' && typeof bill.paidMonth === 'string') return bill.paidMonth;
+    if (bill.status === 'skipped' && typeof bill.skippedMonth === 'string') return bill.skippedMonth;
+    return null;
   }
 
   function isBillPaidThisMonth(bill, monthKey = getCurrentBillMonthKey()) {
-    return bill.status === 'paid' && getBillPaidMonthKey(bill) === monthKey;
+    return bill.status === 'paid' && getBillResolvedMonthKey(bill) === monthKey;
+  }
+
+  function isBillSkippedThisMonth(bill, monthKey = getCurrentBillMonthKey()) {
+    return bill.status === 'skipped' && getBillResolvedMonthKey(bill) === monthKey;
+  }
+
+  function isBillResolvedThisMonth(bill, monthKey = getCurrentBillMonthKey()) {
+    return (bill.status === 'paid' || bill.status === 'skipped') && getBillResolvedMonthKey(bill) === monthKey;
   }
 
   async function resetBillsForNewMonth() {
     const currentMonthKey = getCurrentBillMonthKey();
-    const billsToReset = bills.filter(b => b.status === 'paid' && getBillPaidMonthKey(b) !== currentMonthKey);
+    const billsToReset = bills.filter(b => (b.status === 'paid' || b.status === 'skipped') && getBillResolvedMonthKey(b) !== currentMonthKey);
     if (!billsToReset.length || billsResetInFlight) return;
 
     billsResetInFlight = true;
@@ -2714,7 +2729,9 @@
           updateDoc(doc(db, 'bills', bill.id), {
             status: 'active',
             paidMonth: null,
-            paidAt: null
+            paidAt: null,
+            skippedMonth: null,
+            skippedAt: null
           })
         )
       );
@@ -2722,7 +2739,7 @@
       const billsToResetIds = new Set(billsToReset.map(bill => bill.id));
       bills = bills.map(bill => {
         if (billsToResetIds.has(bill.id)) {
-          return { ...bill, status: 'active', paidMonth: null, paidAt: null };
+          return { ...bill, status: 'active', paidMonth: null, paidAt: null, skippedMonth: null, skippedAt: null };
         }
 
         return bill;
@@ -3425,9 +3442,31 @@
     await updateDoc(doc(db,'bills',id),{
       status:'paid',
       paidMonth:getCurrentBillMonthKey(),
-      paidAt:serverTimestamp()
+      paidAt:serverTimestamp(),
+      skippedMonth:null,
+      skippedAt:null
     });
     showToast('Marked as paid ✓','success');
+  };
+  window.markBillSkipped = async (id) => {
+    await updateDoc(doc(db,'bills',id),{
+      status:'skipped',
+      skippedMonth:getCurrentBillMonthKey(),
+      skippedAt:serverTimestamp(),
+      paidMonth:null,
+      paidAt:null
+    });
+    showToast('Marked as skipped for this month','success');
+  };
+  window.markBillActive = async (id) => {
+    await updateDoc(doc(db,'bills',id),{
+      status:'active',
+      paidMonth:null,
+      paidAt:null,
+      skippedMonth:null,
+      skippedAt:null
+    });
+    showToast('Bill restored to unpaid','success');
   };
   window.resetAllBillsChecklist = async function() {
     if (!bills.length) {
@@ -3444,15 +3483,17 @@
           updateDoc(doc(db, 'bills', bill.id), {
             status: 'active',
             paidMonth: null,
-            paidAt: null
+            paidAt: null,
+            skippedMonth: null,
+            skippedAt: null
           })
         )
       );
 
-      bills = bills.map(bill => ({ ...bill, status: 'active', paidMonth: null, paidAt: null }));
+      bills = bills.map(bill => ({ ...bill, status: 'active', paidMonth: null, paidAt: null, skippedMonth: null, skippedAt: null }));
       renderBills();
       updateFinanceStats();
-      document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b)).length;
+      document.getElementById('billsBadge').textContent = bills.filter(b => isDueThisWeek(b) && !isBillResolvedThisMonth(b)).length;
       showToast('Bills checklist reset', 'success');
     } catch (error) {
       console.error('Manual bills reset failed:', error);
@@ -3467,16 +3508,20 @@
     tbody.innerHTML = sorted.map(b => {
       const dueToday  = isDueThisWeek(b);
       const isPaid = isBillPaidThisMonth(b);
-      const pillClass = isPaid ? 'pill-paid' : dueToday ? 'pill-due' : 'pill-upcoming';
-      const pillLabel = isPaid ? '✓ Paid' : dueToday ? '⚠ Due Soon' : 'Upcoming';
+      const isSkipped = isBillSkippedThisMonth(b);
+      const pillClass = isPaid ? 'pill-paid' : isSkipped ? 'pill-neutral' : dueToday ? 'pill-due' : 'pill-upcoming';
+      const pillLabel = isPaid ? '✓ Paid' : isSkipped ? 'Skipped' : dueToday ? '⚠ Due Soon' : 'Upcoming';
+      const actionButtons = isPaid || isSkipped
+        ? `<button class="btn btn-secondary btn-sm" onclick="markBillActive('${b.id}')">Mark Unpaid</button>`
+        : `<button class="btn btn-success btn-sm" onclick="markBillPaid('${b.id}')">✓ Paid</button><button class="btn btn-secondary btn-sm" onclick="markBillSkipped('${b.id}')">Skip</button>`;
       return `<tr>
         <td><strong>${b.name}</strong>${b.notes?`<div style="font-size:0.75rem;color:var(--muted);margin-top:2px">${b.notes}</div>`:''}</td>
         <td style="font-family:'DM Mono',monospace;font-weight:600">${fmt(b.amount)}</td>
         <td>Day ${b.dueDay} of month</td>
         <td style="text-transform:capitalize">${b.freq||'Monthly'}</td>
         <td><span class="pill ${pillClass}">${pillLabel}</span></td>
-        <td style="display:flex;gap:6px">
-          <button class="btn btn-success btn-sm" onclick="markBillPaid('${b.id}')">✓ Paid</button>
+        <td style="display:flex;gap:6px;flex-wrap:wrap">
+          ${actionButtons}
           <button class="btn btn-danger btn-sm" onclick="deleteBill('${b.id}')">Delete</button>
         </td></tr>`;
     }).join('');
