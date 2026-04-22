@@ -516,22 +516,43 @@
       <div class="timeclock-card-sub" id="glanceTimeClockLast">Tap to clock in, clock out, or manage breaks.</div>
       <div class="tap-hint">Tap to open time clock</div>
     </div>
-    <div class="glance-card clickable" id="maintenanceCard" onclick="window.location.href='admin.html#maintenance'">
-      <div class="glance-icon">MB</div>
-      <div class="glance-label">Maintenance Binder</div>
-      <div class="glance-value" id="glanceMaintenanceDue">—</div>
-      <div class="glance-sub" id="glanceMaintenanceSub">Checking annual inspections</div>
+    <div class="glance-card clickable" id="financeCard" onclick="openBalanceModal()">
+      <div class="glance-icon">💰</div>
+      <div class="glance-label">Available to Spend</div>
+      <div class="glance-value money" id="glanceMoney">$—</div>
+      <div class="glance-sub" id="glanceMoneySub">Set by Jessica</div>
       <div class="glance-supporting">
         <div>
-          <div class="glance-support-label">Recent Logs</div>
-          <div class="glance-support-value" id="glanceMaintenanceLogs">—</div>
+          <div class="glance-support-label">Today Balance</div>
+          <div class="glance-support-value" id="glanceMoneyToday">$—</div>
         </div>
         <div style="text-align:right;">
-          <div class="glance-support-label">Last Record</div>
-          <div class="glance-support-value" id="glanceMaintenanceLast">—</div>
+          <div class="glance-support-label">Bills Due Soon</div>
+          <div class="glance-support-value warn" id="glanceBillsSoon">Checking...</div>
         </div>
       </div>
-      <div class="tap-hint">Tap to open binder</div>
+      <div class="tap-hint">Tap for breakdown</div>
+    </div>
+    <div class="glance-card">
+      <div class="glance-icon">MT</div>
+      <div class="glance-label">Maintenance Budget</div>
+      <div class="glance-value warn" id="glanceMaintenanceBudget">$0.00</div>
+      <div class="glance-sub" id="glanceMaintenanceSub">No reserve set</div>
+      <div class="tap-hint">Updated from maintenance transactions</div>
+    </div>
+    <div class="glance-card clickable" id="billsTodayCard" onclick="openBillsModal()">
+      <div class="glance-icon">🔴</div>
+      <div class="glance-label">Bills Due Today</div>
+      <div class="glance-value danger" id="glanceBills">—</div>
+      <div class="glance-sub" id="glanceBillsSub">Checking...</div>
+      <div class="tap-hint">Tap to view all</div>
+    </div>
+    <div class="glance-card clickable" id="billsMonthCard" onclick="openBillsModal()">
+      <div class="glance-icon">📋</div>
+      <div class="glance-label">Bills Still Due This Month</div>
+      <div class="glance-value danger" id="glanceBillsRemaining">$—</div>
+      <div class="glance-sub" id="glanceBillsRemainingSub">Unpaid this month</div>
+      <div class="tap-hint">Tap to view all</div>
     </div>
     <div class="glance-card" id="remindMattCard" style="display:none;">
       <div class="glance-icon">🔔</div>
@@ -592,9 +613,9 @@
     </div>
   </div>
 
-  <!-- SCHEDULE -->
+  <!-- SCHEDULE + BILLS -->
   <div class="two-col">
-    <div>
+    <div id="billsPanelWrap">
       <div class="section-header">
         <div class="section-title">TODAY'S SCHEDULE</div>
         <div class="section-line"></div>
@@ -606,6 +627,20 @@
           <div class="shimmer"></div>
           <div class="shimmer" style="width:80%"></div>
           <div class="shimmer" style="width:60%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header">
+        <div class="section-title">BILLS DUE TODAY</div>
+        <div class="section-line"></div>
+        <div class="section-badge">AUTO-UPDATED</div>
+      </div>
+      <div class="panel">
+        <div id="billList">
+          <div class="shimmer"></div>
+          <div class="shimmer" style="width:70%"></div>
         </div>
       </div>
     </div>
@@ -652,6 +687,52 @@
 
   <div class="footer-note">MAJC · Managed by Jessica · Updates automatically every morning</div>
 </main>
+
+<!-- BALANCE BREAKDOWN MODAL -->
+<div class="modal-overlay" id="balanceDetailModal">
+  <div class="modal-dark" style="max-width:400px;">
+    <div class="modal-dark-title">AVAILABLE BALANCE</div>
+    <div class="modal-dark-sub">How this month's balance breaks down</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--accent2);">
+        <span style="font-size:0.85rem;color:var(--muted);">Starting Balance</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--accent2);" id="modal-starting">$0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--accent2);">
+        <span style="font-size:0.85rem;color:var(--muted);">Income This Month</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--accent2);" id="modal-income-total">+$0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--danger);">
+        <span style="font-size:0.85rem;color:var(--muted);">Transactions Out (non-maint.)</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--danger);" id="modal-tx-total">−$0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:12px;background:var(--surface);border-radius:6px;border-left:3px solid var(--accent);">
+        <span style="font-size:0.85rem;color:var(--muted);">Maintenance Reserve</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;color:var(--accent);" id="modal-maintenance-total">âˆ’$0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:14px;background:var(--card);border-radius:6px;border:1px solid var(--border);">
+        <span style="font-size:0.9rem;font-weight:600;">Available to Spend</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;" id="modal-available">$0.00</span>
+      </div>
+    </div>
+    <div id="modal-tx-list" style="max-height:220px;overflow-y:auto;margin-bottom:12px;"></div>
+    <div class="modal-dark-actions" style="margin-top:8px;">
+      <button class="btn-dark-secondary" onclick="document.getElementById('balanceDetailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- BILLS DETAIL MODAL -->
+<div class="modal-overlay" id="billsDetailModal">
+  <div class="modal-dark" style="max-width:400px;">
+    <div class="modal-dark-title">BILLS THIS MONTH</div>
+    <div class="modal-dark-sub" id="billsDetailSub">Loading...</div>
+    <div id="bills-detail-list" style="display:flex;flex-direction:column;gap:8px;max-height:440px;overflow-y:auto;"></div>
+    <div class="modal-dark-actions" style="margin-top:16px;">
+      <button class="btn-dark-secondary" onclick="document.getElementById('billsDetailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="timeClockModal">
   <div class="modal-dark timeclock-modal-body">
@@ -885,8 +966,15 @@
   let allEvents     = [];
   let allEstimates  = [];
   let allTasks      = [];
-  let maintenanceLogs = [];
-  let annualInspections = [];
+  let billsTotal    = 0;
+  let startBalance  = 0;
+  let maintenanceStartBalance = 0;
+  let maintenanceSpentTotal = 0;
+  let txTotal       = 0;
+  let incomeTotal   = 0;
+  let allBills      = [];
+  let billsDueSoon  = [];
+  let recentTx      = [];
   let dashLineItems = [];
   let allServices   = [];
   let currentRole   = 'limited';
@@ -923,14 +1011,17 @@
     canEstimate = isAdminUser || currentPermissions.estimates === true;
     canManageSchedule = isAdminUser || currentPermissions.schedule === true || currentRole === 'operator';
     canManageTasks = isAdminUser || currentRole === 'operator';
-    canViewFinancials = false;
+    canViewFinancials = isAdminUser;
     updateDashboardAccess();
     if (currentUser) buildTabs(currentUser);
   }
 
   function updateDashboardAccess() {
     document.getElementById('adminBtn').style.display = isAdminUser ? 'inline-block' : 'none';
-    document.getElementById('maintenanceCard').style.display = isAdminUser ? '' : 'none';
+    document.getElementById('financeCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsTodayCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsMonthCard').style.display = canViewFinancials ? '' : 'none';
+    document.getElementById('billsPanelWrap').style.display = canViewFinancials ? '' : 'none';
     ['input-todo','input-inprog','input-done','btn-todo','btn-inprog','btn-done'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = canManageTasks ? '' : 'none';
@@ -1220,12 +1311,49 @@
       updateWorkflowAlerts();
     }, error => console.error('tasks listener:', error)));
 
-    if (canEstimate) {
+    if (ADMIN_UIDS.includes(currentUser?.uid)) {
       attachDashboardListener('estimates', () => onSnapshot(collection(db, 'estimates'), snap => {
         allEstimates = snap.docs.map(d => ({ id:d.id, ...d.data() }));
         updateJobStatus(allEvents);
         updateWorkflowAlerts();
       }, error => console.error('estimates listener:', error)));
+
+      attachDashboardListener('bills', () => onSnapshot(collection(db, 'bills'), snap => {
+        const bills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allBills = bills;
+        renderBills(bills);
+        updateMonthlyBillCard(bills);
+      }, error => console.error('bills listener:', error)));
+
+      attachDashboardListener('finances.balance', () => onSnapshot(doc(db,'finances','balance'), snap => {
+        startBalance = snap.exists() ? (snap.data().amount || 0) : 0;
+        updateAvailable();
+      }, error => console.error('finances listener:', error)));
+
+      attachDashboardListener('transactions', () => onSnapshot(collection(db,'transactions'), snap => {
+        const now2 = new Date();
+        const monthStr = now2.toISOString().slice(0,7);
+        const lastDay = new Date(now2.getFullYear(), now2.getMonth()+1, 0).getDate();
+        const monthStart = monthStr + '-01';
+        const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
+        recentTx = snap.docs.map(d => d.data())
+          .filter(t => t.date && t.date >= monthStart && t.date <= monthEnd)
+          .sort((a,b) => (b.date||'').localeCompare(a.date||''))
+          .slice(0, 8);
+        txTotal = recentTx.reduce((s,t) => s + (t.amount || 0), 0);
+        updateAvailable();
+      }, error => console.error('transactions listener:', error)));
+
+      attachDashboardListener('income', () => onSnapshot(collection(db,'income'), snap => {
+        const now2 = new Date();
+        const monthStr = now2.toISOString().slice(0,7);
+        const lastDay = new Date(now2.getFullYear(), now2.getMonth()+1, 0).getDate();
+        const monthStart = monthStr + '-01';
+        const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
+        const monthIncome = snap.docs.map(d => d.data()).filter(i => i.date && i.date >= monthStart && i.date <= monthEnd);
+        incomeTotal = monthIncome.reduce((s,i) => s+(i.amount||0), 0);
+        updateAvailable();
+      }, error => console.error('income listener:', error)));
 
       attachDashboardListener('services', () => {
         loadServicesForEstimate();
@@ -1236,32 +1364,6 @@
         loadEstimateCounter();
         return () => {};
       });
-    }
-
-    if (isAdminUser) {
-      attachDashboardListener('maintenanceLogs', () => onSnapshot(
-        collection(db, 'maintenanceLogs'),
-        snap => {
-          maintenanceLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          renderMaintenanceStatus();
-        },
-        error => {
-          console.error('maintenance logs listener:', error);
-          renderMaintenanceUnavailable();
-        }
-      ));
-
-      attachDashboardListener('annualInspections', () => onSnapshot(
-        collection(db, 'annualInspections'),
-        snap => {
-          annualInspections = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          renderMaintenanceStatus();
-        },
-        error => {
-          console.error('annual inspections listener:', error);
-          renderMaintenanceUnavailable();
-        }
-      ));
     }
   }
 
@@ -1358,108 +1460,48 @@
     return ev.status === 'completed' && !getEstimateForEvent(ev.id);
   }
 
-  function parseDateValue(value) {
+  function getCurrentBillMonthKey() {
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function getBillTimestampDate(value) {
     if (!value) return null;
+    if (value instanceof Date) return value;
     if (typeof value.toDate === 'function') return value.toDate();
-    const parsed = new Date(`${value}T00:00:00`);
+    const parsed = new Date(value);
     return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
-  function getAnnualInspectionDueCount() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const soon = new Date(today);
-    soon.setDate(today.getDate() + 30);
-    return annualInspections.filter(record => {
-      const due = parseDateValue(record.nextDue);
-      return due && due <= soon;
-    }).length;
-  }
-
-  function renderMaintenanceUnavailable() {
-    document.getElementById('glanceMaintenanceDue').textContent = '—';
-    document.getElementById('glanceMaintenanceSub').textContent = 'Binder unavailable for this account';
-    document.getElementById('glanceMaintenanceLogs').textContent = '—';
-    document.getElementById('glanceMaintenanceLast').textContent = '—';
-  }
-
-  function renderMaintenanceStatus() {
-    const dueCount = getAnnualInspectionDueCount();
-    const recentCutoff = new Date();
-    recentCutoff.setDate(recentCutoff.getDate() - 30);
-    recentCutoff.setHours(0, 0, 0, 0);
-    const recentLogs = maintenanceLogs.filter(log => {
-      const logged = parseDateValue(log.date);
-      return logged && logged >= recentCutoff;
-    });
-    const latestLog = [...maintenanceLogs]
-      .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))[0];
-
-    const dueEl = document.getElementById('glanceMaintenanceDue');
-    dueEl.textContent = dueCount;
-    dueEl.className = `glance-value ${dueCount ? 'danger' : ''}`;
-    document.getElementById('glanceMaintenanceSub').textContent = dueCount
-      ? 'Annual inspection due soon'
-      : 'Annual inspections current';
-    document.getElementById('glanceMaintenanceLogs').textContent = `${recentLogs.length} in 30d`;
-    document.getElementById('glanceMaintenanceLast').textContent = latestLog?.date || 'None';
-  }
-
-  function renderToday() {
-    const todayEvents = getAccessibleEvents(allEvents)
-      .filter(e => e.date === todayStr)
-      .sort((a,b) => (a.time||'').localeCompare(b.time||''));
-
-    const list = document.getElementById('eventList');
-    if (!list) return;
-
-    if (!todayEvents.length) {
-      list.innerHTML = '<div class="empty-state"><span>📅</span>No events scheduled today.</div>';
-      document.getElementById('glanceEvents').textContent    = '0';
-      document.getElementById('glanceEventsSub').textContent = 'Nothing today';
-      return;
+  function getBillStatusMonthKey(bill, status) {
+    const timestampField = status === 'paid' ? 'paidAt' : 'skippedAt';
+    const monthField = status === 'paid' ? 'paidMonth' : 'skipMonth';
+    const statusDate = getBillTimestampDate(bill[timestampField]);
+    if (statusDate) {
+      return `${statusDate.getFullYear()}-${String(statusDate.getMonth() + 1).padStart(2, '0')}`;
     }
+    return typeof bill[monthField] === 'string' ? bill[monthField] : null;
+  }
 
-    const statusClass = s => s==='inprogress'?'ev-inprogress':s==='completed'?'ev-completed':s==='cancelled'?'ev-cancelled':'ev-scheduled';
-    const statusLabel = s => s==='inprogress'?'In Progress':s==='completed'?'Completed':s==='cancelled'?'Cancelled':'Scheduled';
+  function isBillHandledThisMonth(bill, monthKey = getCurrentBillMonthKey()) {
+    if (bill.status === 'paid') return getBillStatusMonthKey(bill, 'paid') === monthKey;
+    if (bill.status === 'skipped') return getBillStatusMonthKey(bill, 'skipped') === monthKey;
+    return false;
+  }
 
-    list.innerHTML = todayEvents.map(ev => `
-      <div class="event-item ${isMissingEstimateEvent(ev) ? 'workflow-danger' : isIncompleteWorkflowEvent(ev) ? 'workflow-warning' : ''}">
-        <div class="event-main">
-          <div class="event-time">${formatTime(ev.time)}</div>
-          <div class="event-body">
-            <div class="event-title-row">
-              <span class="event-title">${ev.title}</span>
-              <span class="event-status-pill ${statusClass(ev.status)}">${statusLabel(ev.status)}</span>
-            </div>
-            <div class="event-details">
-              ${ev.customer ? `<span class="event-detail">👤 ${ev.customer}${ev.phone?' · '+ev.phone:''}</span>` : ''}
-              ${ev.address  ? `<span class="event-detail">📍 ${ev.address}</span>` : ''}
-              ${ev.truck    ? `<span class="event-detail">🚛 ${ev.truck}</span>` : ''}
-              ${ev.driver   ? `<span class="event-detail">👷 ${ev.driver}</span>` : ''}
-              ${ev.notes    ? `<span class="event-detail">📝 ${ev.notes}</span>` : ''}
-            </div>
-            <div class="event-workflow-pills">
-              ${getEstimateForEvent(ev.id) ? '<span class="workflow-pill good">Estimate Linked</span>' : '<span class="workflow-pill warn">No Estimate</span>'}
-              ${isMissingEstimateEvent(ev) ? '<span class="workflow-pill danger">Follow-Up Needed</span>' : ''}
-              ${isIncompleteWorkflowEvent(ev) ? '<span class="workflow-pill warn">Incomplete Workflow</span>' : ''}
-            </div>
-            ${isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">Completed jobs should move into estimate follow-up before they fall out of sight.</div>' : ''}
-            ${isIncompleteWorkflowEvent(ev) && !isMissingEstimateEvent(ev) ? '<div class="event-workflow-note">This job is still open for today or earlier and needs to keep moving through the workflow.</div>' : ''}
-          </div>
-        </div>
-        <div class="event-actions">
-          ${canEstimate && ev.status !== 'completed' && ev.status !== 'cancelled' ? `<button class="btn-event estimate" onclick="openEstimateFromEvent('${ev.id}')">📝 Create Estimate</button>` : ''}
-          ${canManageSchedule && ev.status === 'scheduled'  ? `<button class="btn-event inprog" onclick="updateEventStatus('${ev.id}','inprogress')">▶ Start Job</button>` : ''}
-          ${canManageSchedule && ev.status === 'inprogress' ? `<button class="btn-event done" onclick="requestEventCompletion('${ev.id}')">✓ Complete Job</button>` : ''}
-          ${canEstimate && isMissingEstimateEvent(ev) ? `<button class="btn-event followup" onclick="openEstimateFromEvent('${ev.id}')">Finish Estimate</button>` : ''}
-        </div>
-      </div>
-    `).join('');
-
-    document.getElementById('glanceEvents').textContent    = todayEvents.length;
-    document.getElementById('glanceEventsSub').textContent =
-      `Next: ${todayEvents[0].title}${todayEvents[0].time ? ' @ '+formatTime(todayEvents[0].time) : ''}`;
+  function getBillsDueSoon(sourceBills) {
+    return (sourceBills || [])
+      .filter(b => !isBillHandledThisMonth(b) && typeof b.dueDay === 'number')
+      .map(b => {
+        let dueDate = new Date(now.getFullYear(), now.getMonth(), b.dueDay);
+        if (dueDate < new Date(`${todayStr}T00:00:00`)) {
+          dueDate = new Date(now.getFullYear(), now.getMonth() + 1, b.dueDay);
+        }
+        const dateStr = dueDate.toISOString().split('T')[0];
+        const daysAway = Math.round((dueDate - new Date(`${todayStr}T00:00:00`)) / 86400000);
+        return { ...b, nextDueDate: dateStr, daysAway };
+      })
+      .filter(b => b.daysAway >= 0 && b.daysAway <= 7)
+      .sort((a, b) => a.daysAway - b.daysAway);
   }
 
   window.requestEventCompletion = function(eventId) {
@@ -1564,11 +1606,12 @@
 
   window.openBalanceModal = function() {
     if (!canViewFinancials) return;
-    const available = startBalance + incomeTotal - billsTotal - txTotal;
+    const nonMaintenanceTxTotal = txTotal - maintenanceSpentTotal;
+    const available = startBalance + incomeTotal - nonMaintenanceTxTotal - maintenanceStartBalance;
     document.getElementById('modal-starting').textContent      = fmt(startBalance);
     document.getElementById('modal-income-total').textContent  = `+${fmt(incomeTotal)}`;
-    document.getElementById('modal-bills-total').textContent   = `-${fmt(billsTotal)}`;
-    document.getElementById('modal-tx-total').textContent      = `−${fmt(txTotal)}`;
+    document.getElementById('modal-tx-total').textContent      = `−${fmt(nonMaintenanceTxTotal)}`;
+    document.getElementById('modal-maintenance-total').textContent = `−${fmt(maintenanceStartBalance)}`;
     document.getElementById('modal-available').textContent     = fmt(available);
     document.getElementById('modal-available').style.color     = available >= 0 ? 'var(--accent2)' : 'var(--danger)';
 
@@ -1601,6 +1644,13 @@
     });
   });
 
+  // Close detail modals on overlay click
+  ['balanceDetailModal','billsDetailModal'].forEach(id => {
+    document.getElementById(id).addEventListener('click', e => {
+      if (e.target === document.getElementById(id)) document.getElementById(id).classList.remove('open');
+    });
+  });
+
   // ── JOB STATUS ──
   function updateJobStatus(allEvents) {
     const visibleEvents = getAccessibleEvents(allEvents);
@@ -1628,8 +1678,8 @@
       const bills    = snap.docs.map(d => ({ id:d.id, ...d.data() }));
       allBills       = bills;
       billsDueSoon   = getBillsDueSoon(bills);
-      updateMonthlyBillCard(bills);
-      const dueToday = bills.filter(b => b.dueDay === todayDay);
+      const dueToday = bills.filter(b => b.dueDay === todayDay && !isBillHandledThisMonth(b));
+      billsTotal     = dueToday.reduce((s,b) => s+(b.amount||0), 0);
       const list     = document.getElementById('billList');
       if (!dueToday.length) {
         list.innerHTML = '<div class="empty-state"><span>✅</span>No bills due today!</div>';
@@ -1662,13 +1712,24 @@
           </div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:600;color:${b.status==='paid'?'var(--accent2)':'var(--danger)'};">${fmt(b.amount)}</div>
         </div>`).join('') : '<div style="color:var(--muted);text-align:center;padding:20px;">No bills due today.</div>';
+
+      updateAvailable();
       updateWorkflowAlerts();
     });
   }
 
   function loadBalance() {
-    onSnapshot(doc(db,'finances','balance'), snap => {
-      startBalance = snap.exists() ? (snap.data().amount||0) : 0;
+    onSnapshot(collection(db,'finances'), snap => {
+      const currentMonthKey = getCurrentBillMonthKey();
+      startBalance = 0;
+      maintenanceStartBalance = 0;
+      snap.docs.forEach(d => {
+        if (d.id === 'balance') {
+          startBalance = d.data().amount || 0;
+        } else if (d.id === `maintenance-${currentMonthKey}`) {
+          maintenanceStartBalance = d.data().amount || 0;
+        }
+      });
       updateAvailable();
     });
   }
@@ -1681,6 +1742,9 @@
       const monthEnd   = monthStr + '-' + String(lastDay).padStart(2,'0');
       const monthTx = snap.docs.map(d => d.data()).filter(t => t.date && t.date >= monthStart && t.date <= monthEnd);
       txTotal = monthTx.reduce((s,t) => s+(t.amount||0), 0);
+      maintenanceSpentTotal = monthTx
+        .filter(t => (t.category || '').toLowerCase() === 'maintenance')
+        .reduce((s,t) => s + (t.amount || 0), 0);
       recentTx = snap.docs.map(d => ({id:d.id,...d.data()}))
         .filter(t => t.date && t.date >= monthStart && t.date <= monthEnd)
         .sort((a,b) => (b.date||'').localeCompare(a.date||''))
@@ -1701,12 +1765,20 @@
     });
   }
   function updateAvailable() {
-    const available = startBalance + incomeTotal - billsTotal - txTotal;
+    const nonMaintenanceTxTotal = txTotal - maintenanceSpentTotal;
+    const available = startBalance + incomeTotal - nonMaintenanceTxTotal - maintenanceStartBalance;
+    const maintenanceRemaining = maintenanceStartBalance - maintenanceSpentTotal;
     const el = document.getElementById('glanceMoney');
     el.textContent = fmt(available);
     el.className = 'glance-value ' + (available >= 0 ? 'money' : 'danger');
     document.getElementById('glanceMoneyToday').textContent = fmt(available);
     document.getElementById('glanceMoneySub').textContent = available >= 0 ? 'Ready for active jobs today' : 'Review spending before new purchases';
+    const maintenanceEl = document.getElementById('glanceMaintenanceBudget');
+    maintenanceEl.textContent = fmt(maintenanceRemaining);
+    maintenanceEl.className = 'glance-value ' + (maintenanceRemaining >= 0 ? 'warn' : 'danger');
+    document.getElementById('glanceMaintenanceSub').textContent = maintenanceStartBalance > 0
+      ? `Started ${fmt(maintenanceStartBalance)} · Spent ${fmt(maintenanceSpentTotal)}`
+      : 'No reserve set';
 
     const soonAmount = billsDueSoon.reduce((sum, bill) => sum + (bill.amount || 0), 0);
     const soonEl = document.getElementById('glanceBillsSoon');
