@@ -150,7 +150,23 @@
       border-left-color: var(--accent);
       color: var(--accent);
     }
-    .nav-item .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .nav-item .nav-icon {
+      width: 22px;
+      min-width: 22px;
+      height: 22px;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      color: inherit;
+      background: rgba(255,255,255,0.45);
+    }
+    .nav-item.active .nav-icon { border-color: var(--accent); background: rgba(176,107,37,0.08); }
     .nav-badge {
       margin-left: auto;
       background: var(--danger);
@@ -473,6 +489,45 @@
     .status-dot.idle   { background: var(--muted); }
     .status-dot.maint  { background: var(--danger); }
 
+    /* Maintenance Binder */
+    .binder-toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; margin-bottom: 18px; }
+    .binder-toolbar .form-group { min-width: 150px; flex: 1; }
+    .binder-check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .binder-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .binder-check input { width: 15px; height: 15px; accent-color: var(--accent); }
+    .binder-log-title { font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .binder-log-meta { display: flex; flex-wrap: wrap; gap: 8px; color: var(--muted); font-size: 0.72rem; }
+    .binder-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--accent-lt);
+      color: var(--accent);
+      border: 1px solid var(--border2);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
     /* ── TEAM TABLE ── */
     .avatar {
       width: 32px; height: 32px; border-radius: 50%;
@@ -667,7 +722,7 @@
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
     }
-    .week-nav { display: flex; align-items: center; gap: 12px; }
+    .week-nav { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
     .week-nav button {
       background: var(--surface); border: 1px solid var(--border); color: var(--text);
       width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
@@ -993,157 +1048,45 @@
     </div>
 
     <div class="sidebar-section-label">Operations</div>
-    <div class="nav-item active" onclick="showSection('finances', this)">
-      <span class="nav-icon">💰</span> Finances
-    </div>
-    <div class="nav-item" onclick="showSection('income', this)">
-      <span class="nav-icon">📈</span> Income
-    </div>
-    <div class="nav-item" onclick="showSection('pnl', this)">
-      <span class="nav-icon">📊</span> P&L
-    </div>
-    <div class="nav-item" onclick="showSection('bills', this)">
-      <span class="nav-icon">📋</span> Bills
-      <span class="nav-badge" id="billsBadge">0</span>
-    </div>
-    <div class="nav-item" onclick="showSection('schedule', this)">
-      <span class="nav-icon">📅</span> Schedule
+    <div class="nav-item active" onclick="showSection('schedule', this)">
+      <span class="nav-icon">SC</span> Schedule
     </div>
     <div class="nav-item" onclick="showSection('crm', this)">
-      <span class="nav-icon">📇</span> CRM
+      <span class="nav-icon">CR</span> CRM
+    </div>
+    <div class="nav-item" onclick="showSection('estimates', this)">
+      <span class="nav-icon">ES</span> Estimates
+      <span class="nav-badge" id="estimatesBadge" style="display:none;">0</span>
+    </div>
+    <div class="nav-item" onclick="showSection('services', this)">
+      <span class="nav-icon">SV</span> Services
     </div>
 
     <div class="sidebar-section-label">People & Fleet</div>
     <div class="nav-item" onclick="showSection('tasks', this)">
-      <span class="nav-icon">✅</span> Tasks
+      <span class="nav-icon">TK</span> Tasks
     </div>
     <div class="nav-item" onclick="showSection('team', this)">
-      <span class="nav-icon">👥</span> Team
+      <span class="nav-icon">TM</span> Team
     </div>
     <div class="nav-item" onclick="showSection('timeclock', this)">
       <span class="nav-icon">TC</span> Time Clock
     </div>
     <div class="nav-item" onclick="showSection('fleet', this)">
-      <span class="nav-icon">🚛</span> Fleet
+      <span class="nav-icon">FL</span> Fleet
     </div>
-
-    <div class="sidebar-section-label">Estimating</div>
-    <div class="nav-item" onclick="showSection('estimates', this)">
-      <span class="nav-icon">📝</span> Estimates
-      <span class="nav-badge" id="estimatesBadge" style="display:none;">0</span>
-    </div>
-    <div class="nav-item" onclick="showSection('services', this)">
-      <span class="nav-icon">⚙️</span> Services
+    <div class="nav-item" onclick="showSection('maintenance', this)">
+      <span class="nav-icon">MB</span> Maintenance Binder
     </div>
   </aside>
 
   <!-- MAIN -->
   <main class="main-content">
 
-    <!-- ══ FINANCES ══ -->
-    <div class="page-section active" id="section-finances">
-      <div class="page-header">
-        <div>
-          <div class="page-title">FINANCES</div>
-          <div class="page-subtitle">Monthly balance, transactions, and cash available for Matt</div>
-        </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-primary" onclick="openModal('balanceModal')">⚡ Set Monthly Balance</button>
-          <button class="btn btn-secondary" onclick="openModal('transactionModal')">+ Log Transaction</button>
-        </div>
-      </div>
-
-      <!-- Month navigator for finances -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-        <div class="month-nav">
-          <button onclick="shiftFinancesMonth(-1)">‹</button>
-          <span class="month-nav-label" id="financesMonthLabel">—</span>
-          <button onclick="shiftFinancesMonth(1)">›</button>
-          <button onclick="resetFinancesMonth()" style="font-size:0.7rem;padding:0 10px;width:auto;height:28px;">This Month</button>
-        </div>
-        <div style="font-size:0.75rem;color:var(--muted);">Showing transactions for selected month</div>
-      </div>
-
-      <div class="stat-grid">
-        <div class="stat-card green">
-          <div class="stat-label">Monthly Starting Balance</div>
-          <div class="stat-value green" id="stat-starting">$0.00</div>
-          <div class="stat-sub">Set by Jessica</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-label">Income This Month</div>
-          <div class="stat-value green" id="stat-income-month">$0.00</div>
-          <div class="stat-sub" id="stat-income-count">0 entries</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-label">Bills Due This Month</div>
-          <div class="stat-value red" id="stat-bills-total">$0.00</div>
-          <div class="stat-sub" id="stat-bills-count">0 bills</div>
-        </div>
-        <div class="stat-card orange">
-          <div class="stat-label">Transactions Out</div>
-          <div class="stat-value orange" id="stat-spent">$0.00</div>
-          <div class="stat-sub" id="stat-tx-count">0 transactions</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-label">Available to Spend</div>
-          <div class="stat-value" id="stat-available">$0.00</div>
-          <div class="stat-sub"></div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">TRANSACTIONS</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div class="panel-meta" id="txMonthLabel">—</div>
-            <button class="btn btn-secondary btn-sm" onclick="exportTransactionsCSV()" title="Export to CSV">⬇ Export CSV</button>
-          </div>
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Date</th><th>Description</th><th>Category</th>
-              <th style="text-align:right">Amount</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="transactionTableBody">
-            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No transactions yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ BILLS ══ -->
-    <div class="page-section" id="section-bills">
-      <div class="page-header">
-        <div>
-          <div class="page-title">BILLS</div>
-          <div class="page-subtitle">Recurring bills by due date — auto-show on Matt's dashboard</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-secondary" onclick="resetAllBillsChecklist()">Reset Paid Status</button>
-          <button class="btn btn-primary" onclick="openModal('billModal')">+ Add Recurring Bill</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">ALL BILLS</div>
-          <div class="panel-meta">Sorted by next due date</div>
-        </div>
-        <table class="data-table">
-          <thead>
-            <tr><th>Bill Name</th><th>Amount</th><th>Due Date</th><th>Frequency</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="billTableBody">
-            <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No bills added yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ══ SCHEDULE ══ -->
-    <div class="page-section" id="section-schedule">
+    <!-- Finance modules removed for operations-only build -->
+    <div class="page-section" id="section-finances" style="display:none"></div>
+    <div class="page-section" id="section-bills" style="display:none"></div>
+    <div class="page-section active" id="section-schedule">
       <div class="page-header">
         <div>
           <div class="page-title">SCHEDULE</div>
@@ -1366,128 +1309,125 @@
       <div class="fleet-grid" id="fleetGrid"></div>
     </div>
 
-    <!-- ══ INCOME ══ -->
-    <div class="page-section" id="section-income">
+    <!-- MAINTENANCE BINDER -->
+    <div class="page-section" id="section-maintenance">
       <div class="page-header">
         <div>
-          <div class="page-title">INCOME</div>
-          <div class="page-subtitle">Log payments received — feeds into your P&L automatically</div>
+          <div class="page-title">MAINTENANCE BINDER</div>
+          <div class="page-subtitle">DOT-ready vehicle maintenance records, monthly checklists, and annual inspection tracking</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal('incomeModal')">+ Log Income</button>
-      </div>
-      <div class="stat-grid">
-        <div class="stat-card green">
-          <div class="stat-label">This Month</div>
-          <div class="stat-value green" id="income-month-total">$0.00</div>
-          <div class="stat-sub" id="income-month-count">0 entries</div>
-        </div>
-        <div class="stat-card green">
-          <div class="stat-label">This Week</div>
-          <div class="stat-value green" id="income-week-total">$0.00</div>
-          <div class="stat-sub" id="income-week-count">0 entries</div>
-        </div>
-        <div class="stat-card neutral">
-          <div class="stat-label">Trucking</div>
-          <div class="stat-value" id="income-cat-trucking">$0.00</div>
-          <div class="stat-sub">This month</div>
-        </div>
-        <div class="stat-card neutral">
-          <div class="stat-label">Excavation</div>
-          <div class="stat-value" id="income-cat-excavation">$0.00</div>
-          <div class="stat-sub">This month</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="openAnnualInspectionModal()">+ Annual Inspection</button>
+          <button class="btn btn-primary" onclick="openMaintenanceLogModal()">+ Maintenance Entry</button>
         </div>
       </div>
+
+      <div class="binder-toolbar">
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select class="form-select" id="maintenanceFilterUnit" onchange="renderMaintenanceBinder()">
+            <option value="all">All units</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Period</label>
+          <select class="form-select" id="maintenanceFilterPeriod" onchange="renderMaintenanceBinder()">
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="ytd">Year to date</option>
+            <option value="all">All records</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom Start</label>
+          <input class="form-input" type="date" id="maintenanceFilterStart" onchange="renderMaintenanceBinder()"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Custom End</label>
+          <input class="form-input" type="date" id="maintenanceFilterEnd" onchange="renderMaintenanceBinder()"/>
+        </div>
+      </div>
+
+      <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:20px;">
+        <div class="stat-card neutral">
+          <div class="stat-label">Records</div>
+          <div class="stat-value" id="maintenanceStatRecords">0</div>
+          <div class="stat-sub">Filtered maintenance entries</div>
+        </div>
+        <div class="stat-card orange">
+          <div class="stat-label">Monthly Checklists</div>
+          <div class="stat-value orange" id="maintenanceStatChecklist">0</div>
+          <div class="stat-sub">Entries with checklist items</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Annual Due</div>
+          <div class="stat-value red" id="maintenanceStatAnnualDue">0</div>
+          <div class="stat-sub">Due within 30 days or overdue</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Total Cost</div>
+          <div class="stat-value green" id="maintenanceStatCost">$0.00</div>
+          <div class="stat-sub">Filtered maintenance spend</div>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="panel-header">
-          <div class="panel-title">INCOME LOG</div>
-          <div class="panel-meta" id="incomeCount">0 entries</div>
+          <div>
+            <div class="panel-title">MAINTENANCE LOGS</div>
+            <div class="panel-meta">Inspection, repair, lubrication, and tire records</div>
+          </div>
+          <div class="panel-meta" id="maintenanceLogCount">0 records</div>
         </div>
         <table class="data-table">
           <thead>
-            <tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right">Amount</th><th></th></tr>
+            <tr>
+              <th>Date</th>
+              <th>Unit</th>
+              <th>Mileage / Hours</th>
+              <th>Work Performed</th>
+              <th>Checklist</th>
+              <th>Cost</th>
+              <th>Certified By</th>
+              <th>Actions</th>
+            </tr>
           </thead>
-          <tbody id="incomeTableBody">
-            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No income logged yet.</td></tr>
+          <tbody id="maintenanceLogBody">
+            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">No maintenance records yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">ANNUAL INSPECTIONS</div>
+            <div class="panel-meta">12-month periodic inspection tracker</div>
+          </div>
+          <div class="panel-meta" id="annualInspectionCount">0 records</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Inspection Date</th>
+              <th>Unit</th>
+              <th>Inspector</th>
+              <th>Result</th>
+              <th>Next Due</th>
+              <th>Report Location</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="annualInspectionBody">
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No annual inspections recorded yet.</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ══ P&L ══ -->
-    <div class="page-section" id="section-pnl">
-      <div class="page-header">
-        <div>
-          <div class="page-title">PROFIT & LOSS</div>
-          <div class="page-subtitle">Income vs expenses — auto-calculated from your entries</div>
-        </div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-        <div class="view-toggle">
-          <button class="view-toggle-btn active" onclick="switchPnlView('weekly',this)">Weekly</button>
-          <button class="view-toggle-btn" onclick="switchPnlView('monthly',this)">Monthly</button>
-          <button class="view-toggle-btn" onclick="switchPnlView('custom',this)">Custom</button>
-        </div>
-        <div id="pnl-custom-dates" style="display:none;display:flex;gap:8px;align-items:center;">
-          <input class="form-input" type="date" id="pnl-start" style="width:150px;padding:7px 10px;font-size:0.82rem;"/>
-          <span style="color:var(--muted);font-size:0.82rem;">to</span>
-          <input class="form-input" type="date" id="pnl-end" style="width:150px;padding:7px 10px;font-size:0.82rem;"/>
-          <button class="btn btn-secondary btn-sm" onclick="renderPnl()">Apply</button>
-        </div>
-        <span style="font-size:0.8rem;color:var(--muted);" id="pnl-period-label"></span>
-      </div>
-
-      <div class="stat-grid" style="margin-bottom:24px;">
-        <div class="stat-card green">
-          <div class="stat-label">Total Income</div>
-          <div class="stat-value green" id="pnl-total-income">$0.00</div>
-        </div>
-        <div class="stat-card red">
-          <div class="stat-label">Total Expenses</div>
-          <div class="stat-value red" id="pnl-total-expenses">$0.00</div>
-        </div>
-        <div class="stat-card" id="pnl-net-card">
-          <div class="stat-label">Net Profit / Loss</div>
-          <div class="stat-value" id="pnl-net">$0.00</div>
-          <div class="stat-sub" id="pnl-margin">0% margin</div>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">INCOME BY CATEGORY</div>
-          </div>
-          <div id="pnl-income-breakdown"></div>
-        </div>
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">EXPENSES BY CATEGORY</div>
-          </div>
-          <div id="pnl-expense-breakdown"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TASKS ══ -->
-    <div class="modal-overlay" id="pnlExpenseModal">
-      <div class="modal" style="max-width:760px;">
-        <div class="modal-title" id="pnlExpenseModalTitle">CATEGORY PURCHASES</div>
-        <div class="modal-sub" id="pnlExpenseModalSub">Recent purchases in this category.</div>
-        <div class="view-toggle" style="margin:12px 0 16px 0;">
-          <button class="view-toggle-btn active" id="pnlExpenseWeekBtn" onclick="switchPnlExpenseView('weekly', this)">This Week</button>
-          <button class="view-toggle-btn" id="pnlExpenseMonthBtn" onclick="switchPnlExpenseView('monthly', this)">This Month</button>
-        </div>
-        <div id="pnlExpenseModalBody">
-          <div style="text-align:center;color:var(--muted);padding:24px 0;">No purchases found.</div>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closePnlExpenseModal()">Close</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="page-section" id="section-tasks">
+    <!-- Legacy finance reporting removed for operations-only build -->
+    <div class="page-section" id="section-income" style="display:none"></div>
+    <div class="page-section" id="section-pnl" style="display:none"></div>
       <div class="page-header">
         <div>
           <div class="page-title">TASKS</div>
@@ -1564,9 +1504,21 @@
       <div class="services-filter">
         <button class="filter-btn active" onclick="filterEstimates('all', this)">All</button>
         <button class="filter-btn" onclick="filterEstimates('draft', this)">Draft</button>
+    <!-- ?????? ESTIMATES ?????? -->
+    <div class="page-section" id="section-estimates">
+      <div class="page-header">
+        <div>
+          <div class="page-title">ESTIMATES</div>
+          <div class="page-subtitle">Estimate requests submitted from the field for back-office review and scheduling</div>
+        </div>
+      </div>
+
+      <div class="services-filter">
+        <button class="filter-btn active" onclick="filterEstimates('all', this)">All</button>
+        <button class="filter-btn" onclick="filterEstimates('draft', this)">Draft</button>
         <button class="filter-btn" onclick="filterEstimates('submitted', this)">Submitted</button>
         <button class="filter-btn" onclick="filterEstimates('approved', this)">Approved</button>
-        <button class="filter-btn" onclick="filterEstimates('invoiced', this)">Invoiced</button>
+        <button class="filter-btn" onclick="filterEstimates('invoiced', this)">Scheduled</button>
       </div>
 
       <div id="estimates-list">
@@ -1574,20 +1526,15 @@
       </div>
     </div>
 
-    <!-- ══ SERVICES ══ -->
+    <!-- ?????? SERVICES ?????? -->
     <div class="page-section" id="section-services">
       <div class="page-header">
         <div>
           <div class="page-title">SERVICES</div>
-          <div class="page-subtitle">Your QuickBooks-aligned service library — drives all estimates</div>
+          <div class="page-subtitle">Your service library for building consistent estimates and job scopes</div>
         </div>
         <button class="btn btn-primary" onclick="openServiceModal()">+ Add Service</button>
       </div>
-
-      <div class="services-filter">
-        <button class="filter-btn active" onclick="filterServices('all', this)">All</button>
-        <button class="filter-btn" onclick="filterServices('Labor', this)">Labor</button>
-        <button class="filter-btn" onclick="filterServices('Material', this)">Material</button>
         <button class="filter-btn" onclick="filterServices('inactive', this)">Inactive</button>
       </div>
 
@@ -2348,6 +2295,149 @@
   </div>
 </div>
 
+<!-- MAINTENANCE LOG -->
+<div class="modal-overlay" id="maintenanceLogModal">
+  <div class="modal" style="max-width:760px;">
+    <div class="modal-title" id="maintenanceLogModalTitle">MAINTENANCE ENTRY</div>
+    <div class="modal-sub">Record repairs, lubrication, tire work, and monthly checklist items for the DOT maintenance binder.</div>
+    <input type="hidden" id="maintenance-log-id"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input class="form-input" type="date" id="maintenance-date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unit *</label>
+        <select class="form-select" id="maintenance-unit"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mileage</label>
+        <input class="form-input" type="number" id="maintenance-mileage" placeholder="609614"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Engine Hours</label>
+        <input class="form-input" type="number" id="maintenance-hours" placeholder="8573.8" step="0.1"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="maintenance-category">
+          <option>Repair</option>
+          <option>Preventive Maintenance</option>
+          <option>Oil / Filter</option>
+          <option>Tires</option>
+          <option>Brakes</option>
+          <option>Electrical</option>
+          <option>Inspection</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vendor / Shop</label>
+        <input class="form-input" type="text" id="maintenance-vendor" placeholder="Internal, shop name, parts vendor"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cost ($)</label>
+        <input class="form-input" type="number" id="maintenance-cost" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">Monthly Checklist</label>
+      <div class="binder-check-grid">
+        <label class="binder-check"><input type="checkbox" id="maint-lube"> Lube</label>
+        <label class="binder-check"><input type="checkbox" id="maint-oil"> Oil</label>
+        <label class="binder-check"><input type="checkbox" id="maint-filter"> Filter</label>
+        <label class="binder-check"><input type="checkbox" id="maint-trans"> Transmission</label>
+        <label class="binder-check"><input type="checkbox" id="maint-diff"> Differential</label>
+        <label class="binder-check"><input type="checkbox" id="maint-batt"> Battery</label>
+        <label class="binder-check"><input type="checkbox" id="maint-wheels"> Wheels Packed</label>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">Work Performed / Repairs *</label>
+      <textarea class="form-input" id="maintenance-work" rows="3" placeholder="Describe inspection, repairs, lubrication, and service performed"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Parts / Accessories Installed</label>
+        <textarea class="form-input" id="maintenance-parts" rows="2" placeholder="Parts installed or No parts replaced"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tire Record</label>
+        <textarea class="form-input" id="maintenance-tires" rows="2" placeholder="Repairs, replacements, rotations, etc."></textarea>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Record Completed By</label>
+        <input class="form-input" type="text" id="maintenance-completed-by" placeholder="Person responsible for this record"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Next Service Due</label>
+        <input class="form-input" type="date" id="maintenance-next-due"/>
+      </div>
+    </div>
+    <label class="binder-check" style="margin-top:4px;">
+      <input type="checkbox" id="maintenance-certified">
+      I certify this maintenance record is complete and accurate to the best of my knowledge.
+    </label>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveMaintenanceLog()">Save Maintenance Entry</button>
+      <button class="btn btn-secondary" onclick="closeModal('maintenanceLogModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANNUAL INSPECTION -->
+<div class="modal-overlay" id="annualInspectionModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-title" id="annualInspectionModalTitle">ANNUAL INSPECTION</div>
+    <div class="modal-sub">Track the required 12-month periodic inspection and where the report is stored.</div>
+    <input type="hidden" id="annual-inspection-id"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Inspection Date *</label>
+        <input class="form-input" type="date" id="annual-date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unit *</label>
+        <select class="form-select" id="annual-unit"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Result</label>
+        <select class="form-select" id="annual-result">
+          <option value="passed">Passed</option>
+          <option value="failed">Failed</option>
+          <option value="pending">Pending Repair</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Inspector Name</label>
+        <input class="form-input" type="text" id="annual-inspector" placeholder="Qualified inspector"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Report Location</label>
+        <input class="form-input" type="text" id="annual-report-location" placeholder="File path, binder location, shop invoice #"/>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label class="form-label">Notes / Defects / Corrective Action</label>
+      <textarea class="form-input" id="annual-notes" rows="3" placeholder="Inspection notes, defects found, repairs completed, or attachment reference"></textarea>
+    </div>
+    <label class="binder-check" style="margin-top:4px;">
+      <input type="checkbox" id="annual-certified">
+      Inspection report has been reviewed and the record is accurate.
+    </label>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="saveAnnualInspection()">Save Annual Inspection</button>
+      <button class="btn btn-secondary" onclick="closeModal('annualInspectionModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -2384,6 +2474,8 @@
   document.getElementById('txDate').value = todayInput;
   document.getElementById('eventDate').value = todayInput;
   document.getElementById('incomeDate').value = todayInput;
+  document.getElementById('maintenance-date').value = todayInput;
+  document.getElementById('annual-date').value = todayInput;
 
   // ── AUTH ──
   onAuthStateChanged(auth, async user => {
@@ -2415,6 +2507,7 @@
 
   // ── STATE ──
   let bills = [], transactions = [], events = [], team = [], trucks = [], income = [], allAdminTasks = [], crmContacts = [], timeClockEntries = [];
+  let maintenanceLogs = [], annualInspections = [];
   let allServices = [], currentFilter = 'all';
   let weekOffset = 0, startingBalance = 0;
   let currentAdminUid = null;
@@ -2574,11 +2667,392 @@
   function ensureFleetData() {
     attachListener('fleet', () => onSnapshot(collection(db, 'fleet'), snap => {
       trucks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      populateMaintenanceUnitSelects();
       if (trucks.length === 0) seedFleet(); else renderFleet();
+      renderMaintenanceBinder();
     }, error => {
       console.error('Fleet listener error:', error);
       showToast(getListenerErrorMessage('Fleet', error), 'error');
     }));
+  }
+
+  // Maintenance Binder
+  const MAINTENANCE_CHECKS = [
+    ['lube', 'Lube'],
+    ['oil', 'Oil'],
+    ['filter', 'Filter'],
+    ['transmission', 'Trans'],
+    ['differential', 'Diff'],
+    ['battery', 'Batt'],
+    ['wheelsPacked', 'Wheels']
+  ];
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function getUnitLabel(unitId) {
+    const truck = trucks.find(t => t.id === unitId || t.num === unitId);
+    if (!truck) return unitId || 'Unassigned';
+    return `${truck.num || ''} ${truck.name || ''}`.trim();
+  }
+
+  function getUnitNum(unitId) {
+    const truck = trucks.find(t => t.id === unitId || t.num === unitId);
+    return truck?.num || unitId || '';
+  }
+
+  function populateMaintenanceUnitSelects() {
+    const unitOptions = trucks
+      .slice()
+      .sort((a,b) => String(a.num || '').localeCompare(String(b.num || '')))
+      .map(t => `<option value="${t.id}">${escapeHtml(`${t.num || ''} ${t.name || ''}`.trim())}</option>`)
+      .join('');
+
+    ['maintenance-unit','annual-unit'].forEach(id => {
+      const select = document.getElementById(id);
+      if (!select) return;
+      const current = select.value;
+      select.innerHTML = unitOptions || '<option value="">Add a fleet unit first</option>';
+      if ([...select.options].some(opt => opt.value === current)) select.value = current;
+    });
+
+    const filter = document.getElementById('maintenanceFilterUnit');
+    if (filter) {
+      const current = filter.value || 'all';
+      filter.innerHTML = '<option value="all">All units</option>' + unitOptions;
+      if ([...filter.options].some(opt => opt.value === current)) filter.value = current;
+    }
+  }
+
+  function getMaintenanceFilteredLogs() {
+    const unit = document.getElementById('maintenanceFilterUnit')?.value || 'all';
+    const period = document.getElementById('maintenanceFilterPeriod')?.value || '30';
+    const customStart = document.getElementById('maintenanceFilterStart')?.value || '';
+    const customEnd = document.getElementById('maintenanceFilterEnd')?.value || '';
+    const today = new Date(`${getLocalDateString()}T00:00:00`);
+    let start = '';
+    let end = '';
+
+    if (customStart || customEnd) {
+      start = customStart;
+      end = customEnd;
+    } else if (period === '30' || period === '90') {
+      const d = new Date(today);
+      d.setDate(d.getDate() - Number(period));
+      start = getLocalDateString(d);
+      end = getLocalDateString(today);
+    } else if (period === 'ytd') {
+      start = `${today.getFullYear()}-01-01`;
+      end = getLocalDateString(today);
+    }
+
+    return maintenanceLogs.filter(log => {
+      if (unit !== 'all' && log.unitId !== unit) return false;
+      if (start && (!log.date || log.date < start)) return false;
+      if (end && (!log.date || log.date > end)) return false;
+      return true;
+    }).sort((a,b) => (b.date || '').localeCompare(a.date || ''));
+  }
+
+  function hasChecklist(log) {
+    const checks = log.checklist || {};
+    return MAINTENANCE_CHECKS.some(([key]) => !!checks[key]);
+  }
+
+  function getAnnualDueCount() {
+    const today = new Date(`${getLocalDateString()}T00:00:00`);
+    const soon = new Date(today);
+    soon.setDate(soon.getDate() + 30);
+    return trucks.filter(truck => {
+      const latest = annualInspections
+        .filter(item => item.unitId === truck.id && item.result === 'passed' && item.nextDue)
+        .sort((a,b) => (b.nextDue || '').localeCompare(a.nextDue || ''))[0];
+      if (!latest) return true;
+      const due = new Date(`${latest.nextDue}T00:00:00`);
+      return due <= soon;
+    }).length;
+  }
+
+  function renderMaintenanceBinder() {
+    const logBody = document.getElementById('maintenanceLogBody');
+    if (!logBody) return;
+    populateMaintenanceUnitSelects();
+
+    const logs = getMaintenanceFilteredLogs();
+    const totalCost = logs.reduce((sum, log) => sum + (Number(log.cost) || 0), 0);
+    document.getElementById('maintenanceStatRecords').textContent = logs.length;
+    document.getElementById('maintenanceStatChecklist').textContent = logs.filter(hasChecklist).length;
+    document.getElementById('maintenanceStatAnnualDue').textContent = getAnnualDueCount();
+    document.getElementById('maintenanceStatCost').textContent = fmt(totalCost);
+    document.getElementById('maintenanceLogCount').textContent = `${logs.length} records`;
+
+    if (!logs.length) {
+      logBody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:32px">No maintenance records for this filter.</td></tr>';
+    } else {
+      logBody.innerHTML = logs.map(log => {
+        const checklist = MAINTENANCE_CHECKS
+          .filter(([key]) => log.checklist?.[key])
+          .map(([, label]) => `<span class="binder-pill">${label}</span>`)
+          .join(' ');
+        return `<tr>
+          <td>${escapeHtml(log.date || '')}</td>
+          <td><strong>${escapeHtml(getUnitLabel(log.unitId))}</strong></td>
+          <td>
+            <div>${log.mileage ? `${Number(log.mileage).toLocaleString()} mi` : '-'}</div>
+            <div style="font-size:0.72rem;color:var(--muted);">${log.engineHours ? `${log.engineHours} hrs` : ''}</div>
+          </td>
+          <td>
+            <div class="binder-log-title">${escapeHtml(log.category || 'Maintenance')}</div>
+            <div style="font-size:0.78rem;color:var(--muted);max-width:320px;">${escapeHtml(log.workPerformed || '')}</div>
+            ${log.partsInstalled ? `<div class="binder-log-meta">Parts: ${escapeHtml(log.partsInstalled)}</div>` : ''}
+          </td>
+          <td>${checklist || '<span style="color:var(--muted);font-size:0.75rem;">None checked</span>'}</td>
+          <td style="text-align:right;font-family:'DM Mono',monospace;">${fmt(log.cost || 0)}</td>
+          <td>${escapeHtml(log.completedBy || log.createdByName || '')}${log.certified ? '<div class="binder-pill" style="margin-top:4px;">Certified</div>' : ''}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="openEditMaintenanceLog('${log.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteMaintenanceLog('${log.id}')">Delete</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    renderAnnualInspections();
+  }
+  window.renderMaintenanceBinder = renderMaintenanceBinder;
+
+  function renderAnnualInspections() {
+    const tbody = document.getElementById('annualInspectionBody');
+    if (!tbody) return;
+    const unit = document.getElementById('maintenanceFilterUnit')?.value || 'all';
+    const rows = annualInspections
+      .filter(item => unit === 'all' || item.unitId === unit)
+      .sort((a,b) => (b.inspectionDate || '').localeCompare(a.inspectionDate || ''));
+    document.getElementById('annualInspectionCount').textContent = `${rows.length} records`;
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No annual inspections recorded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(item => {
+      const dueClass = item.nextDue && item.nextDue <= getLocalDateString() ? 'red' : '';
+      return `<tr>
+        <td>${escapeHtml(item.inspectionDate || '')}</td>
+        <td><strong>${escapeHtml(getUnitLabel(item.unitId))}</strong></td>
+        <td>${escapeHtml(item.inspector || '')}</td>
+        <td><span class="binder-pill">${escapeHtml(item.result || 'pending')}</span></td>
+        <td class="${dueClass}" style="font-weight:700;color:${dueClass ? 'var(--danger)' : 'inherit'}">${escapeHtml(item.nextDue || '')}</td>
+        <td>${escapeHtml(item.reportLocation || '')}</td>
+        <td>
+          <button class="btn btn-secondary btn-sm" onclick="openEditAnnualInspection('${item.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAnnualInspection('${item.id}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function resetMaintenanceLogModal() {
+    document.getElementById('maintenanceLogModalTitle').textContent = 'MAINTENANCE ENTRY';
+    document.getElementById('maintenance-log-id').value = '';
+    document.getElementById('maintenance-date').value = getLocalDateString();
+    ['maintenance-mileage','maintenance-hours','maintenance-vendor','maintenance-cost','maintenance-work','maintenance-parts','maintenance-tires','maintenance-completed-by','maintenance-next-due'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('maintenance-category').value = 'Repair';
+    document.getElementById('maintenance-certified').checked = false;
+    ['maint-lube','maint-oil','maint-filter','maint-trans','maint-diff','maint-batt','maint-wheels'].forEach(id => document.getElementById(id).checked = false);
+    populateMaintenanceUnitSelects();
+  }
+
+  window.openMaintenanceLogModal = function() {
+    resetMaintenanceLogModal();
+    openModal('maintenanceLogModal');
+  };
+
+  window.openEditMaintenanceLog = function(id) {
+    const log = maintenanceLogs.find(item => item.id === id);
+    if (!log) return;
+    resetMaintenanceLogModal();
+    document.getElementById('maintenanceLogModalTitle').textContent = 'EDIT MAINTENANCE ENTRY';
+    document.getElementById('maintenance-log-id').value = id;
+    document.getElementById('maintenance-date').value = log.date || '';
+    document.getElementById('maintenance-unit').value = log.unitId || '';
+    document.getElementById('maintenance-mileage').value = log.mileage || '';
+    document.getElementById('maintenance-hours').value = log.engineHours || '';
+    document.getElementById('maintenance-category').value = log.category || 'Repair';
+    document.getElementById('maintenance-vendor').value = log.vendor || '';
+    document.getElementById('maintenance-cost').value = log.cost || '';
+    document.getElementById('maintenance-work').value = log.workPerformed || '';
+    document.getElementById('maintenance-parts').value = log.partsInstalled || '';
+    document.getElementById('maintenance-tires').value = log.tireRecord || '';
+    document.getElementById('maintenance-completed-by').value = log.completedBy || '';
+    document.getElementById('maintenance-next-due').value = log.nextServiceDue || '';
+    document.getElementById('maintenance-certified').checked = !!log.certified;
+    const checks = log.checklist || {};
+    document.getElementById('maint-lube').checked = !!checks.lube;
+    document.getElementById('maint-oil').checked = !!checks.oil;
+    document.getElementById('maint-filter').checked = !!checks.filter;
+    document.getElementById('maint-trans').checked = !!checks.transmission;
+    document.getElementById('maint-diff').checked = !!checks.differential;
+    document.getElementById('maint-batt').checked = !!checks.battery;
+    document.getElementById('maint-wheels').checked = !!checks.wheelsPacked;
+    openModal('maintenanceLogModal');
+  };
+
+  window.saveMaintenanceLog = async function() {
+    const id = document.getElementById('maintenance-log-id').value;
+    const unitId = document.getElementById('maintenance-unit').value;
+    const date = document.getElementById('maintenance-date').value;
+    const workPerformed = document.getElementById('maintenance-work').value.trim();
+    if (!unitId || !date || !workPerformed) {
+      showToast('Date, unit, and work performed are required', 'error');
+      return;
+    }
+    const certified = document.getElementById('maintenance-certified').checked;
+    const payload = {
+      unitId,
+      unitNum: getUnitNum(unitId),
+      date,
+      mileage: Number(document.getElementById('maintenance-mileage').value) || null,
+      engineHours: Number(document.getElementById('maintenance-hours').value) || null,
+      category: document.getElementById('maintenance-category').value,
+      vendor: document.getElementById('maintenance-vendor').value.trim(),
+      cost: Number(document.getElementById('maintenance-cost').value) || 0,
+      checklist: {
+        lube: document.getElementById('maint-lube').checked,
+        oil: document.getElementById('maint-oil').checked,
+        filter: document.getElementById('maint-filter').checked,
+        transmission: document.getElementById('maint-trans').checked,
+        differential: document.getElementById('maint-diff').checked,
+        battery: document.getElementById('maint-batt').checked,
+        wheelsPacked: document.getElementById('maint-wheels').checked
+      },
+      workPerformed,
+      partsInstalled: document.getElementById('maintenance-parts').value.trim(),
+      tireRecord: document.getElementById('maintenance-tires').value.trim(),
+      completedBy: document.getElementById('maintenance-completed-by').value.trim() || document.getElementById('navUserName').textContent,
+      nextServiceDue: document.getElementById('maintenance-next-due').value,
+      certified,
+      updatedAt: serverTimestamp()
+    };
+    if (certified) payload.certifiedAt = serverTimestamp();
+    if (id) {
+      await updateDoc(doc(db, 'maintenanceLogs', id), payload);
+      showToast('Maintenance entry updated', 'success');
+    } else {
+      await addDoc(collection(db, 'maintenanceLogs'), { ...payload, createdAt: serverTimestamp(), createdByUid: currentAdminUid, createdByName: document.getElementById('navUserName').textContent });
+      showToast('Maintenance entry saved', 'success');
+    }
+    closeModal('maintenanceLogModal');
+  };
+
+  window.deleteMaintenanceLog = async function(id) {
+    if (!confirm('Delete this maintenance entry?')) return;
+    await deleteDoc(doc(db, 'maintenanceLogs', id));
+    showToast('Maintenance entry deleted', 'success');
+  };
+
+  function resetAnnualInspectionModal() {
+    document.getElementById('annualInspectionModalTitle').textContent = 'ANNUAL INSPECTION';
+    document.getElementById('annual-inspection-id').value = '';
+    document.getElementById('annual-date').value = getLocalDateString();
+    document.getElementById('annual-result').value = 'passed';
+    ['annual-inspector','annual-report-location','annual-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('annual-certified').checked = false;
+    populateMaintenanceUnitSelects();
+  }
+
+  window.openAnnualInspectionModal = function() {
+    resetAnnualInspectionModal();
+    openModal('annualInspectionModal');
+  };
+
+  window.openEditAnnualInspection = function(id) {
+    const item = annualInspections.find(entry => entry.id === id);
+    if (!item) return;
+    resetAnnualInspectionModal();
+    document.getElementById('annualInspectionModalTitle').textContent = 'EDIT ANNUAL INSPECTION';
+    document.getElementById('annual-inspection-id').value = id;
+    document.getElementById('annual-date').value = item.inspectionDate || '';
+    document.getElementById('annual-unit').value = item.unitId || '';
+    document.getElementById('annual-result').value = item.result || 'passed';
+    document.getElementById('annual-inspector').value = item.inspector || '';
+    document.getElementById('annual-report-location').value = item.reportLocation || '';
+    document.getElementById('annual-notes').value = item.notes || '';
+    document.getElementById('annual-certified').checked = !!item.certified;
+    openModal('annualInspectionModal');
+  };
+
+  function getAnnualNextDue(inspectionDate) {
+    if (!inspectionDate) return '';
+    const d = new Date(`${inspectionDate}T00:00:00`);
+    d.setFullYear(d.getFullYear() + 1);
+    return getLocalDateString(d);
+  }
+
+  window.saveAnnualInspection = async function() {
+    const id = document.getElementById('annual-inspection-id').value;
+    const unitId = document.getElementById('annual-unit').value;
+    const inspectionDate = document.getElementById('annual-date').value;
+    if (!unitId || !inspectionDate) {
+      showToast('Inspection date and unit are required', 'error');
+      return;
+    }
+    const payload = {
+      unitId,
+      unitNum: getUnitNum(unitId),
+      inspectionDate,
+      result: document.getElementById('annual-result').value,
+      inspector: document.getElementById('annual-inspector').value.trim(),
+      reportLocation: document.getElementById('annual-report-location').value.trim(),
+      notes: document.getElementById('annual-notes').value.trim(),
+      certified: document.getElementById('annual-certified').checked,
+      nextDue: getAnnualNextDue(inspectionDate),
+      updatedAt: serverTimestamp()
+    };
+    if (id) {
+      await updateDoc(doc(db, 'annualInspections', id), payload);
+      showToast('Annual inspection updated', 'success');
+    } else {
+      await addDoc(collection(db, 'annualInspections'), { ...payload, createdAt: serverTimestamp(), createdByUid: currentAdminUid });
+      showToast('Annual inspection saved', 'success');
+    }
+    closeModal('annualInspectionModal');
+  };
+
+  window.deleteAnnualInspection = async function(id) {
+    if (!confirm('Delete this annual inspection record?')) return;
+    await deleteDoc(doc(db, 'annualInspections', id));
+    showToast('Annual inspection deleted', 'success');
+  };
+
+  function ensureMaintenanceData() {
+    ensureFleetData();
+    attachListener('maintenanceLogs', () => onSnapshot(
+      query(collection(db, 'maintenanceLogs'), orderBy('date','desc')),
+      snap => {
+        maintenanceLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderMaintenanceBinder();
+      },
+      error => {
+        console.error('Maintenance logs listener error:', error);
+        showToast(getListenerErrorMessage('Maintenance binder', error), 'error');
+      }
+    ));
+    attachListener('annualInspections', () => onSnapshot(
+      query(collection(db, 'annualInspections'), orderBy('inspectionDate','desc')),
+      snap => {
+        annualInspections = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderMaintenanceBinder();
+      },
+      error => {
+        console.error('Annual inspections listener error:', error);
+        showToast(getListenerErrorMessage('Annual inspections', error), 'error');
+      }
+    ));
   }
 
   function ensureTaskData() {
@@ -2611,59 +3085,27 @@
     if (loadedSections.has(section)) return;
     loadedSections.add(section);
 
-    if (section === 'finances' || section === 'bills' || section === 'income' || section === 'pnl') {
-      ensureFinanceData();
-      return;
-    }
     if (section === 'schedule') return ensureScheduleData();
     if (section === 'crm') return ensureCRMData();
     if (section === 'team') return ensureTeamData();
     if (section === 'fleet') return ensureFleetData();
+    if (section === 'maintenance') return ensureMaintenanceData();
     if (section === 'tasks') return ensureTaskData();
     if (section === 'timeclock') return ensureTimeClockData();
     if (section === 'services' || section === 'estimates') await loadServices();
   }
 
   function loadAll() {
-    ensureSectionData('finances');
+    ensureSectionData('schedule');
+    const initialSection = (window.location.hash || '').replace('#', '');
+    if (initialSection) {
+      const navItem = document.querySelector(`.nav-item[onclick*="'${initialSection}'"]`);
+      showSection(initialSection, navItem);
+    }
   }
 
-  // ── FINANCES ──
   function updateFinanceStats() {
-    const monthStr = getFinancesMonthStr();
-    const { start, end } = getFinancesMonthRange();
-
-    // Bills due this month: count each bill with a dueDay that falls in the month
-    const billsThisMonth = bills.filter(b => b.dueDay >= 1 && b.dueDay <= 31 && !isBillResolvedThisMonth(b));
-    const billsTotal = billsThisMonth.reduce((s, b) => s + (b.amount || 0), 0);
-
-    // Transactions this month (filter by date field)
-    const txThisMonth = transactions.filter(t => t.date && t.date >= start && t.date <= end);
-    const txTotal = txThisMonth.reduce((s, t) => s + (t.amount || 0), 0);
-
-    // Income this month
-    const incomeThisMonth = income.filter(i => i.date && i.date >= start && i.date <= end);
-    const incomeTotal = incomeThisMonth.reduce((s, i) => s + (i.amount || 0), 0);
-
-    // Available = starting balance + income - bills - transactions
-    const available = startingBalance + incomeTotal - billsTotal - txTotal;
-
-    document.getElementById('stat-starting').textContent     = fmt(startingBalance);
-    document.getElementById('stat-income-month').textContent = fmt(incomeTotal);
-    document.getElementById('stat-income-count').textContent = `${incomeThisMonth.length} entries`;
-    document.getElementById('stat-bills-total').textContent  = fmt(billsTotal);
-    document.getElementById('stat-bills-count').textContent  = `${billsThisMonth.length} bills this month`;
-    document.getElementById('stat-spent').textContent        = fmt(txTotal);
-    document.getElementById('stat-tx-count').textContent     = `${txThisMonth.length} transactions`;
-    document.getElementById('stat-available').textContent    = fmt(available);
-
-    // Color the available card based on positive/negative
-    const availEl = document.getElementById('stat-available');
-    availEl.className = `stat-value ${available >= 0 ? 'green' : 'red'}`;
-    const availCard = availEl.closest('.stat-card');
-    if (availCard) {
-      availCard.className = `stat-card ${available >= 0 ? 'green' : 'red'}`;
-    }
+    return;
   }
 
   function isDueThisWeek(bill) {
@@ -4250,8 +4692,8 @@
   };
 
   window.updateEstimateStatus = async function(id, status) {
-    await updateDoc(doc(db,'estimates',id), { status, updatedAt:serverTimestamp() });
-    showToast(`Estimate ${status} ✓`, 'success');
+    await updateDoc(doc(db,'estimates',id), { status });
+    showToast(`Estimate ${status} updated`, 'success');
   };
 
   window.deleteEstimate = async function(id) {
@@ -4829,11 +5271,12 @@
         <div style="font-size:0.74rem;color:var(--muted);margin-top:4px;">${categoryPurchases.length} recent purchase${categoryPurchases.length === 1 ? '' : 's'}</div>
       </div>`;
     }).join('');
+
   };
 
-  // ── TASKS (ADMIN) ──
+  const TASK_CATEGORIES = ['Job Prep','Truck / Equipment','Office & Admin','Follow-Up','Customer Update','Other'];
 
-  const TASK_CATEGORIES = ['Job Prep','Truck / Equipment','Office & Admin','Follow-Up','Billing','Other'];
+  // ?????? TASKS (ADMIN) ??????
 
   function buildAdminTaskTabs() {
     const tabsEl = document.getElementById('admin-task-tabs');
@@ -4860,24 +5303,15 @@
       opt.textContent = `${m.first} ${m.last||''}`.trim();
       sel.appendChild(opt);
     });
-    if (current) sel.value = current;
+    if ([...sel.options].some(o=>o.value===current)) sel.value=current;
   }
 
   window.switchAdminTaskTab = function(filter, btn) {
     adminTaskFilter = filter;
     document.querySelectorAll('#admin-task-tabs .filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
     renderAdminTasks();
   };
-
-  function getTaskDueStatus(dueDate) {
-    if (!dueDate) return null;
-    const today = new Date(); today.setHours(0,0,0,0);
-    const due   = new Date(dueDate + 'T00:00:00');
-    if (due < today)  return 'overdue';
-    if (due.getTime() === today.getTime()) return 'today';
-    return 'upcoming';
-  }
 
   function renderAdminTasks() {
     const todayStr = now.toISOString().split('T')[0];
@@ -4953,7 +5387,7 @@
     document.getElementById('task-stat-remind').textContent  = remindCt;
   }
 
-  // Open modal for new task
+
   window.openNewTask = function() {
     document.getElementById('taskModalTitle').textContent = 'NEW TASK';
     document.getElementById('task-id').value       = '';
@@ -5025,7 +5459,8 @@
 
   window.adminDeleteTask = async (id) => { await deleteDoc(doc(db,'tasks',id)); showToast('Task removed','success'); };
 
-  // ── UI HELPERS ──
+
+  // ?????? UI HELPERS ??????
   window.showSection = function(name, el) {
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -5039,10 +5474,9 @@
     ensureSectionData(name);
     if (name === 'schedule') renderCalendar();
     if (name === 'services') loadServices();
-    if (name === 'pnl') renderPnl();
     if (name === 'tasks') renderAdminTasks();
     if (name === 'timeclock') renderTimeClock();
-    if (name === 'finances') { updateFinancesMonthLabel(); updateFinanceStats(); renderTransactions(); }
+    if (name === 'maintenance') renderMaintenanceBinder();
   };
 
   window.openModal  = (id) => document.getElementById(id)?.classList.add('open');
